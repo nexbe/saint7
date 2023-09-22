@@ -88,16 +88,31 @@ const styles = {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 30px;
     height: 100vh;
     width: fit-content;
     background: var(--primary);
 
+    @media (max-height: 667px) {
+      height: 205vh;
+      width:fit-content;
+    }
+    @media (max-height: 844px) {
+      height: 110vh;
+      width:fit-content;
+    }
+    @media (max-height: 851px) {
+      height: 110vh;
+      width:fit-content;
+    }
+    @media (min-width: 412px) and (max-height: 915px) {
+      height: 103.5vh;
+      width:fit-content;
+    }
     @media (min-width: 440px) {
       width: 100%;
       height: 100vh;
-      padding-top: 0px;
     }
+   
   `,
   header: css`
     color: var(--white);
@@ -112,8 +127,7 @@ const styles = {
     color: var(--primary);
     width: 80%;
     padding: 9px;
-    margin-top: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border-radius: 15px;
     font-weight: 700;
     border: 1px solid transparent;
