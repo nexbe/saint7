@@ -28,7 +28,7 @@ const index = () => {
                 <ProfileIcon />
                 <span css={styles.welcomeText}>Welcome !</span>
               </label>
-              <span css={styles.nameText}>John Smith</span>
+              <span className="header-text">John Smith</span>
             </div>
             <div css={styles.timeText}>Friday, 26th May 2023</div>
           </div>
@@ -132,6 +132,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     margin: 0;
+    background: var(--background);
   `,
   headerContainer: css`
     display: flex;
@@ -140,9 +141,9 @@ const styles = {
     align-items: center;
     padding: 10px 30px;
     margin: 0;
-    background: #293991;
+    background: var(--primary);
     min-height: 90px;
-    color: #fff;
+    color: var(--white);
     font-family: Inter;
     font-style: normal;
     border-radius: 20px 20px 0 0;
@@ -153,6 +154,10 @@ const styles = {
     justify-content: center;
     font-weight: 600;
     width: 100%;
+    .header-text {
+      margin-left: 50px;
+      margin-top: -20px;
+    }
     svg {
       align-items: center;
       width: 50px;
@@ -169,11 +174,6 @@ const styles = {
     font-size: 12px;
     font-weight: 500;
   `,
-  nameText: css`
-    font-size: 18px;
-    margin-left: 50px;
-    margin-top: -20px;
-  `,
   timeText: css`
     font-size: 14px;
   `,
@@ -188,19 +188,20 @@ const styles = {
     margin: 10px;
     font-family: Inter;
     font-style: normal;
+
     ::-webkit-scrollbar {
       width: 2px;
       background-color: transparent;
     }
     .bodyContainer::-webkit-scrollbar-thumb {
       border-radius: 2px;
-      background-color: gray;
+      background-color: var(--font-gray);
     }
     @media (max-width: 1400px) {
       margin: 20px;
     }
     @media (min-width: 1400px) {
-      margin: 50px;
+      margin: 30px;
     }
   `,
   mapContainer: css`
@@ -217,13 +218,14 @@ const styles = {
     display: flex;
     flex-direction: column;
     width: 100%;
-    color: #2f4858;
+    color: var(--primary-font);
     font-size: 14px;
     font-weight: 600;
     gap: 5px;
     border-radius: 10px;
     background: #eff8ff;
     padding: 10px 20px;
+    border: 1px solid var(--primary);
     div {
       display: flex;
     }
@@ -233,7 +235,7 @@ const styles = {
   `,
   address: css`
     display: flex;
-    color: #383838;
+    color: var(--font-gray);
     font-size: 16px;
     font-weight: 600;
     @media (max-width: 400px) {
@@ -281,7 +283,7 @@ const styles = {
     flex-direction: column;
     flex: 1 1 auto;
     button {
-      color: #293991;
+      color: var(--primary);
       text-align: center;
       font-family: Inter;
       font-size: 14px;
@@ -290,8 +292,8 @@ const styles = {
       line-height: normal;
       padding: 7px;
       border-radius: 10px;
-      border: 1px solid #293991;
-      background: #fff;
+      border: 1px solid var(--primary);
+      background: var(--white);
       display: flex;
       flex-direction: column;
       justify-content: center;
