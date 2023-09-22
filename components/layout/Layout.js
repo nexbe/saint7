@@ -6,7 +6,9 @@ import { css } from "@emotion/react";
 const Layout = ({ children }) => {
   return (
     <div css={styles.wrapper}>
-      <div css={styles.content}>{children}</div>
+      <div css={styles.bodyContainer}>
+        <main css={styles.main}>{children}</main>
+      </div>
       <Navbar />
     </div>
   );
@@ -15,9 +17,25 @@ const Layout = ({ children }) => {
 export default Layout;
 
 const styles = {
-  wrapper: css`
+  main: css`
+    flex: 2;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    width: 100%;
+    background: var(--background-color);
+    overflow-x: hidden;
+    overflow-y: hidden;
+  `,
+  wrapper: css`
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color);
+    overflow: hidden;
+  `,
+  bodyContainer: css`
+    display: flex;
+    flex: 2;
   `,
 };
