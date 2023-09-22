@@ -1,7 +1,5 @@
-/** @jsxImportSource @emotion/react */
 import React from "react";
 import Layout from "../../components/layout/Layout";
-import { css } from "@emotion/react";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import Card from "../../components/documents/Card";
 import BatteryWarningIcon from "../../public/icons/batteryWarningIcon";
