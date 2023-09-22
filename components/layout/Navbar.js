@@ -21,7 +21,7 @@ const Navbar = () => {
   const icons = [
     {
       id: 0,
-      href: "/",
+      href: "/home",
       label: "Home",
       icon: <HomeIcon />,
     },
@@ -95,6 +95,8 @@ const styles = {
     justify-content: center;
     align-items: center;
     font-size: 12px;
+    text-decoration: none;
+    color: #2f4858;
 
     @media (min-width: 440px) {
       font-size: 16px;
