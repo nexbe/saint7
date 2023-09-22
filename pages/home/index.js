@@ -1,6 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import Layout from "../../components/layout/Layout";
 import { css } from "@emotion/react";
+import { useRouter } from "next/router";
+
 import ProfileIcon from "/public/icons/profileIcon";
 import NotiIcon from "/public/icons/notiIcon";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
@@ -14,17 +16,19 @@ import UserIcon from "/public/icons/userIcon";
 import DocumentIcon from "/public/icons/documentIcon";
 
 const index = () => {
+  const router = useRouter();
+
   return (
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
           <div>
             <div css={styles.profileInfo}>
-              <ProfileIcon />
-              <div>
+              <label>
+                <ProfileIcon />
                 <span css={styles.welcomeText}>Welcome !</span>
-                <span css={styles.nameText}>John Smith</span>
-              </div>
+              </label>
+              <span css={styles.nameText}>John Smith</span>
             </div>
             <div css={styles.timeText}>Friday, 26th May 2023</div>
           </div>
@@ -40,11 +44,9 @@ const index = () => {
             </div>
             <div css={styles.mapLine}>
               <div css={styles.address}>
-                {" "}
                 <MapPineLineIcon />
                 <label>3891 Ranchview Dr. Richardson, California 62639</label>
               </div>
-
               <hr
                 style={{
                   borderTop: " 2px solid #D9D9D9",
@@ -66,7 +68,7 @@ const index = () => {
                 <div css={styles.progressContent}>
                   <div className="progress-bar">
                     <div className="progress" style={{ width: `20%` }}></div>
-                  </div>
+                  </div>{" "}
                   20%
                 </div>
               </div>
@@ -76,19 +78,19 @@ const index = () => {
           <div css={styles.buttonContainer}>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>
-                <button>
+                <button onClick={() => router.push("/attendance")}>
                   <AttendanceIcon />
                   Attendance
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button>
+                <button onClick={() => router.push("/eLeave")}>
                   <ELeaveIcon />
                   e-Leave
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button>
+                <button onClick={() => router.push("/payslip")}>
                   <PayslipIcon />
                   Payslip
                 </button>
@@ -96,19 +98,19 @@ const index = () => {
             </div>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>
-                <button>
+                <button onClick={() => router.push("/documents")}>
                   <DocumentIcon />
                   Documents
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button>
+                <button onClick={() => router.push("/claims")}>
                   <ClaimsIcon />
                   Claims
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button>
+                <button onClick={() => router.push("/profile")}>
                   <UserIcon />
                   Profile
                 </button>
@@ -129,14 +131,17 @@ const styles = {
     height: 0px;
     display: flex;
     flex-direction: column;
+    margin: 0;
   `,
   headerContainer: css`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 10px 20px;
+    align-items: center;
+    padding: 10px 30px;
+    margin: 0;
     background: #293991;
-    min-height: 85px;
+    min-height: 90px;
     color: #fff;
     font-family: Inter;
     font-style: normal;
@@ -144,12 +149,17 @@ const styles = {
   `,
   profileInfo: css`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
-    gap: 15px;
+    font-weight: 600;
+    width: 100%;
+    svg {
+      align-items: center;
+      width: 50px;
+      height: 50px;
+    }
     span {
-      display: flex;
-      flex-direction: column;
+      padding-left: 10px;
     }
   `,
   notiIcon: css`
@@ -160,13 +170,12 @@ const styles = {
     font-weight: 500;
   `,
   nameText: css`
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 18px;
+    margin-left: 50px;
+    margin-top: -20px;
   `,
   timeText: css`
     font-size: 14px;
-    font-weight: 700;
-    padding-top: 7px;
   `,
   bodyContainer: css`
     display: flex;
@@ -186,6 +195,12 @@ const styles = {
     .bodyContainer::-webkit-scrollbar-thumb {
       border-radius: 2px;
       background-color: gray;
+    }
+    @media (max-width: 1400px) {
+      margin: 20px;
+    }
+    @media (min-width: 1400px) {
+      margin: 50px;
     }
   `,
   mapContainer: css`
@@ -217,9 +232,15 @@ const styles = {
     }
   `,
   address: css`
+    display: flex;
     color: #383838;
     font-size: 16px;
     font-weight: 600;
+    @media (max-width: 400px) {
+      label {
+        font-size: 12px;
+      }
+    }
   `,
   checkIn: css`
     flex-direction: column;
@@ -233,6 +254,8 @@ const styles = {
   progressContent: css`
     padding-left: 25px;
     justify-content: center;
+    align-items: center;
+
     .progress-bar {
       display: flex;
       width: 100%;
@@ -240,6 +263,7 @@ const styles = {
       background-color: #d9d9d9;
       border-radius: 20px;
       overflow: hidden;
+      margin-right: 5px;
     }
     .progress {
       height: 100%;
@@ -277,6 +301,9 @@ const styles = {
       @media (max-width: 1400px) {
         width: 100%;
       }
+      @media (min-width: 1400px) {
+        width: 100%;
+      }
     }
   `,
   formFlexDiv: css`
@@ -286,6 +313,9 @@ const styles = {
     flex-direction: row;
     @media (max-width: 1400px) {
       gap: 20px;
+    }
+    @media (min-width: 1400px) {
+      gap: 50px;
     }
   `,
   formFlexChildDiv: css`
