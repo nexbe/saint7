@@ -15,7 +15,7 @@ import ClaimsIcon from "/public/icons/claimsIcon";
 import UserIcon from "/public/icons/userIcon";
 import DocumentIcon from "/public/icons/documentIcon";
 
-const index = () => {
+const Home = () => {
   const router = useRouter();
 
   return (
@@ -123,7 +123,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default Home;
 
 const styles = {
   wrapper: css`

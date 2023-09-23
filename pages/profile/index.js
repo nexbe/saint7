@@ -12,7 +12,7 @@ import AchievementIcon from "/public/icons/achievementIcon";
 import CertificationIcon from "/public/icons/certificationIcon";
 import CameraIcon from "/public/icons/cameraIcon";
 
-const index = () => {
+const Profile = () => {
   const [showProfileDetail, setShowProfileDetail] = useState(false);
   const [showAchievementDetail, setShowAchievementDetail] = useState(false);
   return (
@@ -157,7 +157,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default Profile;
 
 const styles = {
   wrapper: css`
