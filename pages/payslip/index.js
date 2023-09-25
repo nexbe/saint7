@@ -4,6 +4,7 @@ import Layout from "../../components/layout/Layout";
 import { css } from "@emotion/react";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import Payment from "../../components/payslip/payment/Payment";
+import History from "../../components/payslip/history/History";
 
 const index = () => {
   const [activeComponent, setActiveComponent] = useState("payment");
@@ -23,7 +24,7 @@ const index = () => {
         </li>
       </ul>
       <div css={styles.tabComponent}>
-        {activeComponent === "payment" ? <Payment /> : <div>History </div>}
+        {activeComponent === "payment" ? <Payment /> : <History />}
       </div>
     </Layout>
   );

@@ -83,8 +83,11 @@ const styles = {
     padding: 20px;
     background: var(--white);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
-    max-height: 72vh;
+    max-height: 71vh;
     overflow-y: scroll;
+    @media (min-width: 440px) {
+      margin: 30px;
+    }
   `,
   title: css`
     color: #345165;
