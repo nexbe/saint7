@@ -9,7 +9,7 @@ const HeaderNoti = ({ title, href }) => {
   return (
     <div css={styles.wrapper}>
       <Link href={href}>
-       <BackArrow />
+        <BackArrow />
       </Link>
       {title}
       <NotiIcon />
@@ -23,11 +23,11 @@ const styles = {
   wrapper: css`
     display: flex;
     flex-direction: row;
-    justify-content:space-around;
-    gap: 20px;
+    justify-content: space-around;
+    gap: 20%;
     font-size: 20px;
     font-weight: 700;
-    padding:30px;
+    padding: 30px;
     color: var(--white);
     background: var(--primary);
   `,
