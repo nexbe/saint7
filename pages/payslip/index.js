@@ -1,8 +1,26 @@
-import React from "react";
-import Layout from "../../components/layout/Layout";
+/** @jsxImportSource @emotion/react */
+import React from 'react';
+import Layout from '../../components/layout/Layout';
+import HeaderNoti from '../../components/layout/HeaderNoti';
+import Card from '../../components/documents/Card';
+import BatteryWarningIcon from '../../public/icons/batteryWarningIcon';
+import LightningIcon from '../../public/icons/lightningIcon';
+import { css } from '@emotion/react';
 
 const index = () => {
-  return <Layout>Payslip</Layout>;
+  return (
+    <Layout>
+      <HeaderNoti title={'PaySlip'} href={'/home'} />
+      <div css={styles.wrapper}>PaySlip</div>
+    </Layout>
+  );
 };
 
 export default index;
+
+const styles = {
+  wrapper: css`
+    max-height: 82vh;
+    overflow-y: scroll;
+  `,
+};
