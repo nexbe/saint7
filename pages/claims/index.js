@@ -233,6 +233,7 @@ const styles = {
     font-size: 18px;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     border-radius: 10px;
     background: var(--primary);
   `,

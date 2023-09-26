@@ -118,6 +118,7 @@ const ExpenseRequestStatus = () => {
                 <div
                   css={styles.eachCard}
                   className="primary-text"
+                  style={{ cursor: "pointer" }}
                   onClick={() => router.push("/claims/requestDetail")}
                 >
                   <label>
@@ -130,7 +131,12 @@ const ExpenseRequestStatus = () => {
                     <label css={styles.expenseStatus}>Pending</label>
                   </label>
                 </div>
-                <div css={styles.eachCard} className="primary-text">
+                <div
+                  css={styles.eachCard}
+                  className="primary-text"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => router.push("/claims/requestDetail")}
+                >
                   <label>
                     <label css={styles.expenseId}>#ER-00002</label>
                     Telephone Expense
@@ -141,7 +147,12 @@ const ExpenseRequestStatus = () => {
                     <label css={styles.expenseStatus}>Pending</label>
                   </label>
                 </div>
-                <div css={styles.eachCard} className="primary-text">
+                <div
+                  css={styles.eachCard}
+                  className="primary-text"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => router.push("/claims/requestDetail")}
+                >
                   <label>
                     <label css={styles.expenseId}>#ER-00003</label>
                     Telephone Expense
