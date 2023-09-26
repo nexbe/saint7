@@ -9,13 +9,12 @@ function Icon() {
       fill="none"
       viewBox="0 0 20 20"
     >
-      <circle cx="10" cy="10" r="10" fill="#293991"></circle>
       <path
-        stroke="#fff"
+        stroke="#2F4858"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M5.876 10.625L8.5 8 5.876 5.375M1.5 8h6.998M8.5 2.5H12a.5.5 0 01.5.5v10a.5.5 0 01-.5.5H8.5"
+        d="M3.75 3.125l12.5 13.75M12.795 13.074L7.5 18.747l1.25-6.25-5-1.874 3.453-3.7M8.914 5.09L12.5 1.248l-1.25 6.25 5 1.875-1.743 1.868"
       ></path>
     </svg>
   );
