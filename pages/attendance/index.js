@@ -1,5 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React from 'react';
+import { useRouter } from 'next/router';
+
 import Layout from '../../components/layout/Layout';
 import HeaderNoti from '../../components/layout/HeaderNoti';
 import Card from '../../components/documents/Card';
@@ -7,7 +9,9 @@ import BatteryWarningIcon from '../../public/icons/batteryWarningIcon';
 import LightningIcon from '../../public/icons/lightningIcon';
 import { css } from '@emotion/react';
 
-const index = () => {
+const Index = () => {
+  const router = useRouter();
+
   return (
     <Layout className='container '>
       <HeaderNoti title={'Attendance'} href={'/home'} />
@@ -28,14 +32,17 @@ const index = () => {
                 id='exampleTextarea'
                 rows='4'
               ></textarea>
+              <button
+                className='w-100 mt-4'
+                css={styles.wrapper}
+                onClick={() => router.push('/checkin')}
+              >
+                Check In
+              </button>
             </div>
           </div>
         </div>
       </div>
-
-      <button class='m-3 btn btn-primary' css={styles.wrapper}>
-        Check In
-      </button>
 
       <Card
         id={0}
@@ -44,14 +51,14 @@ const index = () => {
           <>
             <div class='container '>
               <div class='row'>
-                <div class='col-md-6 d-flex align-items-center'>
+                <div class=' d-flex align-items-center'>
                   <p>
                     <b>Date</b>{' '}
                   </p>
                   &ensp; <p>:</p> &ensp;
                   <p>10-05-2023</p>
                 </div>
-                <div class='col-md-6 d-flex align-items-center'>
+                <div class=' d-flex align-items-center'>
                   <p>
                     <b>Time</b>{' '}
                   </p>
@@ -61,7 +68,7 @@ const index = () => {
               </div>
 
               <div class='row'>
-                <div class='col-md-12 d-flex align-items-center'>
+                <div class=' d-flex align-items-center'>
                   <p>
                     <b>Report To</b>{' '}
                   </p>
@@ -89,12 +96,13 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;
 
 const styles = {
   wrapper: css`
-    max-height: 82vh;
-    overflow-y: scroll;
+    // max-height: 82vh;
+    // overflow-y: scroll;
     background: var(--primary);
+    color: var(--white);
   `,
 };
