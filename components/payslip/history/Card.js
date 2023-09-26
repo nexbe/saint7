@@ -1,8 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
+import { useRouter } from "next/navigation";
 
-const Card = ({data}) => {
+const Card = ({ data }) => {
+  const router = useRouter();
   return (
     <div css={styles.wrapper}>
       <h3 css={styles.title}>{data}</h3>
@@ -18,7 +20,7 @@ const Card = ({data}) => {
             <span>Net Salary</span>: <b>$50</b>
           </li>
         </ul>
-        <button css={styles.viewSlipBtn}>View Slip</button>
+        <button css={styles.viewSlipBtn} onClick={() => router.push(`/payslip/${2}`)}>View Slip</button>
       </div>
     </div>
   );
@@ -30,7 +32,7 @@ const styles = {
   wrapper: css`
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.8);
-    padding:15px;
+    padding: 15px;
   `,
   title: css`
     font-weight: 700;
@@ -49,20 +51,20 @@ const styles = {
       margin-top: 5px;
     }
     li {
-      color: #000;
-      font-weight: 400;
+      color: var(--primary);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
       display: flex;
     }
     b {
       font-weight: 600;
       text-align: left;
       padding-left: 20px;
-      font-size: 12px;
     }
     span {
       min-width: 125px;
       text-align: left;
-      font-size: 14px;
       margin-right: 10px;
       display: inline-block;
     }
@@ -75,10 +77,10 @@ const styles = {
     color: #a0aec0;
     font-weight: 700;
     font-size: 14px;
-    text-align:center;
+    text-align: center;
     cursor: pointer;
-    margin-top:15px;
-    height:40px;
+    margin-top: 15px;
+    height: 40px;
     max-width: 200px;
     min-width: 90px;
   `,

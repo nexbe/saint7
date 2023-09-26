@@ -56,7 +56,7 @@ const Payment = () => {
             )}
             {!selectedImage && (
               <label css={styles.browseBtn}>
-                Browse Files
+                Browse Picture
                 <input
                   type="file"
                   accept="image/*"

@@ -21,7 +21,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 9px;
-    max-height: 70vh;
+    max-height: 68vh;
     overflow-y: scroll;
 
     @media (min-width: 440px) {
