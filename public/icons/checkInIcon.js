@@ -9,7 +9,7 @@ function Icon() {
       fill="none"
       viewBox="0 0 20 20"
     >
-      <circle cx="10" cy="10" r="10" fill="#5FA452"></circle>
+      <circle cx="10" cy="10" r="10" fill="#293991"></circle>
       <path
         stroke="#fff"
         strokeLinecap="round"
