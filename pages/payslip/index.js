@@ -6,7 +6,7 @@ import HeaderNoti from "../../components/layout/HeaderNoti";
 import Payment from "../../components/payslip/payment/Payment";
 import History from "../../components/payslip/history/History";
 
-const index = () => {
+const Payslip = () => {
   const [activeComponent, setActiveComponent] = useState("payment");
   return (
     <Layout>
@@ -30,7 +30,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default Payslip;
 
 const styles = {
   activeTab: css`
