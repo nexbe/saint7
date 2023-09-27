@@ -14,8 +14,8 @@ const Card = ({ isActive }) => {
         <span>A Continually Unfolding History</span>
       </div>
       <p css={styles.paragraph}>
-        A single building occupies the hillside at Hillview,a historic
-        240-hectare former sheep farm on Tasmania'sBruny Island...{" "}
+        A single building occupies the hillside at Hillview a historic
+        240 hectare former sheep farm on Tasmanias Bruny Island...{" "}
         <b style={{ color: "#386FFF" }} onClick={() => setModal(true)}>
           View More
         </b>

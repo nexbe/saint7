@@ -18,10 +18,10 @@ const ViewModal = ({ modal, setModal }) => {
         <span>A Continually Unfolding History</span>
       </div>
       <p css={styles.paragraph}>
-        A single building occupies the hillside at Hillview,a historic
-        240-hectare former sheep farm on Tasmania'sBruny Island.Surrounded by
-        breathtaking beauty, the building stands as a testament to the island's
-        rich agricultural heritage. With its rustic charm and idyllic location,
+        A single building occupies the hillside at Hillview a historic
+        240 hectare former sheep farm on Tasmanias Bruny Island.Surrounded by
+        breathtaking beauty the building stands as a testament to the islands
+        rich agricultural heritage. With its rustic charm and idyllic location 
         Hillview offers a glimpse into the past while providing a tranquil
         retreat for visitors seeking solace in nature.
       </p>
