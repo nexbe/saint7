@@ -23,11 +23,11 @@ const styles = {
   wrapper: css`
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     gap: 20%;
     font-size: 20px;
     font-weight: 700;
-    padding: 30px;
+    padding: 20px;
     color: var(--white);
     background: var(--primary);
   `,
