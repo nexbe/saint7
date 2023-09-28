@@ -6,6 +6,8 @@ import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import Select, { components } from "react-select";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { AiOutlineFilePdf } from "react-icons/ai";
+import { IoCloseSharp } from "react-icons/io5";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -14,6 +16,20 @@ const Claims = () => {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg"];
+  const isImage = FILE_EXTENSIONS.some((extension) =>
+    selectedFile?.name?.endsWith(extension)
+  );
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+  };
 
   const options = [
     { value: "advanceTax", label: "Advance Tax" },
@@ -120,17 +136,39 @@ const Claims = () => {
                 <input type={"text"} className="secondary-text" />
               </div>
               <div className="formFlex">
-                <div className="d-flex">
+                <div>
                   <label className="primary-text">Attach Documents</label>
-                </div>
-                <div css={styles.attachFile}>
-                  <input
-                    accept={`application/pdf, image/*`}
-                    type="file"
-                    css={styles.fileInput}
-                    multiple
-                  />
-                  <label>Browse Picture</label>
+                  <div css={styles.attchBox}>
+                    {selectedFile && (
+                      <div css={styles.imageContainer}>
+                        {isImage ? (
+                          <img
+                            src={URL.createObjectURL(selectedFile)}
+                            alt="Selected"
+                            css={styles.selectedImage}
+                          />
+                        ) : (
+                          <div css={styles.fileIconContainer}>
+                            <AiOutlineFilePdf color={"#1E3C72"} size={80} />
+                          </div>
+                        )}
+
+                        <div onClick={handleRemoveFile} css={styles.closeIcon}>
+                          <IoCloseSharp size={20} color="#F6302B" />
+                        </div>
+                      </div>
+                    )}
+                    {!selectedFile && (
+                      <label css={styles.attachBtn}>
+                        Browse Picture
+                        <input
+                          type="file"
+                          accept={`application/pdf, image/*`}
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -252,45 +290,6 @@ const styles = {
       }
     }
   `,
-  fileInput: css`
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: transparent;
-    z-index: 1;
-    &::-webkit-file-upload-button {
-      visibility: hidden;
-    }
-  `,
-  attachFile: css`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 4px;
-    padding: 30px;
-    border: 1px dashed #d6e2ea;
-    background: var(--white);
-    box-shadow: 0px 4px 4px 0px rgba(117, 139, 154, 0.08);
-    position: relative;
-    cursor: pointer;
-    label {
-      color: #5e72e4;
-      text-decoration: underline;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  `,
-  selectBox: css`
-    border: none;
-    background: red;
-  `,
   actionButton: css`
     display: flex;
     flex-direction: row;
@@ -315,5 +314,66 @@ const styles = {
     border: none;
     color: var(--white);
     background: var(--primary);
+  `,
+  attchBox: css`
+    border: 2px dashed #ccc;
+    padding: 30px;
+    margin-bottom: 20px;
+    width: 100%;
+    margin-top: 10px;
+    justify-content: start;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    border: 2px dashed #d6e2ea;
+    background: var(--white);
+    box-shadow: 0px 4px 4px 0px rgba(117, 139, 154, 0.08);
+  `,
+  attachBtn: css`
+    display: inline-block;
+    padding: 8px 16px;
+    font-weight: bold;
+    color: #5e72e4;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+    border: none;
+    background: none;
+    outline: none;
+
+    input {
+      display: none;
+    }
+  `,
+  selectedImage: css`
+    width: 125px;
+    height: 130px;
+    border-radius: 16px;
+    background: #e3f3ff;
+  `,
+  imageContainer: css`
+    position: relative;
+    justify-content: start;
+  `,
+  closeIcon: css`
+    position: absolute;
+    top: 0;
+    right: 50px;
+    cursor: pointer;
+    padding: 0;
+
+    @media (min-width: 440px) {
+      left: 10%;
+    }
+  `,
+  fileIconContainer: css`
+    width: 125px;
+    height: 130px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: #e3f3ff;
   `,
 };

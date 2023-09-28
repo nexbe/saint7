@@ -24,7 +24,8 @@ const styles = {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    gap: 20%;
+    align-items: center;
+    gap: 20px;
     font-size: 20px;
     font-weight: 700;
     padding: 20px;
