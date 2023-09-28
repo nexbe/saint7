@@ -17,6 +17,13 @@ const Profile = () => {
   const router = useRouter();
   const [showProfileDetail, setShowProfileDetail] = useState(false);
   const [showAchievementDetail, setShowAchievementDetail] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -28,21 +35,33 @@ const Profile = () => {
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.profileContent}>
-            <div css={styles.attachFile}>
-              <input
-                accept={`image/*`}
-                type="file"
-                css={styles.fileInput}
-                multiple
-              />
-              <label>
-                <ProfileIcon />
-                <span css={styles.cameraIcon}>
-                  <CameraIcon />
-                </span>
+            <div css={styles.attachBox}>
+              {selectedImage && (
+                <div css={styles.imageContainer}>
+                  <img
+                    src={URL.createObjectURL(selectedImage)}
+                    alt="Selected"
+                    css={styles.selectedImage}
+                  />
+                </div>
+              )}
+
+              <label css={styles.attachBtn}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                {!selectedImage && (
+                  <span>
+                    <ProfileIcon />
+                    <span css={styles.cameraIcon}>
+                      <CameraIcon />
+                    </span>
+                  </span>
+                )}
               </label>
             </div>
-
             <p style={{ marginTop: "5px" }}>
               <label className="header-text">John Smith</label>
               <label className="secondary-text">Employee ID: 123456789</label>
@@ -253,8 +272,8 @@ const styles = {
   `,
   cameraIcon: css`
     position: absolute;
-    bottom: 0;
-    right: 1px;
+    margin-top: -18px;
+    margin-left: 40px;
     background: #d9d9d9;
     border-radius: 50px;
     width: 20px;
@@ -314,26 +333,32 @@ const styles = {
       height: 15px;
     }
   `,
-  fileInput: css`
-    width: 100%;
-    height: 100%;
+  selectedImage: css`
+    width: 55px;
+    height: 55px;
+    border-radius: 50px;
     position: absolute;
-    top: 0;
-    left: 0;
-    color: transparent;
-    z-index: 1;
-    cursor: pointer;
-    &::-webkit-file-upload-button {
-      visibility: hidden;
-    }
+    margin-top: -10px;
+    margin-left: -25px;
   `,
-  attachFile: css`
+  attachBox: css`
     position: absolute;
-    top: -15px;
+    margin-top: -80px;
+    cursor: pointer;
     svg {
       width: 60px;
       height: 60px;
-      cursor: pointer;
+    }
+  `,
+  attachBtn: css`
+    input {
+      display: none;
+      position: relative;
+      margin-top: -40px;
+      margin-left: -7px;
+      width: 60px;
+      height: 60px;
+      z-index: 1;
     }
   `,
 };
