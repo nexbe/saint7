@@ -9,7 +9,16 @@ import OpenEyeIcon from "../../public/icons/OpenEyeIcon";
 const Login = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    if (email && password) {
+      router.push("/home");
+    }
+  };
 
   return (
     <div css={styles.wrapper}>
@@ -19,63 +28,65 @@ const Login = () => {
         <span>Login to your account</span>
       </div>
 
-      <form css={styles.loginFormStyle}>
-        <div>
-          <label htmlFor="email">Your email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            aria-label="email"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <div css={styles.passwordInputWrapper}>
+      <form onSubmit={onSubmitHandler}>
+        <div css={styles.loginFormStyle}>
+          <div>
+            <label htmlFor="email">Your email</label>
             <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              aria-label="password"
+              type="email"
+              id="email"
+              name="email"
+              aria-label="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <div css={styles.passwordInputWrapper}>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                aria-label="password"
+                required
+              />
 
-            <div
-              css={styles.eyeIcon}
-              onClick={() => setShowPassword(!showPassword)}>
-              {!showPassword ? <CloseEyeSlashIcon /> : <OpenEyeIcon />}
+              <div
+                css={styles.eyeIcon}
+                onClick={() => setShowPassword(!showPassword)}>
+                {!showPassword ? <CloseEyeSlashIcon /> : <OpenEyeIcon />}
+              </div>
             </div>
           </div>
         </div>
-      </form>
 
-      <div css={styles.actions}>
-        <div css={styles.checkboxWrapper}>
-          <input
-            type="checkbox"
-            id="remember"
-            name="remember"
-            value={isChecked}
-            checked={isChecked}
-            onChange={() => setIsChecked(!isChecked)}
-            style={{ display: "none" }}
-          />
-          <label htmlFor="remember" css={styles.checkbox}>
-            {isChecked && <div css={styles.checkboxInner}></div>}
-          </label>
-          <span>Remember me</span>
+        <div css={styles.actions}>
+          <div css={styles.checkboxWrapper}>
+            <input
+              type="checkbox"
+              id="remember"
+              name="remember"
+              value={isChecked}
+              checked={isChecked}
+              onChange={() => setIsChecked(!isChecked)}
+              style={{ display: "none" }}
+            />
+            <label htmlFor="remember" css={styles.checkbox}>
+              {isChecked && <div css={styles.checkboxInner}></div>}
+            </label>
+            <span>Remember me</span>
+          </div>
+          <div>Forgot Password ?</div>
         </div>
 
-        <div>Forgot Password ?</div>
-      </div>
-
-      <button
-        onClick={() => router.push("/home")}
-        id="login"
-        css={styles.loginBtn}>
-        Login
-      </button>
+        <button id="login" type="submit" css={styles.loginBtn}>
+          Login
+        </button>
+      </form>
     </div>
   );
 };
@@ -94,25 +105,24 @@ const styles = {
 
     @media (max-height: 667px) {
       height: 205vh;
-      width:fit-content;
+      width: fit-content;
     }
     @media (max-height: 844px) {
       height: 110vh;
-      width:fit-content;
+      width: fit-content;
     }
     @media (max-height: 851px) {
       height: 110vh;
-      width:fit-content;
+      width: fit-content;
     }
     @media (min-width: 412px) and (max-height: 915px) {
       height: 103.5vh;
-      width:fit-content;
+      width: fit-content;
     }
     @media (min-width: 440px) {
       width: 100%;
       height: 100vh;
     }
-   
   `,
   header: css`
     color: var(--white);
@@ -125,7 +135,7 @@ const styles = {
   loginBtn: css`
     background: var(--white);
     color: var(--primary);
-    width: 80%;
+    width: 100%;
     padding: 9px;
     margin-bottom: 20px;
     border-radius: 15px;
@@ -133,23 +143,14 @@ const styles = {
     border: 1px solid transparent;
     font-size: 18px;
     cursor: pointer;
-
-    @media (min-width: 768px) {
-      width: 20%;
-    }
   `,
   loginFormStyle: css`
     margin-top: 30px;
     margin-bottom: 20px;
     color: #fff;
     display: flex;
-    width: 80%;
     flex-direction: column;
     gap: 9px;
-
-    @media (min-width: 768px) {
-      width: 20%;
-    }
 
     input {
       color: #fff;

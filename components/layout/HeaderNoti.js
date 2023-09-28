@@ -12,7 +12,9 @@ const HeaderNoti = ({ title, href }) => {
         <BackArrow />
       </Link>
       {title}
-      <NotiIcon />
+      <Link href={"/notifications"}>
+        <NotiIcon />
+      </Link>
     </div>
   );
 };

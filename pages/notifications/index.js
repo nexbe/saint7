@@ -36,14 +36,14 @@ const Notifications = () => {
       <div css={styles.bodyWrapper}>
         <div>
           <h4>New</h4>
-          <Card isActive={true} state={false}/>
-          <Card isActive={true} state={true}/>
+          <Card isActive={true} state={false} />
+          <Card isActive={true} state={true} />
         </div>
         <div>
           <h4>Earlier</h4>
-          <Card isActive={false} state={true}/>
-          <Card isActive={false} state={true}/>
-          <Card isActive={false} state={false}/>
+          <Card isActive={false} state={true} />
+          <Card isActive={false} state={true} />
+          <Card isActive={false} state={false} />
         </div>
       </div>
     </Layout>
@@ -107,7 +107,7 @@ const styles = {
   `,
   bodyWrapper: css`
     h4 {
-      margin:20px;
+      margin: 20px;
       font-size: 20px;
       font-weight: 600;
       color: var(--primary-font);
