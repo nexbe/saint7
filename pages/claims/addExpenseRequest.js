@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useRef, useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
@@ -8,6 +8,7 @@ import Select, { components } from "react-select";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
+import Image from "next/image";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -142,7 +143,7 @@ const Claims = () => {
                     {selectedFile && (
                       <div css={styles.imageContainer}>
                         {isImage ? (
-                          <img
+                          <Image
                             src={URL.createObjectURL(selectedFile)}
                             alt="Selected"
                             css={styles.selectedImage}

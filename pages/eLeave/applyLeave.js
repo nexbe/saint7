@@ -12,7 +12,7 @@ import { BsArrowRight } from "react-icons/bs";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 
-const Claims = () => {
+const ApplyLeave = () => {
   const haldDayOptions = [
     { value: "firstHalf", label: "First Half (AM)" },
     { value: "secondHalf", label: "Second Half (PM)" },
@@ -287,7 +287,7 @@ const Claims = () => {
   );
 };
 
-export default Claims;
+export default ApplyLeave;
 
 const selectBoxStyle = {
   placeholder: (defaultStyles) => {

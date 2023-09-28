@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 
-const index = () => {
+const ELeave = () => {
   const router = useRouter();
   return (
     <Layout>
@@ -36,7 +36,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default ELeave;
 
 const styles = {
   wrapper: css`

@@ -9,7 +9,7 @@ import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { BiCalendar } from "react-icons/bi";
 
-const index = () => {
+const LeaveCalendar = () => {
   const router = useRouter();
   const [startDate, setStartDate] = useState(null);
   return (
@@ -58,7 +58,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default LeaveCalendar;
 
 const styles = {
   wrapper: css`

@@ -2,25 +2,12 @@
 import { css } from "@emotion/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import {
-  MdOutlineKeyboardDoubleArrowLeft,
-  MdOutlineKeyboardDoubleArrowRight,
-  MdOutlineArrowBackIosNew,
-} from "react-icons/md";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import Card from "../../components/eLeave/Card";
-import FilterModal from "../../components/claims/FilterModal";
-import DateFilterModal from "../../components/claims/DateFilterModal";
 
-import FilterIcon from "/public/icons/filterIcon";
-import CalendarIcon from "/public/icons/calendarIcon";
-import SearchIcon from "/public/icons/searchIcon";
-import NoDataIcon from "/public/icons/noDataIcon";
-import PlusIcon from "/public/icons/plusIcon";
-
-const ExpenseRequestStatus = () => {
+const LeaveHistory = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(1);
   const [count, setCount] = useState(2023);
@@ -170,7 +157,7 @@ const ExpenseRequestStatus = () => {
   );
 };
 
-export default ExpenseRequestStatus;
+export default LeaveHistory;
 
 const styles = {
   wrapper: css`
