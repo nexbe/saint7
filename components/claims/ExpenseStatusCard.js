@@ -6,7 +6,7 @@ import {
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 
-const Card = ({ date, count, amount }) => {
+const Card = ({ date, count, amount, expenseData }) => {
   const [cardDetail, setCardDetail] = useState(false);
 
   return (
@@ -42,30 +42,19 @@ const Card = ({ date, count, amount }) => {
         style={{ display: cardDetail ? "block" : "none" }}
         className="detailWrapper"
       >
-        <div css={styles.detailContainer} className="primary-text">
-          <label>
-            <label css={styles.expenseId}>#ER-00001</label>
-            Telephone Expense
-            <label css={styles.expenseDetail}>Communication</label>
-          </label>
-          <label>SGD 500.00</label>
-        </div>
-        <div css={styles.detailContainer} className="primary-text">
-          <label>
-            <label css={styles.expenseId}>#ER-00002</label>
-            Telephone Expense
-            <label css={styles.expenseDetail}>Communication</label>
-          </label>
-          <label>SGD 500.00</label>
-        </div>
-        <div css={styles.detailContainer} className="primary-text">
-          <label>
-            <label css={styles.expenseId}>#ER-00003</label>
-            Telephone Expense
-            <label css={styles.expenseDetail}>Communication</label>
-          </label>
-          <label>SGD 200.00</label>
-        </div>
+        {expenseData?.map(
+          (item, index) =>
+            item.status == "Approved" && (
+              <div css={styles.detailContainer} className="primary-text">
+                <label>
+                  <label css={styles.expenseId}>{item.id}</label>
+                  {item.category}
+                  <label css={styles.expenseDetail}>{item.subCategory}</label>
+                </label>
+                <label>{item.amount}</label>
+              </div>
+            )
+        )}
       </div>
     </div>
   );
@@ -149,7 +138,7 @@ const styles = {
     border-radius: 4px;
     background: #e0eeff;
     text-transform: uppercase;
-    width: 65%;
+    width: 80px;
   `,
   expenseStatus: css`
     font-size: 10px;

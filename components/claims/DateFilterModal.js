@@ -64,7 +64,7 @@ export default DateFilterModal;
 const styles = {
   modal: css`
     .modal-content {
-      border-radius: 0px 0px 10px 10px;
+      border-radius: 16px;
       margin-top: 12rem;
       width: 100%;
       background: #f5f5f5;

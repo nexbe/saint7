@@ -80,6 +80,53 @@ const Claims = () => {
     });
   }, []);
 
+  const expenseData = [
+    {
+      id: "#ER-00001",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      amount: "$ 200",
+      status: "Pending",
+      date: "2023-09-15",
+    },
+    {
+      id: "#ER-00001",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      amount: "$ 200",
+      status: "Approved",
+      date: "2023-09-15",
+    },
+    {
+      id: "#ER-00003",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      amount: "$ 400",
+      status: "Rejected",
+      date: "2023-07-15",
+    },
+  ];
+
+  const [filterTerm, setFilterTerm] = useState("");
+  const [filteredData, setFilteredData] = useState(expenseData);
+
+  const handleFilterChange = (event) => {
+    const term = event.target.value;
+    setFilterTerm(term);
+
+    // Filter the data based on the filterTerm
+    const filteredResults = expenseData.filter(
+      (item) =>
+        item?.category?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.subCategory?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.status?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.id?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.amount?.toLowerCase().includes(term?.toLowerCase())
+    );
+
+    setFilteredData(filteredResults);
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -93,7 +140,12 @@ const Claims = () => {
             EXPENSE REQUESTS STATUS
           </div>
           <div css={styles.filterContainer}>
-            <input type="text" placeholder="Search fields" />
+            <input
+              type="text"
+              placeholder="Search fields"
+              value={filterTerm}
+              onChange={handleFilterChange}
+            />
             <label css={styles.searchIcon}>
               <SearchIcon />
             </label>
@@ -180,9 +232,9 @@ const Claims = () => {
             </div>
           </div>
           <div style={{ display: showChart ? "none" : "block" }}>
-            <Card title={"January"} count={30} />
-            <Card title={"February"} count={20} />
-            <Card title={"March"} count={10} />
+            <Card title={"January"} count={30} expenseData={filteredData} />
+            <Card title={"February"} count={20} expenseData={filteredData} />
+            <Card title={"March"} count={10} expenseData={filteredData} />
           </div>
           <div
             css={styles.addReport}
@@ -278,13 +330,13 @@ const styles = {
       border-radius: 10px;
       border: 1px solid var(--dark-gray);
       background: var(--white);
+      padding-left: 35px;
       ::placeholder {
         color: var(--dark-gray);
         font-family: Open Sans;
         font-size: 16px;
         font-style: normal;
         font-weight: 400;
-        padding-left: 18px;
       }
       :focus {
         border: 1px solid var(--primary);

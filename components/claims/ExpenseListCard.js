@@ -6,7 +6,7 @@ import {
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 
-const Card = ({ title, count }) => {
+const Card = ({ title, count, expenseData }) => {
   const [open, setOpen] = useState();
 
   return (
@@ -14,58 +14,55 @@ const Card = ({ title, count }) => {
       <div className="secondary-text">
         {title} <span>{count}</span>
       </div>
-      <div css={styles.expenseList} className="primary-text">
-        <label>
-          Telephone Expense
-          <span className="expenseDetail">Communication</span>
-        </label>
-        <label>
-          $ 500.00 <span className="expenseStatus">Approved</span>
-        </label>
-      </div>
-      <div css={styles.expenseList} className="primary-text">
-        <label>
-          Telephone Expense
-          <span className="expenseDetail">Communication</span>
-        </label>
-        <label>
-          $ 500.00{" "}
-          <span className="expenseStatus" style={{ color: "#E53E3E" }}>
-            Rejected
-          </span>
-        </label>
-      </div>
-      <div css={styles.expenseList} className="primary-text">
-        <label>
-          Telephone Expense
-          <label className="expenseDetail">Communication</label>
-        </label>
-        <label>
-          $ 500.00 <label className="expenseStatus">Approved</label>
-        </label>
-      </div>
-      <div style={{ display: open ? "block" : "none" }}>
+      {expenseData.map((item, index) => (
         <div css={styles.expenseList} className="primary-text">
           <label>
-            Telephone Expense
-            <span className="expenseDetail">Communication</span>
+            {item.category}
+            <span className="expenseDetail">{item.subCategory}</span>
           </label>
           <label>
-            $ 500.00{" "}
-            <span className="expenseStatus" style={{ color: "#E53E3E" }}>
-              Rejected
+            {item.amount}{" "}
+            <span
+              className="expenseStatus"
+              style={{
+                color:
+                  item.status == "Pending"
+                    ? "#FFB016"
+                    : item.status == "Rejected"
+                    ? "#E53E3E"
+                    : "",
+              }}
+            >
+              {item.status}
             </span>
           </label>
         </div>
-        <div css={styles.expenseList} className="primary-text">
-          <label>
-            Telephone Expense
-            <span className="expenseDetail">Communication</span>
-          </label>
-          <label>
-            $ 500.00 <span className="expenseStatus">Approved</span>
-          </label>
-        </div>
+      ))}
+      <div style={{ display: open ? "block" : "none" }}>
+        {expenseData.map((item, index) => (
+          <div css={styles.expenseList} className="primary-text">
+            <label>
+              {item.category}
+              <span className="expenseDetail">{item.subCategory}</span>
+            </label>
+            <label>
+              {item.amount}{" "}
+              <span
+                className="expenseStatus"
+                style={{
+                  color:
+                    item.status == "Pending"
+                      ? "#FFB016"
+                      : item.status == "Rejected"
+                      ? "#E53E3E"
+                      : "",
+                }}
+              >
+                {item.status}
+              </span>
+            </label>
+          </div>
+        ))}
       </div>
       <button css={styles.viewMoreBtn} onClick={() => setOpen(!open)}>
         {open ? (
@@ -131,7 +128,7 @@ const styles = {
       border-radius: 4px;
       background: #e0eeff;
       text-transform: uppercase;
-      width: 65%;
+      width: 90px;
     }
     .expenseStatus {
       font-size: 12px;
