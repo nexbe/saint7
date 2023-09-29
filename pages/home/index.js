@@ -52,7 +52,7 @@ const Home = () => {
               </div>
               <hr
                 style={{
-                  borderTop: " 2px solid #D9D9D9",
+                  borderTop: " 3px solid var(--darker-gray)",
                   margin: "0 -30px 0 -30px",
                 }}
               />
@@ -62,6 +62,9 @@ const Home = () => {
                   <label>CheckIn </label>
                 </div>
                 <span>&#128342; 09:05</span>
+              </div>
+              <div className="d-flex">
+                <sapn className="lineDash"></sapn>
               </div>
               <div css={styles.taskProgress}>
                 <div>
@@ -152,7 +155,6 @@ const styles = {
   `,
   profileInfo: css`
     svg {
-      align-items: center;
       width: 50px;
       height: 50px;
     }
@@ -226,6 +228,12 @@ const styles = {
     label {
       padding-left: 5px;
     }
+    .lineDash {
+      border: 1px dashed var(--darker-gray);
+      height: 40px;
+      margin-top: -40px;
+      margin-left: 8px;
+    }
   `,
   address: css`
     display: flex;
@@ -246,6 +254,7 @@ const styles = {
   `,
   taskProgress: css`
     flex-direction: column;
+    margin-top: -4px;
   `,
   progressContent: css`
     padding-left: 25px;

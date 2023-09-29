@@ -15,7 +15,7 @@ function Icon() {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M5.876 10.625L8.5 8 5.876 5.375M1.5 8h6.998M8.5 2.5H12a.5.5 0 01.5.5v10a.5.5 0 01-.5.5H8.5"
+        d="M7.876 12.625L10.5 10 7.876 7.375M3.5 10h6.998M10.5 4.5H14a.5.5 0 01.5.5v10a.5.5 0 01-.5.5h-3.5"
       ></path>
     </svg>
   );

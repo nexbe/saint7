@@ -13,46 +13,61 @@ import AchievementIcon from "/public/icons/achievementIcon";
 import CertificationIcon from "/public/icons/certificationIcon";
 import CameraIcon from "/public/icons/cameraIcon";
 
-
 const Profile = () => {
   const router = useRouter();
   const [showProfileDetail, setShowProfileDetail] = useState(false);
   const [showAchievementDetail, setShowAchievementDetail] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
           <div css={styles.backIcon} onClick={() => router.push("/home")}>
             <BackIcon />
-
           </div>
-          <label className='header-text'>My Profile</label>
+          <label className="header-text">My Profile</label>
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.profileContent}>
+            <div css={styles.attachBox}>
+              {selectedImage && (
+                <div css={styles.imageContainer}>
+                  <img
+                    src={URL.createObjectURL(selectedImage)}
+                    alt="Selected"
+                    css={styles.selectedImage}
+                  />
+                </div>
+              )}
 
-            <div css={styles.attachFile}>
-              <input
-                accept={`image/*`}
-                type="file"
-                css={styles.fileInput}
-                multiple
-              />
-              <label>
-                <ProfileIcon />
-                <span css={styles.cameraIcon}>
-                  <CameraIcon />
-                </span>
+              <label css={styles.attachBtn}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                {!selectedImage && (
+                  <span>
+                    <ProfileIcon />
+                    <span css={styles.cameraIcon}>
+                      <CameraIcon />
+                    </span>
+                  </span>
+                )}
               </label>
             </div>
-
             <p style={{ marginTop: "5px" }}>
               <label className="header-text">John Smith</label>
               <label className="secondary-text">Employee ID: 123456789</label>
-
             </p>
           </div>
-          <div css={styles.infoContent} style={{ marginTop: '90px' }}>
+          <div css={styles.infoContent} style={{ marginTop: "90px" }}>
             <div
               css={styles.labelText}
               onClick={() => setShowProfileDetail(!showProfileDetail)}
@@ -63,37 +78,37 @@ const Profile = () => {
                 {showProfileDetail ? <ArrowUpIcon /> : <ArrowDownIcon />}
               </button>
             </div>
-            <div style={{ display: showProfileDetail ? 'block' : 'none' }}>
+            <div style={{ display: showProfileDetail ? "block" : "none" }}>
               <div css={styles.formFlexDiv}>
                 <div css={styles.formFlexChildDiv}>
-                  <label className='primary-text'>Emaill</label>
+                  <label className="primary-text">Emaill</label>
                 </div>
                 <div css={styles.formFlexChildDiv}>
-                  <span className='primary-text'>tanarak@gmail.com</span>
+                  <span className="primary-text">tanarak@gmail.com</span>
                 </div>
               </div>
               <div css={styles.formFlexDiv}>
                 <div css={styles.formFlexChildDiv}>
-                  <label className='primary-text'>Contact Number</label>
+                  <label className="primary-text">Contact Number</label>
                 </div>
                 <div css={styles.formFlexChildDiv}>
-                  <span className='primary-text'>+66 888 555 6987</span>
-                </div>
-              </div>
-              <div css={styles.formFlexDiv}>
-                <div css={styles.formFlexChildDiv}>
-                  <label className='primary-text'>Position</label>
-                </div>
-                <div css={styles.formFlexChildDiv}>
-                  <span className='primary-text'>Security Supervisor</span>
+                  <span className="primary-text">+66 888 555 6987</span>
                 </div>
               </div>
               <div css={styles.formFlexDiv}>
                 <div css={styles.formFlexChildDiv}>
-                  <label className='primary-text'>Joined Date</label>
+                  <label className="primary-text">Position</label>
                 </div>
                 <div css={styles.formFlexChildDiv}>
-                  <span className='primary-text'>12th Feb 2022</span>
+                  <span className="primary-text">Security Supervisor</span>
+                </div>
+              </div>
+              <div css={styles.formFlexDiv}>
+                <div css={styles.formFlexChildDiv}>
+                  <label className="primary-text">Joined Date</label>
+                </div>
+                <div css={styles.formFlexChildDiv}>
+                  <span className="primary-text">12th Feb 2022</span>
                 </div>
               </div>
             </div>
@@ -109,16 +124,16 @@ const Profile = () => {
                 {showAchievementDetail ? <ArrowUpIcon /> : <ArrowDownIcon />}
               </button>
             </div>
-            <div style={{ display: showAchievementDetail ? 'block' : 'none' }}>
+            <div style={{ display: showAchievementDetail ? "block" : "none" }}>
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: 'none',
-                  paddingTop: '0',
+                  border: "none",
+                  paddingTop: "0",
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className='secondary-text'>
+                  <label className="secondary-text">
                     Certifications and Licenses
                   </label>
                 </div>
@@ -126,12 +141,12 @@ const Profile = () => {
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: 'none',
-                  paddingTop: '0',
+                  border: "none",
+                  paddingTop: "0",
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className='primary-text'>
+                  <label className="primary-text">
                     <AchievementIcon /> Licensed Security Guard (USA)
                   </label>
                 </div>
@@ -139,12 +154,12 @@ const Profile = () => {
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: 'none',
-                  paddingTop: '0',
+                  border: "none",
+                  paddingTop: "0",
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className='primary-text'>
+                  <label className="primary-text">
                     <AchievementIcon />
                     First Aid and CPR Certification
                   </label>
@@ -153,12 +168,12 @@ const Profile = () => {
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: 'none',
-                  paddingTop: '0',
+                  border: "none",
+                  paddingTop: "0",
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className='primary-text'>
+                  <label className="primary-text">
                     <AchievementIcon />
                     Defensive Tactics Training
                   </label>
@@ -257,8 +272,8 @@ const styles = {
   `,
   cameraIcon: css`
     position: absolute;
-    bottom: 0;
-    right: 1px;
+    margin-top: -18px;
+    margin-left: 40px;
     background: #d9d9d9;
     border-radius: 50px;
     width: 20px;
@@ -318,26 +333,32 @@ const styles = {
       height: 15px;
     }
   `,
-  fileInput: css`
-    width: 100%;
-    height: 100%;
+  selectedImage: css`
+    width: 55px;
+    height: 55px;
+    border-radius: 50px;
     position: absolute;
-    top: 0;
-    left: 0;
-    color: transparent;
-    z-index: 1;
-    cursor: pointer;
-    &::-webkit-file-upload-button {
-      visibility: hidden;
-    }
+    margin-top: -10px;
+    margin-left: -25px;
   `,
-  attachFile: css`
+  attachBox: css`
     position: absolute;
-    top: -15px;
+    margin-top: -80px;
+    cursor: pointer;
     svg {
       width: 60px;
       height: 60px;
-      cursor: pointer;
+    }
+  `,
+  attachBtn: css`
+    input {
+      display: none;
+      position: relative;
+      margin-top: -40px;
+      margin-left: -7px;
+      width: 60px;
+      height: 60px;
+      z-index: 1;
     }
   `,
 };

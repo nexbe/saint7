@@ -43,6 +43,100 @@ const ExpenseRequestStatus = () => {
   const decrement = () => {
     setCount(count - 1);
   };
+  const expenseData = [
+    {
+      id: "#ER-00001",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      amount: "$ 200",
+      status: "Pending",
+      date: "2023-09-15",
+    },
+    {
+      id: "#ER-00002",
+      category: "Air Travel Expense",
+      subCategory: "Travel",
+      amount: "$ 300",
+      status: "Pending",
+      date: "2023-08-15",
+    },
+    {
+      id: "#ER-00003",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      amount: "$ 400",
+      status: "Pending",
+      date: "2023-07-15",
+    },
+    {
+      id: "#ER-00001",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      amount: "$ 200",
+      status: "Approved",
+      date: "2023-09-15",
+    },
+    {
+      id: "#ER-00002",
+      category: "Air Travel Expense",
+      subCategory: "Travel",
+      amount: "$ 300",
+      status: "Approved",
+      date: "2023-08-15",
+    },
+    {
+      id: "#ER-00003",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      amount: "$ 400",
+      status: "Approved",
+      date: "2023-07-15",
+    },
+    {
+      id: "#ER-00001",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      amount: "$ 200",
+      status: "Rejected",
+      date: "2023-09-15",
+    },
+    {
+      id: "#ER-00002",
+      category: "Air Travel Expense",
+      subCategory: "Travel",
+      amount: "$ 300",
+      status: "Rejected",
+      date: "2023-08-15",
+    },
+    {
+      id: "#ER-00003",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      amount: "$ 400",
+      status: "Rejected",
+      date: "2023-07-15",
+    },
+  ];
+
+  const [filterTerm, setFilterTerm] = useState("");
+  const [filteredData, setFilteredData] = useState(expenseData);
+
+  const handleFilterChange = (event) => {
+    const term = event.target.value;
+    setFilterTerm(term);
+
+    // Filter the data based on the filterTerm
+    const filteredResults = expenseData.filter(
+      (item) =>
+        item?.category?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.subCategory?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.status?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.id?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.amount?.toLowerCase().includes(term?.toLowerCase())
+    );
+
+    setFilteredData(filteredResults);
+  };
 
   return (
     <Layout>
@@ -59,7 +153,12 @@ const ExpenseRequestStatus = () => {
             <label className="header-text">EXPENSE REQUESTS STATUS</label>
           </div>
           <div css={styles.filterContainer}>
-            <input type="text" placeholder="Search fields" />
+            <input
+              type="text"
+              placeholder="Search fields"
+              value={filterTerm}
+              onChange={handleFilterChange}
+            />
             <label css={styles.searchIcon}>
               <SearchIcon />
             </label>
@@ -115,54 +214,32 @@ const ExpenseRequestStatus = () => {
             </div>
             {activeTab == 1 && (
               <div css={styles.cardContainer}>
-                <div
-                  css={styles.eachCard}
-                  className="primary-text"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => router.push("/claims/requestDetail")}
-                >
-                  <label>
-                    <label css={styles.expenseId}>#ER-00001</label>
-                    Telephone Expense
-                    <label css={styles.expenseDetail}>Communication</label>
-                  </label>
-                  <label>
-                    $ 200.00
-                    <label css={styles.expenseStatus}>Pending</label>
-                  </label>
-                </div>
-                <div
-                  css={styles.eachCard}
-                  className="primary-text"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => router.push("/claims/requestDetail")}
-                >
-                  <label>
-                    <label css={styles.expenseId}>#ER-00002</label>
-                    Telephone Expense
-                    <label css={styles.expenseDetail}>Communication</label>
-                  </label>
-                  <label>
-                    $ 200.00
-                    <label css={styles.expenseStatus}>Pending</label>
-                  </label>
-                </div>
-                <div
-                  css={styles.eachCard}
-                  className="primary-text"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => router.push("/claims/requestDetail")}
-                >
-                  <label>
-                    <label css={styles.expenseId}>#ER-00003</label>
-                    Telephone Expense
-                    <label css={styles.expenseDetail}>Communication</label>
-                  </label>
-                  <label>
-                    $ 200.00
-                    <label css={styles.expenseStatus}>Pending</label>
-                  </label>
-                </div>
+                {filteredData.map(
+                  (item, index) =>
+                    item.status == "Pending" && (
+                      <div
+                        css={styles.eachCard}
+                        className="primary-text"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => router.push("/claims/requestDetail")}
+                        key={index}
+                      >
+                        <label>
+                          <label css={styles.expenseId}>{item.id}</label>
+                          {item.category}
+                          <label css={styles.expenseDetail}>
+                            {item.subCategory}
+                          </label>
+                        </label>
+                        <label>
+                          {item.amount}
+                          <label css={styles.expenseStatus}>
+                            {item.status}
+                          </label>
+                        </label>
+                      </div>
+                    )
+                )}
               </div>
             )}
             {activeTab == 2 && (
@@ -170,10 +247,22 @@ const ExpenseRequestStatus = () => {
                 <Card
                   date={"September 2022"}
                   count={3}
-                  amount={"SGD 1,200.00"}
+                  amount={"$ 900.00"}
+                  expenseData={filteredData}
                 />
-                <Card date={"August 2022"} count={3} amount={"SGD 1,200.00"} />
-                <Card date={"July 2022"} count={3} amount={"SGD 1,200.00"} />
+
+                <Card
+                  date={"August 2022"}
+                  count={3}
+                  amount={"$ 900.00"}
+                  expenseData={filteredData}
+                />
+                <Card
+                  date={"July 2022"}
+                  count={3}
+                  amount={"$ 900.00"}
+                  expenseData={filteredData}
+                />
               </div>
             )}
             {activeTab == 3 && (
@@ -279,13 +368,13 @@ const styles = {
       border-radius: 10px;
       border: 1px solid var(--dark-gray);
       background: var(--white);
+      padding-left: 35px;
       ::placeholder {
         color: var(--dark-gray);
         font-family: Open Sans;
         font-size: 16px;
         font-style: normal;
         font-weight: 400;
-        padding-left: 18px;
       }
       :focus {
         border: 1px solid var(--primary);
@@ -367,14 +456,14 @@ const styles = {
     font-weight: 400;
   `,
   expenseDetail: css`
-    padding: 0px 10px;
+    padding: 0 10px;
     font-size: 8px;
     justify-content: center;
     align-items: center;
     border-radius: 4px;
     background: #e0eeff;
     text-transform: uppercase;
-    width: 65%;
+    width: 80px;
   `,
   expenseStatus: css`
     font-size: 10px;

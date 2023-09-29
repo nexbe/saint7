@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 import Chart from "chart.js/auto";
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import dayjs from "dayjs";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -27,6 +28,14 @@ const Claims = () => {
   const [showChart, setShowChart] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [dateModalOpen, setDateModalOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState(dayjs());
+  const handlePrevMonth = () => {
+    setCurrentDate(currentDate.subtract(1, "month"));
+  };
+  const handleNextMonth = () => {
+    setCurrentDate(currentDate.add(1, "month"));
+  };
+  const formattedDate = currentDate.format("MMMM YYYY");
 
   const filterModal = () => {
     setModalOpen(!modalOpen);
@@ -59,29 +68,65 @@ const Claims = () => {
         ],
       },
       options: {
-        responsive: true,
-        aspectRatio: 2.3,
+        responsive: false,
+        aspectRatio: 1.2,
         plugins: {
           legend: false,
-          tooltips: {
-            callbacks: {
-              label: function (tooltipItem, data) {
-                // Customize the tooltip label
-
-                const percentage =
-                  (
-                    (value / data.datasets[0].data.reduce((a, b) => a + b, 0)) *
-                    100
-                  ).toFixed(2) + "%";
-                return `${percentage}`;
-              },
-            },
+          tooltip: {
+            enabled: false,
           },
         },
         cutoutPercentage: 1,
       },
     });
   }, []);
+
+  const expenseData = [
+    {
+      id: "#ER-00001",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      amount: "$ 200",
+      status: "Pending",
+      date: "2023-09-15",
+    },
+    {
+      id: "#ER-00001",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      amount: "$ 200",
+      status: "Approved",
+      date: "2023-09-15",
+    },
+    {
+      id: "#ER-00003",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      amount: "$ 400",
+      status: "Rejected",
+      date: "2023-07-15",
+    },
+  ];
+
+  const [filterTerm, setFilterTerm] = useState("");
+  const [filteredData, setFilteredData] = useState(expenseData);
+
+  const handleFilterChange = (event) => {
+    const term = event.target.value;
+    setFilterTerm(term);
+
+    // Filter the data based on the filterTerm
+    const filteredResults = expenseData.filter(
+      (item) =>
+        item?.category?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.subCategory?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.status?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.id?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.amount?.toLowerCase().includes(term?.toLowerCase())
+    );
+
+    setFilteredData(filteredResults);
+  };
 
   return (
     <Layout>
@@ -96,7 +141,12 @@ const Claims = () => {
             EXPENSE REQUESTS STATUS
           </div>
           <div css={styles.filterContainer}>
-            <input type="text" placeholder="Search fields" />
+            <input
+              type="text"
+              placeholder="Search fields"
+              value={filterTerm}
+              onChange={handleFilterChange}
+            />
             <label css={styles.searchIcon}>
               <SearchIcon />
             </label>
@@ -139,12 +189,24 @@ const Claims = () => {
           </div>
           <div style={{ display: showChart ? "block" : "none" }}>
             <div css={styles.dateContainer}>
-              <BackIcon />
-              <label className="primary-text">March 2023</label>
-              <ForwardIcon />
+              <button onClick={handlePrevMonth}>
+                <BackIcon />
+              </button>
+              <label className="primary-text">{formattedDate}</label>
+              <button onClick={handleNextMonth}>
+                <ForwardIcon />
+              </button>
             </div>
             <div style={{ textAlign: "center" }}>
-              <canvas id="myChart" ref={canvas}></canvas>
+              <div css={styles.pieChart}>
+                <canvas id="myChart" ref={canvas}></canvas>
+                <label className="pendingPercent">48%</label>
+                <label className="approvedPercent">32%</label>
+                <label className="rejectedPercent">20%</label>
+                <label className="expenseCount">
+                  50 <span>Expenses</span>
+                </label>
+              </div>
               <div css={styles.chartDataStatus}>
                 <div style={{ gap: "10px" }}>
                   <span css={styles.colorStatus}></span>
@@ -164,16 +226,16 @@ const Claims = () => {
                 </div>
                 <div className="primary-text">
                   <span css={styles.percentageStatus}>800.00 USD - 48% </span>
-                  <span css={styles.percentageStatus}>800.00 USD - 48% </span>
-                  <span css={styles.percentageStatus}>800.00 USD - 48% </span>
+                  <span css={styles.percentageStatus}>800.00 USD - 32% </span>
+                  <span css={styles.percentageStatus}>800.00 USD - 20% </span>
                 </div>
               </div>
             </div>
           </div>
           <div style={{ display: showChart ? "none" : "block" }}>
-            <Card title={"January"} count={30} />
-            <Card title={"February"} count={20} />
-            <Card title={"March"} count={10} />
+            <Card title={"January"} count={30} expenseData={filteredData} />
+            <Card title={"February"} count={20} expenseData={filteredData} />
+            <Card title={"March"} count={10} expenseData={filteredData} />
           </div>
           <div
             css={styles.addReport}
@@ -271,13 +333,13 @@ const styles = {
       border-radius: 10px;
       border: 1px solid var(--dark-gray);
       background: var(--white);
+      padding-left: 35px;
       ::placeholder {
         color: var(--dark-gray);
         font-family: Open Sans;
         font-size: 16px;
         font-style: normal;
         font-weight: 400;
-        padding-left: 18px;
       }
       :focus {
         border: 1px solid var(--primary);
@@ -301,13 +363,47 @@ const styles = {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
     .primary-text {
       color: #497c8a;
+    }
+    button {
+      border: none;
+      background: none;
     }
   `,
   dataPercent: css`
     position: absolute;
     margin-top: -70px;
+  `,
+  pieChart: css`
+    position: relative;
+    display: flex;
+    justify-content: center;
+    label {
+      position: absolute;
+      color: var(--white);
+    }
+    .rejectedPercent {
+      margin-top: 10rem;
+      margin-left: 10rem;
+    }
+    .approvedPercent {
+      margin-top: 40px;
+      margin-left: 7rem;
+    }
+    .pendingPercent {
+      margin-top: 6rem;
+      margin-right: 11rem;
+    }
+    .expenseCount {
+      margin-top: 100px;
+      color: #37474f;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      line-height: 20px;
+    }
   `,
   chartDataStatus: css`
     display: flex;
