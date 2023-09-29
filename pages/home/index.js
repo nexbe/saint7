@@ -34,7 +34,11 @@ const Home = () => {
             </div>
             <div css={styles.timeText}>Friday, 26th May 2023</div>
           </div>
-          <NotiIcon />
+          <div
+            onClick={() => router.push("/notifications")}
+            style={{ cursor: "pointer" }}>
+            <NotiIcon />
+          </div>
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.mapContainer}>
