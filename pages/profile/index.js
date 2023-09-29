@@ -13,6 +13,7 @@ import AchievementIcon from "/public/icons/achievementIcon";
 import CertificationIcon from "/public/icons/certificationIcon";
 import CameraIcon from "/public/icons/cameraIcon";
 
+
 const Profile = () => {
   const router = useRouter();
   const [showProfileDetail, setShowProfileDetail] = useState(false);
@@ -23,11 +24,13 @@ const Profile = () => {
         <div css={styles.headerContainer}>
           <div css={styles.backIcon} onClick={() => router.push("/home")}>
             <BackIcon />
+
           </div>
-          <label className="header-text">My Profile</label>
+          <label className='header-text'>My Profile</label>
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.profileContent}>
+
             <div css={styles.attachFile}>
               <input
                 accept={`image/*`}
@@ -46,9 +49,10 @@ const Profile = () => {
             <p style={{ marginTop: "5px" }}>
               <label className="header-text">John Smith</label>
               <label className="secondary-text">Employee ID: 123456789</label>
+
             </p>
           </div>
-          <div css={styles.infoContent} style={{ marginTop: "90px" }}>
+          <div css={styles.infoContent} style={{ marginTop: '90px' }}>
             <div
               css={styles.labelText}
               onClick={() => setShowProfileDetail(!showProfileDetail)}
@@ -59,37 +63,37 @@ const Profile = () => {
                 {showProfileDetail ? <ArrowUpIcon /> : <ArrowDownIcon />}
               </button>
             </div>
-            <div style={{ display: showProfileDetail ? "block" : "none" }}>
+            <div style={{ display: showProfileDetail ? 'block' : 'none' }}>
               <div css={styles.formFlexDiv}>
                 <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Emaill</label>
+                  <label className='primary-text'>Emaill</label>
                 </div>
                 <div css={styles.formFlexChildDiv}>
-                  <span className="primary-text">tanarak@gmail.com</span>
+                  <span className='primary-text'>tanarak@gmail.com</span>
                 </div>
               </div>
               <div css={styles.formFlexDiv}>
                 <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Contact Number</label>
+                  <label className='primary-text'>Contact Number</label>
                 </div>
                 <div css={styles.formFlexChildDiv}>
-                  <span className="primary-text">+66 888 555 6987</span>
-                </div>
-              </div>
-              <div css={styles.formFlexDiv}>
-                <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Position</label>
-                </div>
-                <div css={styles.formFlexChildDiv}>
-                  <span className="primary-text">Security Supervisor</span>
+                  <span className='primary-text'>+66 888 555 6987</span>
                 </div>
               </div>
               <div css={styles.formFlexDiv}>
                 <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Joined Date</label>
+                  <label className='primary-text'>Position</label>
                 </div>
                 <div css={styles.formFlexChildDiv}>
-                  <span className="primary-text">12th Feb 2022</span>
+                  <span className='primary-text'>Security Supervisor</span>
+                </div>
+              </div>
+              <div css={styles.formFlexDiv}>
+                <div css={styles.formFlexChildDiv}>
+                  <label className='primary-text'>Joined Date</label>
+                </div>
+                <div css={styles.formFlexChildDiv}>
+                  <span className='primary-text'>12th Feb 2022</span>
                 </div>
               </div>
             </div>
@@ -105,16 +109,16 @@ const Profile = () => {
                 {showAchievementDetail ? <ArrowUpIcon /> : <ArrowDownIcon />}
               </button>
             </div>
-            <div style={{ display: showAchievementDetail ? "block" : "none" }}>
+            <div style={{ display: showAchievementDetail ? 'block' : 'none' }}>
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: "none",
-                  paddingTop: "0",
+                  border: 'none',
+                  paddingTop: '0',
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className="secondary-text">
+                  <label className='secondary-text'>
                     Certifications and Licenses
                   </label>
                 </div>
@@ -122,12 +126,12 @@ const Profile = () => {
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: "none",
-                  paddingTop: "0",
+                  border: 'none',
+                  paddingTop: '0',
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">
+                  <label className='primary-text'>
                     <AchievementIcon /> Licensed Security Guard (USA)
                   </label>
                 </div>
@@ -135,12 +139,12 @@ const Profile = () => {
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: "none",
-                  paddingTop: "0",
+                  border: 'none',
+                  paddingTop: '0',
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">
+                  <label className='primary-text'>
                     <AchievementIcon />
                     First Aid and CPR Certification
                   </label>
@@ -149,12 +153,12 @@ const Profile = () => {
               <div
                 css={styles.formFlexDiv}
                 style={{
-                  border: "none",
-                  paddingTop: "0",
+                  border: 'none',
+                  paddingTop: '0',
                 }}
               >
                 <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">
+                  <label className='primary-text'>
                     <AchievementIcon />
                     Defensive Tactics Training
                   </label>

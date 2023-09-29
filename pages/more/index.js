@@ -7,7 +7,11 @@ import NotiIcon from "/public/icons/notiIcon";
 import SearchIcon from "../../public/icons/searchIcon";
 import AnnouncementIcon from "../../public/icons/announcementIcon";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 const MorePage = () => {
+  const router = useRouter();
+
   return (
     <Layout>
       <div css={styles.headerContainer}>
@@ -21,7 +25,7 @@ const MorePage = () => {
           </div>
           <div css={styles.timeText}>Friday, 26th May 2023</div>
         </div>
-        <div css={styles.notiIcon}>
+        <div css={styles.notiIcon} onClick={() => router.push("/notifications")}>
           {" "}
           <NotiIcon />
         </div>

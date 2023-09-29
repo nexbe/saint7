@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+
 import { css } from "@emotion/react";
 import Chart from "chart.js/auto";
 import { useRef, useEffect, useState } from "react";
@@ -182,9 +183,11 @@ const Claims = () => {
           </div>
         </div>
       </div>
+
     </Layout>
   );
 };
+
 
 export default Claims;
 
@@ -338,5 +341,6 @@ const styles = {
     position: absolute;
     bottom: 60px;
     right: 12px;
+
   `,
 };

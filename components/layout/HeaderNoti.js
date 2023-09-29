@@ -12,7 +12,9 @@ const HeaderNoti = ({ title, href }) => {
         <BackArrow />
       </Link>
       {title}
-      <NotiIcon />
+      <Link href={"/notifications"}>
+        <NotiIcon />
+      </Link>
     </div>
   );
 };
@@ -28,6 +30,7 @@ const styles = {
     font-size: 20px;
     font-weight: 700;
     padding: 20px;
+
     color: var(--white);
     background: var(--primary);
   `,
