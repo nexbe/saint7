@@ -23,17 +23,20 @@ const Home = () => {
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
           <div>
-            <div css={styles.profileInfo}>
+            <div className="d-flex" css={styles.profileInfo}>
               <label>
                 <ProfileIcon />
-                <span css={styles.welcomeText}>Welcome !</span>
               </label>
-              <span className="header-text">John Smith</span>
+              <div className="d-flex" style={{ flexDirection: "column" }}>
+                <span css={styles.welcomeText}>Welcome !</span>
+                <span className="header-text">John Smith</span>
+              </div>
             </div>
             <div css={styles.timeText}>Friday, 26th May 2023</div>
           </div>
-          <div css={styles.notiIcon}>
-            {" "}
+          <div
+            onClick={() => router.push("/notifications")}
+            style={{ cursor: "pointer" }}>
             <NotiIcon />
           </div>
         </div>
@@ -139,32 +142,22 @@ const styles = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 30px;
-    margin: 0;
-    background: var(--primary);
-    min-height: 90px;
+    gap: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 20px;
     color: var(--white);
-    font-family: Inter;
-    font-style: normal;
-    border-radius: 20px 20px 0 0;
+    background: var(--primary);
+    line-height: 20px;
   `,
   profileInfo: css`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-weight: 600;
-    width: 100%;
-    .header-text {
-      margin-left: 50px;
-      margin-top: -20px;
-    }
     svg {
       align-items: center;
       width: 50px;
       height: 50px;
     }
     span {
-      padding-left: 10px;
+      padding-left: 15px;
     }
   `,
   notiIcon: css`
@@ -176,6 +169,7 @@ const styles = {
   `,
   timeText: css`
     font-size: 14px;
+    padding-top: 10px;
   `,
   bodyContainer: css`
     display: flex;

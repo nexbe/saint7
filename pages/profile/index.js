@@ -1,43 +1,55 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import { useState } from 'react';
+import { css } from "@emotion/react";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
-import Layout from '../../components/layout/Layout';
-import BackIcon from '/public/icons/backIcon';
-import ProfileIcon from '/public/icons/profileIcon';
-import UserIcon from '/public/icons/userIcon';
-import ArrowDownIcon from '/public/icons/arrowDownIcon';
-import ArrowUpIcon from '/public/icons/arrowUpIcon';
-import AchievementIcon from '/public/icons/achievementIcon';
-import CertificationIcon from '/public/icons/certificationIcon';
-import CameraIcon from '/public/icons/cameraIcon';
-import Link from 'next/link';
+import Layout from "../../components/layout/Layout";
+import BackIcon from "/public/icons/backArrow";
+import ProfileIcon from "/public/icons/profileIcon";
+import UserIcon from "/public/icons/userIcon";
+import ArrowDownIcon from "/public/icons/arrowDownIcon";
+import ArrowUpIcon from "/public/icons/arrowUpIcon";
+import AchievementIcon from "/public/icons/achievementIcon";
+import CertificationIcon from "/public/icons/certificationIcon";
+import CameraIcon from "/public/icons/cameraIcon";
+
 
 const Profile = () => {
+  const router = useRouter();
   const [showProfileDetail, setShowProfileDetail] = useState(false);
   const [showAchievementDetail, setShowAchievementDetail] = useState(false);
   return (
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
-          <div css={styles.backIcon}>
-            <Link href='/home'>
-              <BackIcon />{' '}
-            </Link>
+          <div css={styles.backIcon} onClick={() => router.push("/home")}>
+            <BackIcon />
+
           </div>
           <label className='header-text'>My Profile</label>
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.profileContent}>
-            <label css={styles.imageBox}>
-              <ProfileIcon />
-              <span css={styles.cameraIcon}>
-                <CameraIcon />
-              </span>
-            </label>
-            <p>
-              <label className='header-text'>John Smith</label>
-              <label className='secondary-text'>Employee ID: 123456789</label>
+
+            <div css={styles.attachFile}>
+              <input
+                accept={`image/*`}
+                type="file"
+                css={styles.fileInput}
+                multiple
+              />
+              <label>
+                <ProfileIcon />
+                <span css={styles.cameraIcon}>
+                  <CameraIcon />
+                </span>
+              </label>
+            </div>
+
+            <p style={{ marginTop: "5px" }}>
+              <label className="header-text">John Smith</label>
+              <label className="secondary-text">Employee ID: 123456789</label>
+
             </p>
           </div>
           <div css={styles.infoContent} style={{ marginTop: '90px' }}>
@@ -243,15 +255,6 @@ const styles = {
       color: var(--light-gray);
     }
   `,
-  imageBox: css`
-    position: absolute;
-    top: -15px;
-    cursor: pointer;
-    svg {
-      width: 50px;
-      height: 50px;
-    }
-  `,
   cameraIcon: css`
     position: absolute;
     bottom: 0;
@@ -313,6 +316,28 @@ const styles = {
     svg {
       width: 15px;
       height: 15px;
+    }
+  `,
+  fileInput: css`
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: transparent;
+    z-index: 1;
+    cursor: pointer;
+    &::-webkit-file-upload-button {
+      visibility: hidden;
+    }
+  `,
+  attachFile: css`
+    position: absolute;
+    top: -15px;
+    svg {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
     }
   `,
 };

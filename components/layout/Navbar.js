@@ -91,7 +91,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     text-align: center;
-    gap: 4px;
+    margin-top:8px;
     justify-content: center;
     align-items: center;
     font-size: 12px;
