@@ -30,6 +30,7 @@ const styles = {
     font-size: 20px;
     font-weight: 700;
     padding: 20px;
+
     color: var(--white);
     background: var(--primary);
   `,

@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+
 import React, { useState } from "react";
 import Layout from "../../components/layout/Layout";
 import { css } from "@emotion/react";
@@ -26,9 +27,11 @@ const Payslip = () => {
       <div css={styles.tabComponent}>
         {activeComponent === "payment" ? <Payment /> : <History />}
       </div>
+
     </Layout>
   );
 };
+
 
 export default Payslip;
 
@@ -54,5 +57,6 @@ const styles = {
   `,
   tabComponent: css`
     margin: 0px 10px 0px 10px;
+
   `,
 };
