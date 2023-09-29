@@ -45,7 +45,11 @@ const Card = ({ date, count, amount, expenseData }) => {
         {expenseData?.map(
           (item, index) =>
             item.status == "Approved" && (
-              <div css={styles.detailContainer} className="primary-text">
+              <div
+                css={styles.detailContainer}
+                className="primary-text"
+                key={index}
+              >
                 <label>
                   <label css={styles.expenseId}>{item.id}</label>
                   {item.category}

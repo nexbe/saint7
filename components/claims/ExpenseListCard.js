@@ -15,7 +15,7 @@ const Card = ({ title, count, expenseData }) => {
         {title} <span>{count}</span>
       </div>
       {expenseData.map((item, index) => (
-        <div css={styles.expenseList} className="primary-text">
+        <div css={styles.expenseList} className="primary-text" key={index}>
           <label>
             {item.category}
             <span className="expenseDetail">{item.subCategory}</span>
@@ -40,7 +40,7 @@ const Card = ({ title, count, expenseData }) => {
       ))}
       <div style={{ display: open ? "block" : "none" }}>
         {expenseData.map((item, index) => (
-          <div css={styles.expenseList} className="primary-text">
+          <div css={styles.expenseList} className="primary-text" key={index}>
             <label>
               {item.category}
               <span className="expenseDetail">{item.subCategory}</span>

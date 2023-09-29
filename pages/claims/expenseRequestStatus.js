@@ -222,6 +222,7 @@ const ExpenseRequestStatus = () => {
                         className="primary-text"
                         style={{ cursor: "pointer" }}
                         onClick={() => router.push("/claims/requestDetail")}
+                        key={index}
                       >
                         <label>
                           <label css={styles.expenseId}>{item.id}</label>
