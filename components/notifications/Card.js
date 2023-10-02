@@ -47,7 +47,6 @@ const styles = {
     span {
       font-size: 14px;
       font-weight: 700;
-      line-height: 25px;
       margin-left: ${isActive ? "20px" : ""};
       margin-top: -8px;
       text-transform: capitalize;
@@ -56,6 +55,7 @@ const styles = {
   paragraph: css`
     font-size: 14px;
     font-weight: 400;
+    line-height:20px;
   `,
   info: css`
     display: flex;

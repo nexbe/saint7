@@ -12,20 +12,9 @@ const Payslip = () => {
   return (
     <Layout>
       <HeaderNoti title={"Payslip"} href={"/home"} />
-      <ul css={styles.tabpane}>
-        <li
-          onClick={() => setActiveComponent("payment")}
-          css={activeComponent === "payment" ? styles.activeTab : ""}>
-          Payment
-        </li>
-        <li
-          onClick={() => setActiveComponent("history")}
-          css={activeComponent === "history" ? styles.activeTab : ""}>
-          History
-        </li>
-      </ul>
       <div css={styles.tabComponent}>
-        {activeComponent === "payment" ? <Payment /> : <History />}
+        <History />
+        {/* {activeComponent === "payment" ? <Payment /> : <History />} */}
       </div>
 
     </Layout>

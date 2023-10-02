@@ -33,6 +33,7 @@ const styles = {
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.8);
     padding: 15px;
+    color: #000;
   `,
   title: css`
     font-weight: 700;
@@ -48,13 +49,14 @@ const styles = {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      padding-left:0rem;
       margin-top: 5px;
     }
     li {
-      color: var(--primary);
+      color: #000;
       font-size: 14px;
       font-style: normal;
-      font-weight: 600;
+      font-weight: 400;
       display: flex;
     }
     b {

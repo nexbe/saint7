@@ -23,7 +23,7 @@ const styles = {
     gap: 9px;
     max-height: 68vh;
     overflow-y: scroll;
-
+    color: #000;
     @media (min-width: 440px) {
       margin: 30px;
     }
