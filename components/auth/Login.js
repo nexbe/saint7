@@ -80,7 +80,7 @@ const Login = () => {
             </label>
             <span>Remember me</span>
           </div>
-          <div>Forgot Password ?</div>
+          <div onClick={() => router.push("/auth/resetPassword")}>Forgot Password ?</div>
         </div>
 
         <button id="login" type="submit" css={styles.loginBtn}>
