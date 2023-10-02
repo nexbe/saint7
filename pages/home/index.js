@@ -36,7 +36,8 @@ const Home = () => {
           </div>
           <div
             onClick={() => router.push("/notifications")}
-            style={{ cursor: "pointer" }}>
+            style={{ cursor: "pointer" }}
+          >
             <NotiIcon />
           </div>
         </div>
@@ -152,6 +153,7 @@ const styles = {
     color: var(--white);
     background: var(--primary);
     line-height: 20px;
+    height: 90px;
   `,
   profileInfo: css`
     svg {
