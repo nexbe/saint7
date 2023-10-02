@@ -73,25 +73,25 @@ const styles = {
   wrapper: css`
     @media (min-width: 440px) {
       width: 100%;
-      justify-content: space-evenly;
+      justify-content: space-between;
     }
     display: flex;
     flex-direction: row;
-    height: 55px;
+    height: 65px;
     text-align: center;
-    justify-content: space-evenly;
-    background: #fff;
+    justify-content: space-between;
+    background: var(--white);
     box-shadow: 1px 1px 5px 3px rgba(0, 0, 0, 0.08);
-    border-radius: 0 0 20px 20px;
     margin-top: auto;
     gap: 30px;
     width: 100%;
+    padding: 0 10px;
   `,
   navLink: css`
     display: flex;
     flex-direction: column;
     text-align: center;
-    margin-top:8px;
+    margin-top: 8px;
     justify-content: center;
     align-items: center;
     font-size: 12px;

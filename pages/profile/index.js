@@ -2,6 +2,7 @@
 import { css } from "@emotion/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { FaPlus } from "react-icons/fa";
 
 import Layout from "../../components/layout/Layout";
 import BackIcon from "/public/icons/backArrow";
@@ -12,12 +13,17 @@ import ArrowUpIcon from "/public/icons/arrowUpIcon";
 import AchievementIcon from "/public/icons/achievementIcon";
 import CertificationIcon from "/public/icons/certificationIcon";
 import CameraIcon from "/public/icons/cameraIcon";
+import AddCertificateModal from "../../components/profile/AddCertificateModal";
 
 const Profile = () => {
   const router = useRouter();
   const [showProfileDetail, setShowProfileDetail] = useState(false);
   const [showAchievementDetail, setShowAchievementDetail] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const addCertificateModal = () => {
+    setModalOpen(!modalOpen);
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -179,6 +185,32 @@ const Profile = () => {
                   </label>
                 </div>
               </div>
+              <div
+                css={styles.formFlexDiv}
+                style={{
+                  border: "none",
+                  paddingTop: "0",
+                }}
+              >
+                <div css={styles.formFlexChildDiv}>
+                  <div
+                    className="header-text"
+                    css={styles.addBox}
+                    onClick={addCertificateModal}
+                  >
+                    <label>
+                      <FaPlus color="var(--primary)" />
+                    </label>
+                    Add More
+                  </div>
+                  {modalOpen && (
+                    <AddCertificateModal
+                      isOpen={modalOpen}
+                      close={() => setModalOpen(!modalOpen)}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -201,10 +233,9 @@ const styles = {
   headerContainer: css`
     display: flex;
     justify-content: center;
-    padding-top: 7px;
+    align-items: center;
     background: var(--primary);
-    min-height: 70px;
-    border-radius: 20px 20px 0 0;
+    height: 90px;
   `,
   backIcon: css`
     position: absolute;
@@ -242,7 +273,7 @@ const styles = {
     background: var(--mobile-color-usage-white, #fff);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     position: absolute;
-    top: 55px;
+    top: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -359,6 +390,29 @@ const styles = {
       width: 60px;
       height: 60px;
       z-index: 1;
+    }
+  `,
+  addBox: css`
+    color: var(--primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    label {
+      width: 25px;
+      height: 25px;
+      border-radius: 4px;
+      background: var(--secondary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    svg {
+      margin: 0;
+      width: 18px;
+      height: 18px;
     }
   `,
 };

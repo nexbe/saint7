@@ -8,7 +8,6 @@ import Select, { components } from "react-select";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
-import Image from "next/image";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -143,7 +142,7 @@ const Claims = () => {
                     {selectedFile && (
                       <div css={styles.imageContainer}>
                         {isImage ? (
-                          <Image
+                          <img
                             src={URL.createObjectURL(selectedFile)}
                             alt="Selected"
                             css={styles.selectedImage}
