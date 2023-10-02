@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-const resetPassword = () => {
+const ResetPassword = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
@@ -64,7 +64,7 @@ const resetPassword = () => {
   );
 };
 
-export default resetPassword;
+export default ResetPassword;
 
 const styles = {
   wrapper: css`

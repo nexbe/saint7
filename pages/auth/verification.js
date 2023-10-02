@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-const verification = () => {
+const Verification = () => {
   const router = useRouter();
   const [time, setTime] = useState({ minutes: 0, seconds: 59 });
   const [firstDigit, setFirstDigit] = useState(null);
@@ -122,7 +122,7 @@ const verification = () => {
   );
 };
 
-export default verification;
+export default Verification;
 
 const styles = {
   wrapper: css`
