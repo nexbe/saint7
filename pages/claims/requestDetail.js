@@ -1,12 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import DatePicker from "react-datepicker";
-require("react-datepicker/dist/react-datepicker.css");
-import Select, { components } from "react-select";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import Image from "next/image";
+import dayjs from "dayjs";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -16,11 +13,118 @@ import InvoiceImageModal from "../../components/claims/InvoiceImageModal";
 const RequestDetail = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(1);
+
   const [openImageModal, setOpenImageModal] = useState(false);
 
   const imageModal = () => {
     setOpenImageModal(!openImageModal);
   };
+
+  const expenseData = [
+    {
+      id: "#ER-00001",
+      category: "Advanced Tax",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 200,
+      status: "Pending",
+      date: "2023-09-10",
+    },
+    {
+      id: "#ER-00002",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 800,
+      status: "Approved",
+      date: "2023-09-20",
+    },
+    {
+      id: "#ER-00003",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 500,
+      status: "Rejected",
+      date: "2023-09-28",
+    },
+    {
+      id: "#ER-000010",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 100,
+      status: "Rejected",
+      date: "2023-09-18",
+    },
+    {
+      id: "#ER-00004",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 300,
+      status: "Pending",
+      date: "2023-08-10",
+    },
+    {
+      id: "#ER-00005",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 400,
+      status: "Approved",
+      date: "2023-08-20",
+    },
+    {
+      id: "#ER-00006",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 500,
+      status: "Rejected",
+      date: "2023-08-29",
+    },
+    {
+      id: "#ER-00007",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 400,
+      status: "Pending",
+      date: "2023-07-10",
+    },
+    {
+      id: "#ER-00008",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 500,
+      status: "Approved",
+      date: "2023-07-20",
+    },
+    {
+      id: "#ER-00009",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 700,
+      status: "Rejected",
+      date: "2023-07-29",
+    },
+  ];
+
+  const [selectedExpense, setSelectedExpense] = useState(expenseData);
+
+  const handleExpenseChange = (id) => {
+    const filteredResults = expenseData.filter(
+      (item) => item?.id?.toLowerCase() === id?.toLowerCase()
+    );
+    setSelectedExpense(filteredResults);
+  };
+
+  useEffect(() => {
+    handleExpenseChange(router.query.expenseId);
+  }, [router.query]);
 
   return (
     <Layout>
@@ -29,8 +133,13 @@ const RequestDetail = () => {
         <div css={styles.bodyContainer}>
           <div className="d-flex" css={styles.cardWrapper}>
             <label className="primary-text">
-              Total<label className="amount">SGD 200.00</label>
-              <label className="date">03.03.2023</label>
+              Total
+              <label className="amount">
+                {selectedExpense[0].currency} {selectedExpense[0].amount}
+              </label>
+              <label className="date">
+                {dayjs(selectedExpense[0].date).format("DD.MM.YYYY")}
+              </label>
             </label>
             <div onClick={imageModal} style={{ cursor: "pointer" }}>
               <Image
@@ -81,27 +190,31 @@ const RequestDetail = () => {
                 <>
                   <div>
                     <label className="detailLabel">Report Id</label>
-                    <label>ER#00001</label>
+                    <label>{selectedExpense[0].id}</label>
                   </div>
                   <div>
-                    <label className="detailLabel">Report Name</label>
-                    <label>Telephone Expense</label>
+                    <label className="detailLabel">Category Name</label>
+                    <label>{selectedExpense[0].category}</label>
                   </div>
                   <div>
                     <label className="detailLabel">Expense Date</label>
-                    <label>03/03/2023</label>
+                    <label>
+                      {dayjs(selectedExpense[0].date).format("DD/MM/YYYY")}
+                    </label>
                   </div>
                   <div>
                     <label className="detailLabel">Transaction Time</label>
-                    <label>24/03/2023 09:27:32</label>
-                  </div>
-                  <div>
-                    <label className="detailLabel">Category</label>
-                    <label>Communication</label>
+                    <label>
+                      {dayjs(selectedExpense[0].date).format(
+                        "DD/MM/YYYY hh:mm:ss"
+                      )}
+                    </label>
                   </div>
                   <div>
                     <label className="detailLabel">Amount</label>
-                    <label>$200.00</label>
+                    <label>
+                      {selectedExpense[0].currency} {selectedExpense[0].amount}
+                    </label>
                   </div>
                   <div>
                     <label className="detailLabel">Purpose</label>

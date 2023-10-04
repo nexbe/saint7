@@ -1,181 +1,161 @@
 /** @jsxImportSource @emotion/react */
 import { Modal } from "reactstrap";
-import { useRef, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { css } from "@emotion/react";
 
-const FilterModal = ({ isOpen = false, close = () => {} }) => {
-  const [check, setCheck] = useState({});
+const FilterModal = ({
+  isOpen = false,
+  close = () => {},
+  handleCategoryChange = () => {},
+}) => {
+  const [check, setCheck] = useState([]);
+  const [minAmount, setMinAmount] = useState(null);
+  const [maxAmount, setMaxAmount] = useState(null);
+  let categoryOptions = [
+    {
+      id: 1,
+      name: "Advanced Tax",
+    },
+    {
+      id: 2,
+      name: "Air Travel Expense",
+    },
+    {
+      id: 3,
+      name: "Automobile Expense",
+    },
+    {
+      id: 4,
+      name: "Employee Advance",
+    },
+    {
+      id: 5,
+      name: "Fuel/Mileage Expense",
+    },
+    {
+      id: 6,
+      name: "Furniture and Equipment",
+    },
+    {
+      id: 7,
+      name: "IT and Internet Expense",
+    },
+    {
+      id: 8,
+      name: "Lodging",
+    },
+    {
+      id: 9,
+      name: " Meals and Entertainment",
+    },
+    {
+      id: 10,
+      name: "Office Supplies",
+    },
+    {
+      id: 11,
+      name: "Air Travel Expense",
+    },
+    {
+      id: 12,
+      name: "Telephone Expense",
+    },
+    {
+      id: 13,
+      name: "Parking",
+    },
+  ];
+
+  useMemo(() => {
+    setCheck(
+      categoryOptions?.map((eachData) => {
+        return false;
+      })
+    );
+  }, []);
+
   const toggleCheck = (id) => {
-    setCheck((prevState) => ({
-      ...prevState,
-      [id]: !prevState[id] || false,
-    }));
+    let open = check;
+    open[id] = !check[id];
+    setCheck([...open]);
   };
+
+  const handleMinAmountChange = (event) => {
+    const min = event.target.value;
+    setMinAmount(min);
+  };
+
+  const handleMaxAmountChange = (event) => {
+    const max = event.target.value;
+    setMaxAmount(max);
+  };
+
+  const groupedCategories = [];
+  for (let i = 0; i < categoryOptions.length; i += 3) {
+    groupedCategories.push(categoryOptions.slice(i, i + 3));
+  }
+
   return (
     <Modal size="md" isOpen={isOpen} toggle={close} css={styles.modal}>
       <div css={styles.amountContent}>
         <label>
-          <input type={"number"} placeholder="Minimum" />
+          <input
+            type={"number"}
+            placeholder="Minimum"
+            value={minAmount}
+            onChange={handleMinAmountChange}
+          />
         </label>
         <span></span>
         <label>
-          <input type={"number"} placeholder="Maximum" />
+          <input
+            type={"number"}
+            placeholder="Maximum"
+            value={maxAmount}
+            onChange={handleMaxAmountChange}
+          />
         </label>
       </div>
       <div css={styles.categoryContent}>
         <label style={{ color: "#4D4D4D" }}>Category</label>
-        <div className="categoryGroup">
-          <div className="categoryValue">
-            <label
-              onClick={() => toggleCheck("check1")}
-              style={{
-                border: check.check1 ? "1px solid var(--primary)" : "",
-                color: check.check1 ? "var(--primary)" : "",
-              }}
-            >
-              Advance Tax
-            </label>
-            <label
-              onClick={() => toggleCheck("check2")}
-              style={{
-                border: check.check2 ? "1px solid var(--primary)" : "",
-                color: check.check2 ? "var(--primary)" : "",
-              }}
-            >
-              Air Travel Expense
-            </label>
-            <label
-              onClick={() => toggleCheck("check3")}
-              style={{
-                border: check.check3 ? "1px solid var(--primary)" : "",
-                color: check.check3 ? "var(--primary)" : "",
-              }}
-            >
-              Automobile Expense
-            </label>
-          </div>
-          <div className="categoryValue">
-            <label
-              onClick={() => toggleCheck("check4")}
-              style={{
-                border: check.check4 ? "1px solid var(--primary)" : "",
-                color: check.check4 ? "var(--primary)" : "",
-              }}
-            >
-              Employee Advance
-            </label>
-            <label
-              onClick={() => toggleCheck("check5")}
-              style={{
-                border: check.check5 ? "1px solid var(--primary)" : "",
-                color: check.check5 ? "var(--primary)" : "",
-              }}
-            >
-              Fuel/Mileage Expense
-            </label>
-            <label
-              onClick={() => toggleCheck("check6")}
-              style={{
-                border: check.check6 ? "1px solid var(--primary)" : "",
-                color: check.check6 ? "var(--primary)" : "",
-              }}
-            >
-              Furniture and Equipment
-            </label>
-          </div>
-          <div className="categoryValue">
-            <label
-              onClick={() => toggleCheck("check7")}
-              style={{
-                border: check.check7 ? "1px solid var(--primary)" : "",
-                color: check.check7 ? "var(--primary)" : "",
-              }}
-            >
-              IT and Internet Expense
-            </label>
-            <label
-              onClick={() => toggleCheck("check8")}
-              style={{
-                border: check.check8 ? "1px solid var(--primary)" : "",
-                color: check.check8 ? "var(--primary)" : "",
-              }}
-            >
-              Lodging
-            </label>
-            <label
-              onClick={() => toggleCheck("check9")}
-              style={{
-                border: check.check9 ? "1px solid var(--primary)" : "",
-                color: check.check9 ? "var(--primary)" : "",
-              }}
-            >
-              Meals and Entertainment
-            </label>
-          </div>
-          <div className="categoryValue">
-            <label
-              onClick={() => toggleCheck("check10")}
-              style={{
-                border: check.check10 ? "1px solid var(--primary)" : "",
-                color: check.check10 ? "var(--primary)" : "",
-              }}
-            >
-              Office Supplies
-            </label>
-            <label
-              onClick={() => toggleCheck("check11")}
-              style={{
-                border: check.check11 ? "1px solid var(--primary)" : "",
-                color: check.check11 ? "var(--primary)" : "",
-              }}
-            >
-              Air Travel Expense
-            </label>
-            <label
-              onClick={() => toggleCheck("check12")}
-              style={{
-                border: check.check12 ? "1px solid var(--primary)" : "",
-                color: check.check12 ? "var(--primary)" : "",
-              }}
-            >
-              Employee Advance
-            </label>
-          </div>
-          <div className="categoryValue">
-            <label
-              onClick={() => toggleCheck("check13")}
-              style={{
-                border: check.check13 ? "1px solid var(--primary)" : "",
-                color: check.check13 ? "var(--primary)" : "",
-              }}
-            >
-              Parking
-            </label>
-            <label
-              onClick={() => toggleCheck("check14")}
-              style={{
-                border: check.check14 ? "1px solid var(--primary)" : "",
-                color: check.check14 ? "var(--primary)" : "",
-              }}
-            >
-              Telephone Expense
-            </label>
-            <label
-              onClick={() => toggleCheck("check15")}
-              style={{
-                border: check.check15 ? "1px solid var(--primary)" : "",
-                color: check.check15 ? "var(--primary)" : "",
-              }}
-            >
-              Other Expenses
-            </label>
-          </div>
+        <div className="category-container">
+          {groupedCategories.map((group, index) => (
+            <div key={index} className="category-group">
+              {group.map((category) => (
+                <div className="categoryValue" key={category.id}>
+                  <label
+                    onClick={() => toggleCheck(category.id)}
+                    style={{
+                      border: check[category.id]
+                        ? "2px solid var(--primary)"
+                        : "",
+                      color: check[category.id] ? "var(--primary)" : "",
+                      fontWeight: check[category.id] ? "700" : "",
+                    }}
+                  >
+                    {category.name}
+                  </label>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
         <div css={styles.actionButton}>
           <button css={styles.cancelBtn} onClick={() => close()}>
             Cancel
           </button>
-          <button css={styles.addBtn} onClick={() => close()}>
+          <button
+            css={styles.addBtn}
+            onClick={() => {
+              handleCategoryChange(
+                minAmount,
+                maxAmount,
+                categoryOptions,
+                check
+              );
+              close();
+            }}
+          >
             Confirm
           </button>
         </div>
@@ -192,17 +172,8 @@ const styles = {
       border-radius: 16px;
       margin-top: 12rem;
       width: 100%;
-      background: #f5f5f5;
-      padding: 20px;
-      padding-bottom: 20px;
-      @media (max-width: 360px) {
-        padding: 4px;
-        padding-bottom: 20px;
-      }
-      @media (min-width: 450px) {
-        padding-left: 40px;
-        padding-bottom: 20px;
-      }
+      background: var(--white);
+      padding: 10px;
     }
   `,
   amountContent: css`
@@ -237,20 +208,20 @@ const styles = {
     }
   `,
   categoryContent: css`
-    .categoryGroup {
+    .category-container {
       display: flex;
-      gap: 10px;
       flex-direction: column;
-      justify-content: center;
+      gap: 10px;
+    }
+    .category-group {
+      display: flex;
+      gap: 7px;
     }
     .categoryValue {
-      display: flex;
-      gap: 10px;
       label {
         cursor: pointer;
         border: 1px solid var(--darker-gray);
         padding: 2px 10px;
-        width: 30%;
         font-size: 12px;
         font-weight: 400;
         line-height: normal;
@@ -259,6 +230,8 @@ const styles = {
         display: flex;
         justify-content: center;
         align-items: center;
+        min-width: 105px;
+        height: 40px;
       }
     }
   `,
@@ -267,7 +240,7 @@ const styles = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding-top: 15px;
+    padding-top: 20px;
     button {
       border-radius: 10px;
       padding: 3px 20px;

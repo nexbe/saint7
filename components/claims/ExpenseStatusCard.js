@@ -1,66 +1,126 @@
 /** @jsxImportSource @emotion/react */
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { css } from "@emotion/react";
 import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 
-const Card = ({ date, count, amount, expenseData }) => {
-  const [cardDetail, setCardDetail] = useState(false);
+import NoDataIcon from "/public/icons/noDataIcon";
+
+const Card = ({ expenseList }) => {
+  const [selectedIndex, setSelectedIndex] = useState();
+  const [openCard, setOpenCard] = useState([]);
+
+  useEffect(() => {}, [expenseList, openCard]);
+
+  useMemo(() => {
+    setOpenCard(
+      expenseList?.map((eachData) => {
+        return false;
+      })
+    );
+  }, [expenseList]);
+
+  let total = expenseList?.map((eachExpense, index) => {
+    let sum = 0;
+    eachExpense[1]?.map((eachData) => {
+      sum += eachData.amount;
+    });
+    return sum;
+  });
+
+  const handleOpen = (index) => {
+    let open = openCard;
+    open[index] = !openCard[index];
+    setOpenCard([...open]);
+  };
 
   return (
-    <div css={styles.cardContainer}>
-      <div
-        css={styles.approvedCard}
-        style={{
-          color: cardDetail ? "var(--white)" : "",
-          background: cardDetail ? "var(--primary)" : "",
-          borderRadius: cardDetail ? "10px 10px 0 0" : "",
-        }}
-        className="primary-text"
-      >
-        <label>{date}</label>
-        <label
-          className="count"
-          style={{
-            border: cardDetail ? "1px solid var(--white)" : "",
-          }}
-        >
-          {count}
-        </label>
-        <label>{amount}</label>
-        <label onClick={() => setCardDetail(!cardDetail)}>
-          {cardDetail ? (
-            <MdOutlineKeyboardArrowUp color="var(--white)" size={30} />
-          ) : (
-            <MdOutlineKeyboardArrowDown color="var(--primary)" size={30} />
-          )}
-        </label>
-      </div>
-      <div
-        style={{ display: cardDetail ? "block" : "none" }}
-        className="detailWrapper"
-      >
-        {expenseData?.map(
-          (item, index) =>
-            item.status == "Approved" && (
-              <div
-                css={styles.detailContainer}
-                className="primary-text"
-                key={index}
-              >
-                <label>
-                  <label css={styles.expenseId}>{item.id}</label>
-                  {item.category}
-                  <label css={styles.expenseDetail}>{item.subCategory}</label>
-                </label>
-                <label>{item.amount}</label>
+    <>
+      {expenseList && expenseList.length > 0 && (
+        <>
+          {expenseList?.map((eachResult, index) => {
+            return (
+              <div css={styles.cardContainer} key={index}>
+                <div
+                  css={styles.approvedCard}
+                  style={{
+                    color: openCard[index] ? "var(--white)" : "",
+                    background: openCard[index] ? "var(--primary)" : "",
+                    borderRadius: openCard[index] ? "10px 10px 0 0" : "",
+                  }}
+                  className="primary-text"
+                >
+                  <label>{eachResult[0]}</label>
+                  <label
+                    className="count"
+                    style={{
+                      border: openCard[index] ? "1px solid var(--white)" : "",
+                    }}
+                  >
+                    {eachResult[1].length}
+                  </label>
+                  <label>
+                    {"$"} {total[index]}
+                  </label>
+                  <label
+                    onClick={() => {
+                      setSelectedIndex(index);
+                      handleOpen(index);
+                    }}
+                  >
+                    {openCard[index] ? (
+                      <MdOutlineKeyboardArrowUp
+                        color="var(--white)"
+                        size={30}
+                      />
+                    ) : (
+                      <MdOutlineKeyboardArrowDown
+                        color="var(--primary)"
+                        size={30}
+                      />
+                    )}
+                  </label>
+                </div>
+                {eachResult[1]?.map((eachNote, nestedIndex) => {
+                  return (
+                    <div
+                      style={{
+                        display: openCard[index] ? "block" : "none",
+                      }}
+                      className="detailWrapper"
+                      key={nestedIndex}
+                    >
+                      <div
+                        css={styles.detailContainer}
+                        className="primary-text"
+                        key={nestedIndex}
+                      >
+                        <label>
+                          <label css={styles.expenseId}>{eachNote.id}</label>
+                          {eachNote.category}
+                        </label>
+                        <label>
+                          {eachNote.currency} {eachNote.amount}
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            )
-        )}
-      </div>
-    </div>
+            );
+          })}
+        </>
+      )}
+      {expenseList && expenseList.length == 0 && (
+        <div css={styles.noDataContainer} className="primary-text">
+          <NoDataIcon />
+          <label>Nothing Here to show</label>
+          <label>You don’t have any report request</label>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -156,5 +216,11 @@ const styles = {
     border-radius: 4px;
     background: rgba(250, 126, 11, 0.2);
     color: #fa7e0b;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

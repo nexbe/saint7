@@ -1,13 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { Modal } from "reactstrap";
-import { useRef, useEffect, useState } from "react";
+import { useState } from "react";
 import { css } from "@emotion/react";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import { BiCalendarAlt } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
 
-const DateFilterModal = ({ isOpen = false, close = () => {} }) => {
+const DateFilterModal = ({
+  isOpen = false,
+  close = () => {},
+  handleDateChange = () => {},
+}) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
 
@@ -51,7 +55,13 @@ const DateFilterModal = ({ isOpen = false, close = () => {} }) => {
         <button css={styles.cancelBtn} onClick={() => close()}>
           Cancel
         </button>
-        <button css={styles.addBtn} onClick={() => close()}>
+        <button
+          css={styles.addBtn}
+          onClick={() => {
+            handleDateChange(startDate, endDate);
+            close();
+          }}
+        >
           Confirm
         </button>
       </div>
@@ -67,74 +77,8 @@ const styles = {
       border-radius: 16px;
       margin-top: 12rem;
       width: 100%;
-      background: #f5f5f5;
+      background: var(--white);
       padding: 20px;
-      padding-bottom: 20px;
-      @media (max-width: 360px) {
-        padding: 4px;
-        padding-bottom: 20px;
-      }
-      @media (min-width: 450px) {
-        padding-left: 40px;
-        padding-bottom: 20px;
-      }
-    }
-  `,
-  amountContent: css`
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 0 50px;
-    span {
-      border-bottom: 1px solid var(--darker-gray);
-      width: 20px;
-      position: relative;
-      top: -12px;
-    }
-    label {
-      border-bottom: 1px solid var(--darker-gray);
-      width: 65px;
-      color: var(--darker-gray);
-    }
-    input {
-      border: none;
-      background: none;
-      :focus {
-        outline: none;
-        border: none;
-      }
-      ::placeholder {
-        color: var(--darker-gray);
-        font-size: 13px;
-        font-weight: 400;
-        line-height: normal;
-      }
-    }
-  `,
-  categoryContent: css`
-    .categoryGroup {
-      display: flex;
-      gap: 10px;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .categoryValue {
-      display: flex;
-      gap: 10px;
-      label {
-        cursor: pointer;
-        border: 1px solid var(--darker-gray);
-        padding: 2px 10px;
-        width: 30%;
-        font-size: 12px;
-        font-weight: 400;
-        line-height: normal;
-        color: var(--darker-gray);
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
     }
   `,
   actionButton: css`
@@ -142,7 +86,7 @@ const styles = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding-top: 15px;
+    padding-top: 30px;
     button {
       border-radius: 10px;
       padding: 3px 20px;
