@@ -31,17 +31,65 @@ const Claims = () => {
     setSelectedFile(null);
   };
 
-  const options = [
-    { value: "advanceTax", label: "Advance Tax" },
-    { value: "airTravelExpense", label: "Air Travel Expense" },
-    { value: "automobileExpense", label: "Automobile Expense" },
-    { value: "lodging", label: "Lodging" },
-    { value: "parking", label: "Parking" },
-    { value: "officeSupplies", label: "Office Supplies" },
-    { value: "telephoneExpense", label: "Telephone Expense" },
-    { value: "employeeAdvance", label: "Employee Advance" },
-    { value: "furnitureAndEquipment", label: "Furniture and Equipment" },
+  let categoryOptions = [
+    {
+      id: 1,
+      name: "Advanced Tax",
+    },
+    {
+      id: 2,
+      name: "Air Travel Expense",
+    },
+    {
+      id: 3,
+      name: "Automobile Expense",
+    },
+    {
+      id: 4,
+      name: "Employee Advance",
+    },
+    {
+      id: 5,
+      name: "Fuel/Mileage Expense",
+    },
+    {
+      id: 6,
+      name: "Furniture and Equipment",
+    },
+    {
+      id: 7,
+      name: "IT and Internet Expense",
+    },
+    {
+      id: 8,
+      name: "Lodging",
+    },
+    {
+      id: 9,
+      name: " Meals and Entertainment",
+    },
+    {
+      id: 10,
+      name: "Office Supplies",
+    },
+    {
+      id: 11,
+      name: "Air Travel Expense",
+    },
+    {
+      id: 12,
+      name: "Telephone Expense",
+    },
+    {
+      id: 13,
+      name: "Parking",
+    },
   ];
+
+  const options = categoryOptions?.map((eachOption) => ({
+    value: eachOption?.id,
+    label: eachOption?.name,
+  }));
 
   const handleSelectChange = (selectedOption) => {
     setSelectedOption(selectedOption);

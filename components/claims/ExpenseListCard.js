@@ -1,78 +1,95 @@
 /** @jsxImportSource @emotion/react */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 
-const Card = ({ title, count, expenseData }) => {
-  const [open, setOpen] = useState();
+import NoDataIcon from "/public/icons/noDataIcon";
+
+const Card = ({ expenseList }) => {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {}, [expenseList]);
 
   return (
-    <div css={styles.cardContainer}>
-      <div className="secondary-text">
-        {title} <span>{count}</span>
-      </div>
-      {expenseData.map((item, index) => (
-        <div css={styles.expenseList} className="primary-text" key={index}>
-          <label>
-            {item.category}
-            <span className="expenseDetail">{item.subCategory}</span>
-          </label>
-          <label>
-            {item.amount}{" "}
-            <span
-              className="expenseStatus"
-              style={{
-                color:
-                  item.status == "Pending"
-                    ? "#FFB016"
-                    : item.status == "Rejected"
-                    ? "#E53E3E"
-                    : "",
-              }}
-            >
-              {item.status}
-            </span>
-          </label>
+    <>
+      {expenseList && expenseList.length > 0 && (
+        <>
+          {expenseList?.map((eachResult, index) => {
+            return (
+              <div css={styles.cardContainer} key={index}>
+                <div className="secondary-text">
+                  <label>{eachResult[0]} </label>
+                  <span>{eachResult[1].length}</span>
+                </div>
+                {eachResult[1]?.map((eachNote, index) => {
+                  return (
+                    <div
+                      style={{
+                        display: index < 3 ? "block" : open ? "block" : "none",
+                      }}
+                      key={index}
+                    >
+                      <div
+                        css={styles.expenseList}
+                        className="primary-text"
+                        style={{ background: index % 2 ? "" : "#f7f7f7" }}
+                      >
+                        <label>{eachNote.category}</label>
+                        <label>
+                          {eachNote.currency} {eachNote.amount}{" "}
+                          <span
+                            className="expenseStatus"
+                            style={{
+                              color:
+                                eachNote.status == "Pending"
+                                  ? "#FFB016"
+                                  : eachNote.status == "Rejected"
+                                  ? "#E53E3E"
+                                  : "",
+                            }}
+                          >
+                            {eachNote.status}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })}
+                {eachResult[1].length > 3 && (
+                  <button
+                    css={styles.viewMoreBtn}
+                    onClick={() => setOpen(!open)}
+                  >
+                    {open ? (
+                      <MdOutlineKeyboardArrowUp
+                        color="var(--white)"
+                        size={30}
+                      />
+                    ) : (
+                      <MdOutlineKeyboardArrowDown
+                        color="var(--white)"
+                        size={30}
+                      />
+                    )}{" "}
+                    View {open ? "Less" : "More"}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </>
+      )}
+      {expenseList && expenseList.length == 0 && (
+        <div css={styles.noDataContainer} className="primary-text">
+          <NoDataIcon />
+          <label>Nothing Here to show</label>
+          <label>You don’t have any report request</label>
         </div>
-      ))}
-      <div style={{ display: open ? "block" : "none" }}>
-        {expenseData.map((item, index) => (
-          <div css={styles.expenseList} className="primary-text" key={index}>
-            <label>
-              {item.category}
-              <span className="expenseDetail">{item.subCategory}</span>
-            </label>
-            <label>
-              {item.amount}{" "}
-              <span
-                className="expenseStatus"
-                style={{
-                  color:
-                    item.status == "Pending"
-                      ? "#FFB016"
-                      : item.status == "Rejected"
-                      ? "#E53E3E"
-                      : "",
-                }}
-              >
-                {item.status}
-              </span>
-            </label>
-          </div>
-        ))}
-      </div>
-      <button css={styles.viewMoreBtn} onClick={() => setOpen(!open)}>
-        {open ? (
-          <MdOutlineKeyboardArrowUp color="var(--white)" size={30} />
-        ) : (
-          <MdOutlineKeyboardArrowDown color="var(--white)" size={30} />
-        )}{" "}
-        View {open ? "Less" : "More"}
-      </button>
-    </div>
+      )}
+    </>
   );
 };
 
@@ -88,24 +105,28 @@ const styles = {
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 12px;
-    .primary-text:nth-child(2n) {
-      background: #f7f7f7;
-    }
     .secondary-text {
       color: var(--primary);
       font-weight: 700;
       font-size: 16px;
       position: relative;
+      display: flex;
+      gap: 5px;
+      label {
+        display: flex;
+      }
       span {
-        position: absolute;
+        position: relative;
         color: var(--white);
         font-size: 10px;
         background: var(--primary);
-        padding: 0 4px;
+        width: 10px;
+        height: 10px;
+        padding: 10px;
+        display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 30px;
-        margin-left: 5px;
       }
     }
   `,
@@ -119,16 +140,6 @@ const styles = {
     label {
       display: flex;
       flex-direction: column;
-    }
-    .expenseDetail {
-      padding: 0 10px;
-      font-size: 8px;
-      justify-content: center;
-      align-items: center;
-      border-radius: 4px;
-      background: #e0eeff;
-      text-transform: uppercase;
-      width: 90px;
     }
     .expenseStatus {
       font-size: 12px;
@@ -149,5 +160,11 @@ const styles = {
       height: 18px;
       color: var(--white);
     }
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

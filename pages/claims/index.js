@@ -2,9 +2,11 @@
 
 import { css } from "@emotion/react";
 import Chart from "chart.js/auto";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
+import moment from "moment";
+import _ from "lodash";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -14,6 +16,7 @@ import DateFilterModal from "../../components/claims/DateFilterModal";
 
 import FilterIcon from "/public/icons/filterIcon";
 import CalendarIcon from "/public/icons/calendarIcon";
+import RefreshIcon from "/public/icons/refreshIcon";
 import SearchIcon from "/public/icons/searchIcon";
 import ShowChartIcon from "/public/icons/showChartIcon";
 import ShowListIcon from "/public/icons/showListIcon";
@@ -57,7 +60,8 @@ const Claims = () => {
         labels: ["Pending", "Approved", "Rejected"],
         datasets: [
           {
-            data: [20, 32, 48],
+            data: [30, 30, 40],
+            labels: ["Pending", "Approved", "Rejected"],
             backgroundColor: [
               "rgba(117, 221, 72, 1)",
               "rgba(229, 62, 62, 1)",
@@ -69,14 +73,13 @@ const Claims = () => {
       },
       options: {
         responsive: false,
-        aspectRatio: 1.2,
+        aspectRatio: 1.4,
         plugins: {
           legend: false,
           tooltip: {
             enabled: false,
           },
         },
-        cutoutPercentage: 1,
       },
     });
   }, []);
@@ -84,32 +87,106 @@ const Claims = () => {
   const expenseData = [
     {
       id: "#ER-00001",
-      category: "Telephone Expense",
+      category: "Advanced Tax",
       subCategory: "COMMUNICATION",
-      amount: "$ 200",
+      currency: "$",
+      amount: 200,
       status: "Pending",
-      date: "2023-09-15",
+      date: "2023-09-10",
     },
     {
-      id: "#ER-00001",
+      id: "#ER-00002",
       category: "Telephone Expense",
       subCategory: "COMMUNICATION",
-      amount: "$ 200",
+      currency: "$",
+      amount: 800,
       status: "Approved",
-      date: "2023-09-15",
+      date: "2023-09-20",
     },
     {
       id: "#ER-00003",
       category: "Parking",
       subCategory: "COMMUNICATION",
-      amount: "$ 400",
+      currency: "$",
+      amount: 500,
       status: "Rejected",
-      date: "2023-07-15",
+      date: "2023-09-28",
+    },
+    {
+      id: "#ER-000010",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 100,
+      status: "Rejected",
+      date: "2023-09-18",
+    },
+    {
+      id: "#ER-00004",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 300,
+      status: "Pending",
+      date: "2023-08-10",
+    },
+    {
+      id: "#ER-00005",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 400,
+      status: "Approved",
+      date: "2023-08-20",
+    },
+    {
+      id: "#ER-00006",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 500,
+      status: "Rejected",
+      date: "2023-08-29",
+    },
+    {
+      id: "#ER-00007",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 400,
+      status: "Pending",
+      date: "2023-07-10",
+    },
+    {
+      id: "#ER-00008",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 500,
+      status: "Approved",
+      date: "2023-07-20",
+    },
+    {
+      id: "#ER-00009",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 700,
+      status: "Rejected",
+      date: "2023-07-29",
     },
   ];
 
+  const monthName = (item) => moment(item.date, "YYYY-MM-DD").format("MMMM");
+
   const [filterTerm, setFilterTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(expenseData);
+  const [expenseList, setExpenseList] = useState();
+
+  useEffect(() => {
+    const result = _.groupBy(expenseData, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+  }, []);
 
   const handleFilterChange = (event) => {
     const term = event.target.value;
@@ -121,12 +198,87 @@ const Claims = () => {
         item?.category?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.subCategory?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.status?.toLowerCase().includes(term?.toLowerCase()) ||
-        item?.id?.toLowerCase().includes(term?.toLowerCase()) ||
-        item?.amount?.toLowerCase().includes(term?.toLowerCase())
+        item?.id?.toLowerCase().includes(term?.toLowerCase())
     );
-
-    setFilteredData(filteredResults);
+    const result = _.groupBy(filteredResults, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
   };
+
+  const handleDateChange = (startDate, endDate) => {
+    const filteredResults = expenseData.filter(
+      (item) =>
+        new Date(item.date).getTime() >= new Date(startDate).getTime() &&
+        new Date(item.date).getTime() <= new Date(endDate).getTime()
+    );
+    const result = _.groupBy(filteredResults, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+  };
+
+  const handleCategoryChange = (
+    minAmount,
+    maxAmount,
+    categoryOptions,
+    check
+  ) => {
+    let filteredResults;
+    filteredResults = minAmount
+      ? expenseData.filter((item) => item.amount >= minAmount)
+      : expenseData;
+    filteredResults = maxAmount
+      ? filteredResults.filter((item) => item.amount <= maxAmount)
+      : filteredResults;
+
+    let checkCategoryList = [];
+    check.forEach((value, index) => {
+      if (value === true) {
+        checkCategoryList.push(categoryOptions[index - 1].name);
+      }
+    });
+
+    filteredResults = filteredResults.filter((item) => {
+      if (!!checkCategoryList.find((category) => category === item.category))
+        return item;
+    });
+
+    const result = _.groupBy(filteredResults, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+  };
+
+  const handleRefresh = () => {
+    setFilterTerm("");
+    const result = _.groupBy(expenseData, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+  };
+
+  const expenseCount = _.values(expenseList).reduce(
+    (accumulator, eachExpense) => {
+      return accumulator + eachExpense[1]?.length;
+    },
+    0
+  );
+
+  let approvedTotal = 0;
+  let rejectedTotal = 0;
+  let pendingTotal = 0;
+  let approvedCount = 0;
+  let rejectedCount = 0;
+  let pendingCount = 0;
+  expenseData?.map((eachExpense, index) => {
+    if (eachExpense.status == "Approved") {
+      approvedTotal += parseFloat(eachExpense.amount);
+      approvedCount += 1;
+    } else if (eachExpense.status == "Rejected") {
+      rejectedTotal += parseFloat(eachExpense.amount);
+      rejectedCount += 1;
+    } else {
+      pendingTotal += parseFloat(eachExpense.amount);
+      pendingCount += 1;
+    }
+  });
 
   return (
     <Layout>
@@ -152,6 +304,14 @@ const Claims = () => {
             </label>
             <div>
               <button
+                style={{ border: "none", background: "none" }}
+                onClick={handleRefresh}
+              >
+                <RefreshIcon />
+              </button>
+            </div>
+            <div>
+              <button
                 onClick={filterModal}
                 style={{ border: "none", background: "none" }}
               >
@@ -161,6 +321,7 @@ const Claims = () => {
                 <FilterModal
                   isOpen={modalOpen}
                   close={() => setModalOpen(!modalOpen)}
+                  handleCategoryChange={handleCategoryChange}
                 />
               )}
             </div>
@@ -175,6 +336,7 @@ const Claims = () => {
                 <DateFilterModal
                   isOpen={dateModalOpen}
                   close={() => setDateModalOpen(!dateModalOpen)}
+                  handleDateChange={handleDateChange}
                 />
               )}
             </div>
@@ -200,11 +362,11 @@ const Claims = () => {
             <div style={{ textAlign: "center" }}>
               <div css={styles.pieChart}>
                 <canvas id="myChart" ref={canvas}></canvas>
-                <label className="pendingPercent">48%</label>
+                {/* <label className="pendingPercent">48%</label>
                 <label className="approvedPercent">32%</label>
-                <label className="rejectedPercent">20%</label>
+                <label className="rejectedPercent">20%</label> */}
                 <label className="expenseCount">
-                  50 <span>Expenses</span>
+                  {expenseCount} <span>Expenses</span>
                 </label>
               </div>
               <div css={styles.chartDataStatus}>
@@ -225,17 +387,21 @@ const Claims = () => {
                   <label>Rejected</label>
                 </div>
                 <div className="primary-text">
-                  <span css={styles.percentageStatus}>800.00 USD - 48% </span>
-                  <span css={styles.percentageStatus}>800.00 USD - 32% </span>
-                  <span css={styles.percentageStatus}>800.00 USD - 20% </span>
+                  <span css={styles.percentageStatus}>
+                    {pendingTotal} $ - {(pendingCount / expenseCount) * 100}%{" "}
+                  </span>
+                  <span css={styles.percentageStatus}>
+                    {approvedTotal} $ - {(approvedCount / expenseCount) * 100}%{" "}
+                  </span>
+                  <span css={styles.percentageStatus}>
+                    {rejectedTotal} $ - {(rejectedCount / expenseCount) * 100}%{" "}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
           <div style={{ display: showChart ? "none" : "block" }}>
-            <Card title={"January"} count={30} expenseData={filteredData} />
-            <Card title={"February"} count={20} expenseData={filteredData} />
-            <Card title={"March"} count={10} expenseData={filteredData} />
+            <Card expenseList={expenseList} />
           </div>
           <div
             css={styles.addReport}
@@ -245,11 +411,9 @@ const Claims = () => {
           </div>
         </div>
       </div>
-
     </Layout>
   );
 };
-
 
 export default Claims;
 
@@ -302,21 +466,6 @@ const styles = {
     border-radius: 10px;
     background: var(--primary);
   `,
-  requestContent: css`
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    @media (min-width: 400px) {
-      gap: 50px;
-    }
-    @media (min-width: 1400px) {
-      gap: 30px;
-    }
-    label {
-      font-size: 18px;
-      color: var(--primary);
-    }
-  `,
   filterContainer: css`
     display: flex;
     justify-content: space-between;
@@ -324,7 +473,7 @@ const styles = {
     position: relative;
     input {
       height: 30px;
-      width: 70%;
+      width: 60%;
       padding: 9px 12px;
       flex-direction: column;
       justify-content: center;
@@ -363,7 +512,7 @@ const styles = {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     .primary-text {
       color: #497c8a;
     }
@@ -371,10 +520,6 @@ const styles = {
       border: none;
       background: none;
     }
-  `,
-  dataPercent: css`
-    position: absolute;
-    margin-top: -70px;
   `,
   pieChart: css`
     position: relative;
@@ -397,7 +542,7 @@ const styles = {
       margin-right: 11rem;
     }
     .expenseCount {
-      margin-top: 100px;
+      margin-top: 85px;
       color: #37474f;
       display: flex;
       flex-direction: column;
@@ -409,7 +554,7 @@ const styles = {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding-top: 10px;
+    padding: 20px 0;
     div {
       display: flex;
       flex-direction: column;
@@ -437,6 +582,5 @@ const styles = {
     position: absolute;
     bottom: 60px;
     right: 12px;
-
   `,
 };

@@ -1,12 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import {
   MdOutlineKeyboardDoubleArrowLeft,
   MdOutlineKeyboardDoubleArrowRight,
   MdOutlineArrowBackIosNew,
 } from "react-icons/md";
+import moment from "moment";
+import _ from "lodash";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -16,6 +18,7 @@ import DateFilterModal from "../../components/claims/DateFilterModal";
 
 import FilterIcon from "/public/icons/filterIcon";
 import CalendarIcon from "/public/icons/calendarIcon";
+import RefreshIcon from "/public/icons/refreshIcon";
 import SearchIcon from "/public/icons/searchIcon";
 import NoDataIcon from "/public/icons/noDataIcon";
 import PlusIcon from "/public/icons/plusIcon";
@@ -46,80 +49,145 @@ const ExpenseRequestStatus = () => {
   const expenseData = [
     {
       id: "#ER-00001",
-      category: "Telephone Expense",
+      category: "Advanced Tax",
       subCategory: "COMMUNICATION",
-      amount: "$ 200",
+      currency: "$",
+      amount: 200,
       status: "Pending",
-      date: "2023-09-15",
+      date: "2023-09-10",
     },
     {
       id: "#ER-00002",
-      category: "Air Travel Expense",
-      subCategory: "Travel",
-      amount: "$ 300",
-      status: "Pending",
-      date: "2023-08-15",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 800,
+      status: "Approved",
+      date: "2023-09-20",
     },
     {
       id: "#ER-00003",
       category: "Parking",
       subCategory: "COMMUNICATION",
-      amount: "$ 400",
+      currency: "$",
+      amount: 500,
+      status: "Rejected",
+      date: "2023-09-28",
+    },
+    {
+      id: "#ER-000010",
+      category: "Parking",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 100,
+      status: "Rejected",
+      date: "2023-09-18",
+    },
+    {
+      id: "#ER-00004",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 300,
       status: "Pending",
-      date: "2023-07-15",
+      date: "2023-08-10",
     },
     {
-      id: "#ER-00001",
+      id: "#ER-00005",
       category: "Telephone Expense",
       subCategory: "COMMUNICATION",
-      amount: "$ 200",
+      currency: "$",
+      amount: 400,
       status: "Approved",
-      date: "2023-09-15",
+      date: "2023-08-20",
     },
     {
-      id: "#ER-00002",
-      category: "Air Travel Expense",
-      subCategory: "Travel",
-      amount: "$ 300",
-      status: "Approved",
-      date: "2023-08-15",
-    },
-    {
-      id: "#ER-00003",
+      id: "#ER-00006",
       category: "Parking",
       subCategory: "COMMUNICATION",
-      amount: "$ 400",
-      status: "Approved",
-      date: "2023-07-15",
+      currency: "$",
+      amount: 500,
+      status: "Rejected",
+      date: "2023-08-29",
     },
     {
-      id: "#ER-00001",
+      id: "#ER-00007",
       category: "Telephone Expense",
       subCategory: "COMMUNICATION",
-      amount: "$ 200",
-      status: "Rejected",
-      date: "2023-09-15",
+      currency: "$",
+      amount: 400,
+      status: "Pending",
+      date: "2023-07-10",
     },
     {
-      id: "#ER-00002",
-      category: "Air Travel Expense",
-      subCategory: "Travel",
-      amount: "$ 300",
-      status: "Rejected",
-      date: "2023-08-15",
+      id: "#ER-00008",
+      category: "Telephone Expense",
+      subCategory: "COMMUNICATION",
+      currency: "$",
+      amount: 500,
+      status: "Approved",
+      date: "2023-07-20",
     },
     {
-      id: "#ER-00003",
+      id: "#ER-00009",
       category: "Parking",
       subCategory: "COMMUNICATION",
-      amount: "$ 400",
+      currency: "$",
+      amount: 700,
       status: "Rejected",
-      date: "2023-07-15",
+      date: "2023-07-29",
     },
   ];
 
   const [filterTerm, setFilterTerm] = useState("");
+  const [expenseList, setExpenseList] = useState();
   const [filteredData, setFilteredData] = useState(expenseData);
+  const [approvedData, setApprovedData] = useState(expenseData);
+  const [rejectedData, setRejectedData] = useState(expenseData);
+  const [approvedTotal, setApprovedTotal] = useState();
+  const [rejectedTotal, setRejectedTotal] = useState();
+
+  const monthName = (item) =>
+    moment(item.date, "YYYY-MM-DD").format("MMMM YYYY");
+
+  useEffect(() => {
+    const result = _.groupBy(expenseData, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+  }, []);
+
+  const handleListChange = (filteredResults) => {
+    const approvedList = filteredResults.filter(
+      (item) => item && item.status && item.status.toLowerCase() === "approved"
+    );
+
+    const approvedResult = _.groupBy(approvedList, monthName);
+    const approvedResultArr = _.entries(approvedResult);
+    setApprovedData(approvedResultArr);
+    const rejectedList = filteredResults.filter(
+      (item) => item && item.status && item.status.toLowerCase() === "rejected"
+    );
+
+    const rejectResult = _.groupBy(rejectedList, monthName);
+    const rejectResultArr = _.entries(rejectResult);
+    setRejectedData(rejectResultArr);
+
+    let approvedTotal = 0;
+    let rejectedTotal = 0;
+
+    approvedData?.map((eachExpense, index) => {
+      if (eachExpense.status == "Approved") {
+        approvedTotal += parseFloat(eachExpense.amount);
+      }
+    });
+    setApprovedTotal(approvedTotal);
+    rejectedList?.map((eachExpense, index) => {
+      if (eachExpense.status == "Rejected") {
+        rejectedTotal += parseFloat(eachExpense.amount);
+      }
+    });
+    setRejectedTotal(rejectedTotal);
+  };
 
   const handleFilterChange = (event) => {
     const term = event.target.value;
@@ -131,11 +199,71 @@ const ExpenseRequestStatus = () => {
         item?.category?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.subCategory?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.status?.toLowerCase().includes(term?.toLowerCase()) ||
-        item?.id?.toLowerCase().includes(term?.toLowerCase()) ||
-        item?.amount?.toLowerCase().includes(term?.toLowerCase())
+        item?.id?.toLowerCase().includes(term?.toLowerCase())
     );
-
     setFilteredData(filteredResults);
+    const result = _.groupBy(filteredResults, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+    handleListChange(filteredResults);
+  };
+
+  const handleDateChange = (startDate, endDate) => {
+    const filteredResults = expenseData.filter(
+      (item) =>
+        new Date(item.date).getTime() >= new Date(startDate).getTime() &&
+        new Date(item.date).getTime() <= new Date(endDate).getTime()
+    );
+    setFilteredData(filteredResults);
+    const result = _.groupBy(filteredResults, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+    handleListChange(filteredResults);
+  };
+
+  const handleCategoryChange = (
+    minAmount,
+    maxAmount,
+    categoryOptions,
+    check
+  ) => {
+    let filteredResults;
+    filteredResults = minAmount
+      ? expenseData.filter((item) => item.amount >= minAmount)
+      : expenseData;
+    filteredResults = maxAmount
+      ? filteredResults.filter((item) => item.amount <= maxAmount)
+      : filteredResults;
+
+    let checkCategoryList = [];
+    check.forEach((value, index) => {
+      if (value === true) {
+        checkCategoryList.push(categoryOptions[index - 1].name);
+      }
+    });
+
+    filteredResults = filteredResults.filter((item) => {
+      if (!!checkCategoryList.find((category) => category === item.category))
+        return item;
+    });
+    setFilteredData(filteredResults);
+    const result = _.groupBy(filteredResults, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+    handleListChange(filteredResults);
+  };
+
+  useMemo(() => {
+    handleListChange(expenseData);
+  }, []);
+
+  const handleRefresh = () => {
+    setFilterTerm("");
+    setFilteredData(expenseData);
+    const result = _.groupBy(expenseData, monthName);
+    const resultArr = _.entries(result);
+    setExpenseList(resultArr);
+    handleListChange(expenseData);
   };
 
   return (
@@ -164,6 +292,14 @@ const ExpenseRequestStatus = () => {
             </label>
             <div>
               <button
+                style={{ border: "none", background: "none" }}
+                onClick={handleRefresh}
+              >
+                <RefreshIcon />
+              </button>
+            </div>
+            <div>
+              <button
                 onClick={filterModal}
                 style={{ border: "none", background: "none" }}
               >
@@ -173,6 +309,7 @@ const ExpenseRequestStatus = () => {
                 <FilterModal
                   isOpen={modalOpen}
                   close={() => setModalOpen(!modalOpen)}
+                  handleCategoryChange={handleCategoryChange}
                 />
               )}
             </div>
@@ -187,6 +324,7 @@ const ExpenseRequestStatus = () => {
                 <DateFilterModal
                   isOpen={dateModalOpen}
                   close={() => setDateModalOpen(!dateModalOpen)}
+                  handleDateChange={handleDateChange}
                 />
               )}
             </div>
@@ -213,77 +351,74 @@ const ExpenseRequestStatus = () => {
               </label>
             </div>
             {activeTab == 1 && (
-              <div css={styles.cardContainer}>
-                {filteredData.map(
-                  (item, index) =>
-                    item.status == "Pending" && (
-                      <div
-                        css={styles.eachCard}
-                        className="primary-text"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => router.push("/claims/requestDetail")}
-                        key={index}
-                      >
-                        <label>
-                          <label css={styles.expenseId}>{item.id}</label>
-                          {item.category}
-                          <label css={styles.expenseDetail}>
-                            {item.subCategory}
-                          </label>
-                        </label>
-                        <label>
-                          {item.amount}
-                          <label css={styles.expenseStatus}>
-                            {item.status}
-                          </label>
-                        </label>
-                      </div>
-                    )
+              <>
+                {filteredData && filteredData.length > 0 && (
+                  <div css={styles.cardContainer}>
+                    {filteredData.map(
+                      (item, index) =>
+                        item.status == "Pending" && (
+                          <div
+                            css={styles.eachCard}
+                            className="primary-text"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              router.push({
+                                pathname: "/claims/requestDetail",
+                                query: {
+                                  expenseId: item.id,
+                                },
+                              });
+                            }}
+                            key={index}
+                          >
+                            <label>
+                              <label css={styles.expenseId}>{item.id}</label>
+                              {item.category}
+                            </label>
+                            <label>
+                              {item.currency} {item.amount}
+                              <label css={styles.expenseStatus}>
+                                {item.status}
+                              </label>
+                            </label>
+                          </div>
+                        )
+                    )}
+                  </div>
                 )}
-              </div>
+                {filteredData && filteredData.length == 0 && (
+                  <div css={styles.noDataContainer} className="primary-text">
+                    <NoDataIcon />
+                    <label>Nothing Here to show</label>
+                    <label>You don’t have any report request</label>
+                  </div>
+                )}
+              </>
             )}
             {activeTab == 2 && (
               <div css={styles.cardWrapper}>
-                <Card
-                  date={"September 2022"}
-                  count={3}
-                  amount={"$ 900.00"}
-                  expenseData={filteredData}
-                />
-
-                <Card
-                  date={"August 2022"}
-                  count={3}
-                  amount={"$ 900.00"}
-                  expenseData={filteredData}
-                />
-                <Card
-                  date={"July 2022"}
-                  count={3}
-                  amount={"$ 900.00"}
-                  expenseData={filteredData}
-                />
+                <Card expenseList={approvedData} total={approvedTotal} />
               </div>
             )}
             {activeTab == 3 && (
-              <div css={styles.noDataContainer} className="primary-text">
-                <NoDataIcon />
-                <label>Nothing Here to show</label>
-                <label>You don’t have any report request</label>
+              <div css={styles.cardWrapper}>
+                <Card expenseList={rejectedData} total={rejectedTotal} />
               </div>
             )}
           </div>
-          <button
-            css={styles.dateButton}
-            style={{ display: activeTab == 3 ? "none" : "block" }}
-          >
-            <MdOutlineKeyboardDoubleArrowLeft size={"20"} onClick={decrement} />
-            <label className="primary-text">{count}</label>
-            <MdOutlineKeyboardDoubleArrowRight
-              size={"20"}
-              onClick={increment}
-            />
-          </button>
+          {filteredData && filteredData.length > 0 && (
+            <button css={styles.dateButton}>
+              <MdOutlineKeyboardDoubleArrowLeft
+                size={"20"}
+                onClick={decrement}
+              />
+              <label className="primary-text">{count}</label>
+              <MdOutlineKeyboardDoubleArrowRight
+                size={"20"}
+                onClick={increment}
+              />
+            </button>
+          )}
           <div
             css={styles.addReport}
             onClick={() => router.push("/claims/addExpenseRequest")}
@@ -359,7 +494,7 @@ const styles = {
     position: relative;
     input {
       height: 30px;
-      width: 70%;
+      width: 60%;
       padding: 9px 12px;
       flex-direction: column;
       justify-content: center;
