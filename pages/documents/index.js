@@ -83,7 +83,7 @@ const Documents = () => {
       </div>
       <div>
         {isDelete && (
-          <div css={styles.actions}>
+          <div css={styles.deleteAction}>
             <button onClick={() => setIsDelete(false)} css={styles.cancelBtn}>
               Cancel
             </button>
@@ -138,5 +138,12 @@ const styles = {
     cursor: pointer;
     width: 40%;
     padding: 12px;
+  `,
+  deleteAction: css`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 5px;
+    gap: 9px;
   `,
 };

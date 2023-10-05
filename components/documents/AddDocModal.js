@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
 import UploadIcon from "../../public/icons/uploadIcon";
+import PdfIcon from "../../public/icons/pdfIcon";
 
 const AddDocModal = ({ modal, setModal }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -59,11 +60,7 @@ const AddDocModal = ({ modal, setModal }) => {
             {selectedImage && (
               //console.log(URL.createObjectURL(image))
               <div css={styles.imageContainer}>
-                <img
-                  src={URL.createObjectURL(selectedImage)}
-                  alt="Selected"
-                  css={styles.selectedImage}
-                />
+                <PdfIcon />
                 <div onClick={handleRemoveImage} css={styles.closeIcon}>
                   <CloseIcon />
                 </div>
@@ -74,7 +71,7 @@ const AddDocModal = ({ modal, setModal }) => {
                 Browse Picture
                 <input
                   type="file"
-                  accept="image/*"
+                  accept=".pdf"
                   multiple={true}
                   onChange={handleFileChange}
                 />
@@ -87,7 +84,7 @@ const AddDocModal = ({ modal, setModal }) => {
                   Upload file
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".pdf"
                     onChange={handleFileChange}
                   />
                 </label>
@@ -219,7 +216,7 @@ const styles = {
   closeIcon: css`
     position: absolute;
     top: 0;
-    left: 0;
+    right: 0;
     cursor: pointer;
     padding: 0;
 
