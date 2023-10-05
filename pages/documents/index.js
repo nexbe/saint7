@@ -11,7 +11,7 @@ import { css } from "@emotion/react";
 import AddDocModal from "../../components/documents/AddDocModal";
 import EditDocModal from "../../components/documents/EditDocModal";
 
-const index = () => {
+const Documents = () => {
   const [addModal, setAddModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -97,7 +97,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default Documents;
 
 const styles = {
   wrapper: css`
