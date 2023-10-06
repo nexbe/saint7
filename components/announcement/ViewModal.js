@@ -53,7 +53,7 @@ const styles = {
       border: none;
     }
     @media (min-width: 440px) {
-      margin-top: 0%;
+      margin-top: 5%;
     }
   `,
   header: css`

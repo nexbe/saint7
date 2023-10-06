@@ -6,10 +6,13 @@ import {
   AccordionBody,
   AccordionHeader,
   AccordionItem,
+  Input,
 } from "reactstrap";
+import EditPencil from "../../public/icons/editPencil";
 
-const Card = ({ id, title, body, icon }) => {
+const Card = ({ id, title, body, icon, isEdit , setEditModal, isDelete}) => {
   const [open, setOpen] = useState();
+  const [isChecked, setIsChecked] = useState();
 
   const toggle = (id) => {
     if (open === id) {
@@ -23,8 +26,21 @@ const Card = ({ id, title, body, icon }) => {
     <Accordion open={open} toggle={toggle} css={styles.wrapper}>
       <AccordionItem>
         <AccordionHeader targetId={id} css={styles.item}>
-          {icon}
+          {!isDelete ? icon : <div css={styles.checkBoxStyle}>
+            <Input 
+              type="checkbox"
+              id="status"
+              name="status"
+              checked={isChecked}
+              style={{ border: "2px solid #000" }}
+            />
+          </div>} 
           {title}
+          {isEdit && (
+            <div style={{ marginLeft: "auto", cursor: "pointer" }} onClick={() => setEditModal(true)}>
+              <EditPencil />
+            </div>
+          )}
         </AccordionHeader>
         <AccordionBody accordionId={id}>{body}</AccordionBody>
       </AccordionItem>
