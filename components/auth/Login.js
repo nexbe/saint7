@@ -5,18 +5,27 @@ import { useRouter } from "next/router";
 import LoginLogo from "../../public/icons/LoginLogo";
 import CloseEyeSlashIcon from "../../public/icons/CloseEyeSlashIcon";
 import OpenEyeIcon from "../../public/icons/OpenEyeIcon";
+import useAuth from "../../store/auth";
 
 const Login = () => {
   const router = useRouter();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async(e) => {
     e.preventDefault();
     if (email && password) {
-      router.push("/home");
+      try{
+        await login({
+          identifier: email,
+          password : password,
+        },router)
+      }catch(err){
+        console.log(err)
+      }
     }
   };
 
