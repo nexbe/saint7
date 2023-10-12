@@ -2,8 +2,10 @@
 import Layout from "../../components/layout/Layout";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
+import dayjs from "dayjs";
 
-import ProfileIcon from "/public/icons/profileIcon";
 import NotiIcon from "/public/icons/notiIcon";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
 import CheckInIcon from "/public/icons/checkInIcon";
@@ -14,9 +16,26 @@ import PayslipIcon from "/public/icons/payslipIcon";
 import ClaimsIcon from "/public/icons/claimsIcon";
 import UserIcon from "/public/icons/userIcon";
 import DocumentIcon from "/public/icons/documentIcon";
+import profileStore from "../../store/profile";
+import userStore from "../../store/auth";
+import Map from "../../components/Map";
 
 const Home = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const {
+    getAllProfiles,
+    ProfileInfo: profileInfo,
+    loading,
+  } = profileStore((state) => state);
+  const { user } = userStore((state) => state);
+
+  useEffect(() => {
+    getAllProfiles({
+      apolloClient,
+      where: { userId: user.id },
+    });
+  }, [user]);
 
   return (
     <Layout>
@@ -25,14 +44,24 @@ const Home = () => {
           <div>
             <div className="d-flex" css={styles.profileInfo}>
               <label>
-                <ProfileIcon />
+                <img
+                  src={
+                    profileInfo[0]?.photo?.url
+                      ? `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
+                      : "images/defaultImage.jpg"
+                  }
+                />
               </label>
               <div className="d-flex" style={{ flexDirection: "column" }}>
                 <span css={styles.welcomeText}>Welcome !</span>
-                <span className="header-text">John Smith</span>
+                <span className="header-text">
+                  {profileInfo[0]?.firstName} {profileInfo[0]?.lastName}
+                </span>
               </div>
             </div>
-            <div css={styles.timeText}>Friday, 26th May 2023</div>
+            <div css={styles.timeText}>
+              {dayjs(new Date()).format(" dddd, DD MMMM YYYY")}
+            </div>
           </div>
           <div
             onClick={() => router.push("/notifications")}
@@ -43,13 +72,11 @@ const Home = () => {
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.mapContainer}>
-            <div css={styles.mapIcon}>
-              <img src="images/map.jpg" />
-            </div>
+            <Map />
             <div css={styles.mapLine}>
               <div css={styles.address}>
                 <MapPineLineIcon />
-                <label>3891 Ranchview Dr. Richardson, California 62639</label>
+                <label>123 Sample Street, NewYork</label>
               </div>
               <hr
                 style={{
@@ -62,13 +89,15 @@ const Home = () => {
                   <CheckInIcon />
                   <label>CheckIn </label>
                 </div>
-                <span>&#128342; 09:05</span>
+                <span>
+                  &#128342; {dayjs(new Date().toISOString()).format("HH:MM")}
+                </span>
               </div>
               <div className="d-flex">
                 <sapn className="lineDash"></sapn>
               </div>
               <div css={styles.taskProgress}>
-                <div>
+                <div className="progressLabel">
                   <ProgressIcon />
                   <label>Task Progress</label>
                 </div>
@@ -85,7 +114,16 @@ const Home = () => {
           <div css={styles.buttonContainer}>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/attendance")}>
+                <button
+                  onClick={() => {
+                    router.push({
+                      pathname: "/profile",
+                      query: {
+                        selectedProfile: selectedProfile,
+                      },
+                    });
+                  }}
+                >
                   <AttendanceIcon />
                   Attendance
                 </button>
@@ -156,9 +194,11 @@ const styles = {
     height: 90px;
   `,
   profileInfo: css`
-    svg {
+    padding-top: 5px;
+    img {
       width: 50px;
       height: 50px;
+      border-radius: 40px;
     }
     span {
       padding-left: 15px;
@@ -173,7 +213,7 @@ const styles = {
   `,
   timeText: css`
     font-size: 14px;
-    padding-top: 10px;
+    padding-top: 5px;
   `,
   bodyContainer: css`
     display: flex;
@@ -205,6 +245,11 @@ const styles = {
   mapContainer: css`
     display: flex;
     flex-direction: column;
+    .leaflet-bottom {
+      display: none;
+    }
+    .leaflet-touch .leaflet-bar {
+    }
   `,
   mapIcon: css`
     display: flex;
@@ -224,6 +269,7 @@ const styles = {
     background: #eff8ff;
     padding: 10px 20px;
     border: 1px solid var(--primary);
+
     div {
       display: flex;
     }
@@ -233,7 +279,7 @@ const styles = {
     .lineDash {
       border: 1px dashed var(--darker-gray);
       height: 40px;
-      margin-top: -40px;
+      margin-top: -37px;
       margin-left: 8px;
     }
   `,
@@ -242,10 +288,8 @@ const styles = {
     color: var(--font-gray);
     font-size: 16px;
     font-weight: 600;
-    @media (max-width: 400px) {
-      label {
-        font-size: 12px;
-      }
+    label {
+      margin-top: -3px;
     }
   `,
   checkIn: css`
@@ -253,10 +297,16 @@ const styles = {
     span {
       padding-left: 25px;
     }
+    div {
+      align-items: center;
+    }
   `,
   taskProgress: css`
     flex-direction: column;
-    margin-top: -4px;
+    margin-top: -10px;
+    .progressLabel {
+      align-items: center;
+    }
   `,
   progressContent: css`
     padding-left: 25px;

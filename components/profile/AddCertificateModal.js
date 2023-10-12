@@ -1,15 +1,38 @@
 /** @jsxImportSource @emotion/react */
 import { Modal } from "reactstrap";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { css } from "@emotion/react";
+import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
+import { useMutation } from "@apollo/client";
 
-const AddCertificateModal = ({ isOpen = false, close = () => {} }) => {
+import ConfirmModal from "./ConfirmModal";
+import certificateStore from "../../store/certificate";
+import { CREATE_CERTIFICATE } from "../../graphql/mutations/certificate";
+import showDefaultNoti from "../../utils/notifications";
+
+const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
+  const router = useRouter();
+  const { createCertificate, getAllCertificates } = certificateStore(
+    (state) => state
+  );
+  const [createCertificateAction, { loadCertificate, errCertificate }] =
+    useMutation(CREATE_CERTIFICATE);
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFile, setSelectedFile] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [saveAction, setSaveAction] = useState(false);
+
   const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg"];
   const isImage = FILE_EXTENSIONS.some((extension) =>
     selectedFile?.name?.endsWith(extension)
@@ -27,82 +50,125 @@ const AddCertificateModal = ({ isOpen = false, close = () => {} }) => {
     setSelectedDate(date);
   };
 
+  const onSubmit = async (data) => {
+    if (!!saveAction) {
+      await createCertificate({
+        createCertificateAction,
+        data: {
+          name: data.name,
+          expiryDate: new Date(selectedDate).toISOString(),
+          users_permissions_user: userId,
+          publishedAt: new Date().toISOString(),
+        },
+      });
+      close();
+      router.push("/profile");
+      showDefaultNoti("Certificate added successfully.", "success");
+    }
+  };
+
   return (
     <Modal size="md" isOpen={isOpen} toggle={close} css={styles.modal}>
-      <div css={styles.formContent}>
-        <div className="primary-text" css={styles.formHeader}>
-          Add New Certifications/ Licenses{" "}
-          <IoCloseSharp
-            size={20}
-            color="rgba(117, 117, 117, 1)"
-            onClick={() => close()}
-          />
-        </div>
-        <div className="formFlex">
-          <div className="d-flex">
-            <label className="secondary-text">
-              Name <span>*</span>
-            </label>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div css={styles.formContent}>
+          <div className="primary-text" css={styles.formHeader}>
+            Add New Certifications/ Licenses{" "}
+            <IoCloseSharp
+              size={20}
+              color="rgba(117, 117, 117, 1)"
+              onClick={() => {
+                // close();
+                setConfirmOpen(!confirmOpen);
+              }}
+            />
           </div>
-          <input type={"text"} className="secondary-text" />
-        </div>
-        <div className="formFlex">
-          <div className="d-flex">
-            <label className="secondary-text">
-              Expired Date <span>*</span>
-            </label>
+          {confirmOpen && (
+            <ConfirmModal
+              isOpen={confirmOpen}
+              setConfirmOpen={setConfirmOpen}
+              close={() => {
+                close();
+              }}
+            />
+          )}
+          <div className="formFlex">
+            <div className="d-flex">
+              <label className="secondary-text">
+                Name <span>*</span>
+              </label>
+            </div>
+            <input
+              type={"text"}
+              className="secondary-text"
+              {...register("name", {
+                required: true,
+              })}
+            />
           </div>
-          <DatePicker
-            selected={selectedDate}
-            onChange={handleDateChange}
-            dateFormat="dd/MM/yyyy"
-          />
-        </div>
-        <div className="formFlex" style={{ border: "none" }}>
-          <div>
-            <label className="secondary-text">
-              Attach Documents <span>*</span>
-            </label>
+          <div className="formFlex">
+            <div className="d-flex">
+              <label className="secondary-text">
+                Expired Date <span>*</span>
+              </label>
+            </div>
+            <DatePicker
+              selected={selectedDate}
+              onChange={handleDateChange}
+              dateFormat="dd/MM/yyyy"
+            />
+          </div>
+          <div className="formFlex" style={{ border: "none" }}>
+            <div>
+              <label className="secondary-text">
+                Attach Documents <span>*</span>
+              </label>
 
-            <div css={styles.attchBox}>
-              {selectedFile && (
-                <div css={styles.imageContainer}>
-                  {isImage ? (
-                    <img
-                      src={URL.createObjectURL(selectedFile)}
-                      alt="Selected"
-                      css={styles.selectedImage}
-                    />
-                  ) : (
-                    <div css={styles.fileIconContainer}>
-                      <AiOutlineFilePdf color={"#1E3C72"} size={80} />
+              <div css={styles.attchBox}>
+                {selectedFile && (
+                  <div css={styles.imageContainer}>
+                    {isImage ? (
+                      <img
+                        src={URL.createObjectURL(selectedFile)}
+                        alt="Selected"
+                        css={styles.selectedImage}
+                      />
+                    ) : (
+                      <div css={styles.fileIconContainer}>
+                        <AiOutlineFilePdf color={"#1E3C72"} size={80} />
+                      </div>
+                    )}
+
+                    <div onClick={handleRemoveFile} css={styles.closeIcon}>
+                      <IoCloseSharp size={20} color="#F6302B" />
                     </div>
-                  )}
-
-                  <div onClick={handleRemoveFile} css={styles.closeIcon}>
-                    <IoCloseSharp size={20} color="#F6302B" />
                   </div>
-                </div>
-              )}
-              {!selectedFile && (
-                <label css={styles.attachBtn}>
-                  Browse File
-                  <input
-                    type="file"
-                    accept={`application/pdf, image/*`}
-                    onChange={handleFileChange}
-                  />
-                </label>
-              )}
+                )}
+                {!selectedFile && (
+                  <label css={styles.attachBtn}>
+                    Browse File
+                    <input
+                      type="file"
+                      accept={`application/pdf, image/*`}
+                      onChange={handleFileChange}
+                      multiple
+                    />
+                  </label>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div css={styles.actionButton}>
-        <button css={styles.addBtn} onClick={() => close()}>
-          Add New
-        </button>
-      </div>
+        <div css={styles.actionButton}>
+          <button
+            css={styles.addBtn}
+            onClick={() => {
+              setSaveAction(true);
+            }}
+          >
+            Add New
+          </button>
+        </div>
+      </form>
     </Modal>
   );
 };
@@ -164,7 +230,7 @@ const styles = {
   `,
   attchBox: css`
     border: 2px dashed #ccc;
-    padding: 30px;
+    padding: 10px;
     margin-bottom: 20px;
     width: 100%;
     margin-top: 10px;
@@ -195,8 +261,8 @@ const styles = {
     }
   `,
   selectedImage: css`
-    width: 125px;
-    height: 130px;
+    width: 95px;
+    height: 100px;
     border-radius: 16px;
     background: #e3f3ff;
   `,
@@ -216,8 +282,8 @@ const styles = {
     }
   `,
   fileIconContainer: css`
-    width: 125px;
-    height: 130px;
+    width: 95px;
+    height: 100px;
     display: grid;
     place-items: center;
     border-radius: 16px;

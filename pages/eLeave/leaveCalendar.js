@@ -15,7 +15,7 @@ const LeaveCalendar = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Leave Calendar"} href={"/home"} />
+        <HeaderNoti title={"Leave Calendar"} href={"/eLeave"} />
         <div css={styles.bodyContainer}>
           <div css={styles.caledarContainer}>
             <div css={styles.calendarCard}>
@@ -75,6 +75,7 @@ const styles = {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
+    position: relative;
     min-height: 200px;
     ::-webkit-scrollbar {
       width: 2px;
@@ -88,7 +89,7 @@ const styles = {
   caledarContainer: css`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
   `,
@@ -99,17 +100,20 @@ const styles = {
     justify-content: center;
     align-items: center;
     width: 100%;
+    .react-datepicker__tab-loop {
+      div {
+        inset: none;
+        transform: none;
+        padding: 0;
+      }
+    }
     label {
       display: flex;
       flex-direction: column;
     }
     .react-datepicker-wrapper {
       input {
-        border: none;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
+        display: none;
       }
     }
     .react-datepicker__triangle {
@@ -120,9 +124,15 @@ const styles = {
       background: var(--white);
       box-shadow: 0px 4px 8px 0px rgba(21, 21, 21, 0.15);
       border: none;
-      margin-top: -35px;
-      margin-left: -3px;
-      width: 100%;
+      margin-top: -25px;
+      padding-left: 10px;
+      @media (max-width: 450px) {
+        width: 100vw;
+      }
+      @media (min-width: 450px) {
+        width: 100%;
+        justify-content: center;
+      }
     }
     .react-datepicker__header {
       background: var(--white);
@@ -130,6 +140,11 @@ const styles = {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      width: 100%;
+      align-items: center;
+      @media (min-width: 390px) {
+        margin-left: 10px;
+      }
     }
     .react-datepicker__week,
     .react-datepicker__day-names {
@@ -137,6 +152,10 @@ const styles = {
       display: flex;
       gap: 20px;
       text-transform: uppercase;
+      align-items: center;
+      @media (min-width: 390px) {
+        margin-left: 10px;
+      }
     }
     .react-datepicker__current-month {
       color: var(--primary);
@@ -145,7 +164,7 @@ const styles = {
       font-style: normal;
       font-weight: 600;
       line-height: normal;
-      margin-top: 10px;
+      margin-top: 15px;
     }
     .react-datepicker__navigation-icon--next {
       top: 11px;

@@ -11,6 +11,7 @@ import { BsArrowRight } from "react-icons/bs";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
+import { redirect } from "next/dist/server/api-utils";
 
 const ApplyLeave = () => {
   const haldDayOptions = [
@@ -33,11 +34,6 @@ const ApplyLeave = () => {
     { value: "compensatory", label: "Compensatory Time Off (Comp Time)" },
     { value: "unpaid", label: "Unpaid Leave" },
     { value: "educational", label: "Educational Leave" },
-    { value: "juryDuty", label: "Jury Duty Leave" },
-    { value: "military", label: "Military Leave" },
-    { value: "sabbatical", label: "Sabbatical Leave" },
-    { value: "emergency", label: "Emergency Leave" },
-    { value: "family", label: "Family and Medical Leave Act (FMLA) Leave" },
   ];
   const router = useRouter();
   const [chosenType, setChosenType] = useState(null);
@@ -85,7 +81,7 @@ const ApplyLeave = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Apply Leave"} href={"/home"} />
+        <HeaderNoti title={"Apply Leave"} href={"/eLeave"} />
         <div css={styles.bodyContainer}>
           <div>
             <div css={styles.formContent}>
@@ -210,6 +206,7 @@ const ApplyLeave = () => {
                 <div className="d-flex">
                   <label className="secondary-text">Leave Types</label>
                 </div>
+
                 <Select
                   value={selectedLeaveTypeOption}
                   onChange={handleSelectLeaveTypeChange}
@@ -296,7 +293,6 @@ const selectBoxStyle = {
       color: "rgba(0, 0, 0, 0.30)",
       fontWeight: "600",
       fontSize: "14px",
-      marginLeft: "-5px",
     };
   },
   multiValue: (styles, { data }) => {
@@ -306,22 +302,30 @@ const selectBoxStyle = {
       borderRadius: "10px",
     };
   },
+  singleValue: (styles, { data }) => {
+    return {
+      ...styles,
+    };
+  },
   menu: (provided, state) => ({
     ...provided,
     width: "100%",
     outline: "none",
   }),
-
+  valueContainer: (provided, state) => ({
+    ...provided,
+    padding: "0",
+  }),
   control: (base) => ({
     ...base,
     border: "none",
     outline: "none",
-    backgroundColor: "none",
+    background: "none",
     fontSize: "14px",
     height: "10px",
     color: "var(--primary-font)",
     fontWeight: "400",
-    marginLeft: "-5px",
+    display: "flex",
   }),
 };
 
@@ -341,7 +345,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 20px;
+    margin: 10px;
     gap: 12px;
     font-family: Inter;
     font-style: normal;
@@ -352,12 +356,6 @@ const styles = {
     .bodyContainer::-webkit-scrollbar-thumb {
       border-radius: 2px;
       background-color: var(--font-gray);
-    }
-    @media (max-width: 1400px) {
-      margin: 20px;
-    }
-    @media (min-width: 1400px) {
-      margin: 30px;
     }
     svg {
       cursor: pointer;
@@ -456,10 +454,11 @@ const styles = {
   selectBoxOptions: css`
     display: flex;
     gap: 10px;
-    margin: 0 20px;
+    margin: 3px 20px;
     line-height: 20px;
     font-size: 13px;
     color: #37474f;
+    cursor: pointer;
   `,
   actionButton: css`
     display: flex;
