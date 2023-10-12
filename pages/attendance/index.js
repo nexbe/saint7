@@ -1,97 +1,30 @@
 /** @jsxImportSource @emotion/react */
-import React from 'react';
-import { useRouter } from 'next/router';
-
-import Layout from '../../components/layout/Layout';
-import HeaderNoti from '../../components/layout/HeaderNoti';
-import Card from '../../components/documents/Card';
-import BatteryWarningIcon from '../../public/icons/batteryWarningIcon';
-import LightningIcon from '../../public/icons/lightningIcon';
-import { css } from '@emotion/react';
+import React, { useState } from "react";
+import Layout from "../../components/layout/Layout";
+import HeaderNoti from "../../components/layout/HeaderNoti";
+import { css } from "@emotion/react";
+import CheckInOut from "../../components/attendence/CheckInOut";
 
 const Index = () => {
-  const router = useRouter();
-
+  const [activeComponent, setActiveComponent] = useState("check");
   return (
-    <Layout className='container '>
-      <HeaderNoti title={'Attendance'} href={'/home'} />
-      <div className='d-flex justify-content-between '>
-        <p className='m-3'>Monday, 10th May 2023</p>
-        <p className='m-3'>09:00:00</p>
-      </div>
-
-      <div class='m-3 '>
-        <div class='row'>
-          <div class='col-12'>
-            <div class='form-group'>
-              <label for='exampleTextarea'>
-                <b>Add Comment</b>{' '}
-              </label>
-              <textarea
-                class='form-control'
-                id='exampleTextarea'
-                rows='4'
-              ></textarea>
-              <button
-                className='w-100 mt-4'
-                css={styles.wrapper}
-                onClick={() => router.push('/checkin')}
-              >
-                Check In
-              </button>
-            </div>
-          </div>
+    <Layout className="container ">
+      <HeaderNoti title={"Attendance"} href={"/home"} />
+      <div css={styles.tabComponent}>
+        <div
+          css={activeComponent === "check" ? styles.activeTab : styles.tabpane}
+          onClick={() => setActiveComponent("check")}>
+          Check In/Out
+        </div>
+        <div
+          css={
+            activeComponent === "history" ? styles.activeTab : styles.tabpane
+          }
+          onClick={() => setActiveComponent("history")}>
+          Attendance History
         </div>
       </div>
-
-      <Card
-        id={0}
-        title={'Duty Schedule Detail'}
-        body={
-          <>
-            <div class='container '>
-              <div class='row'>
-                <div class=' d-flex align-items-center'>
-                  <p>
-                    <b>Date</b>{' '}
-                  </p>
-                  &ensp; <p>:</p> &ensp;
-                  <p>10-05-2023</p>
-                </div>
-                <div class=' d-flex align-items-center'>
-                  <p>
-                    <b>Time</b>{' '}
-                  </p>
-                  &ensp; <p>:</p> &ensp;
-                  <p>9:00AM - 6:00PM</p>
-                </div>
-              </div>
-
-              <div class='row'>
-                <div class=' d-flex align-items-center'>
-                  <p>
-                    <b>Report To</b>{' '}
-                  </p>
-                  &ensp; <p>:</p> &ensp;
-                  <p>
-                    {' '}
-                    2715 Ash Dr.
-                    <br />
-                    San Jose, South Dakota 83475
-                  </p>
-                </div>
-              </div>
-            </div>
-          </>
-        }
-        icon={<BatteryWarningIcon />}
-      />
-      <Card
-        id={0}
-        title={'Current Location'}
-        body={<>address</>}
-        icon={<BatteryWarningIcon />}
-      />
+      {activeComponent === "check" ? <CheckInOut /> : "History"}
     </Layout>
   );
 };
@@ -99,10 +32,30 @@ const Index = () => {
 export default Index;
 
 const styles = {
-  wrapper: css`
-    // max-height: 82vh;
-    // overflow-y: scroll;
+  tabpane: css`
+    display: flex;
+    margin: 10px;
+    flex-direction: row;
+    color: var(--darker-gray);
+    gap: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  `,
+  tabComponent: css`
+    display: flex;
+    flex-direction: row;
+    border-bottom: 0.4px solid #2f4858;
+    background: #e3f3ff;
+    padding: 9px;
+  `,
+  activeTab: css`
+    border-radius: 5px;
+    color: #fff;
+    padding: 9px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
     background: var(--primary);
-    color: var(--white);
   `,
 };
