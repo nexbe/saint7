@@ -5,7 +5,7 @@ import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
 import ProfileIcon from "../../public/icons/profileIcon";
 
-const ViewModal = ({ modal, setModal }) => {
+const ViewModal = ({ modal, setModal, data, time }) => {
   const toggle = () => {
     setModal(!modal);
   };
@@ -15,22 +15,21 @@ const ViewModal = ({ modal, setModal }) => {
         <CloseIcon />
       </div>
       <div css={styles.header}>
-        <span>A Continually Unfolding History</span>
+        <span>{data.attributes?.title}</span>
       </div>
-      <p css={styles.paragraph}>
-        A single building occupies the hillside at Hillview a historic
-        240 hectare former sheep farm on Tasmanias Bruny Island.Surrounded by
-        breathtaking beauty the building stands as a testament to the islands
-        rich agricultural heritage. With its rustic charm and idyllic location 
-        Hillview offers a glimpse into the past while providing a tranquil
-        retreat for visitors seeking solace in nature.
-      </p>
+      <p css={styles.paragraph}>{data?.attributes?.description}</p>
       <div css={styles.info}>
         <div>
           <ProfileIcon />
-          <span style={{ marginLeft: "9px" }}>Jonah Johnson</span>
+          <span style={{ marginLeft: "9px" }}>
+            {" "}
+            {
+              data.attributes?.users_permissions_users?.data?.[0]?.attributes
+                ?.username
+            }
+          </span>
         </div>
-        <span>1 hour ago</span>
+        <span>{time}</span>
       </div>
     </Modal>
   );
@@ -40,7 +39,7 @@ export default ViewModal;
 
 const styles = {
   wrapper: css`
-    margin-top: 40%;
+    margin-top: 50%;
     padding: 20px;
     border-radius: 16px;
     background: #fff;
