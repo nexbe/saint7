@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import React from "react";
 import Layout from "../../components/layout/Layout";
 import ProfileIcon from "/public/icons/profileIcon";
 import NotiIcon from "/public/icons/notiIcon";
 import SearchIcon from "../../public/icons/searchIcon";
 import AnnouncementIcon from "../../public/icons/announcementIcon";
+import TeamIcon from "../../public/icons/teamIcon";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -25,7 +25,10 @@ const MorePage = () => {
           </div>
           <div css={styles.timeText}>Friday, 26th May 2023</div>
         </div>
-        <div css={styles.notiIcon} onClick={() => router.push("/notifications")}>
+        <div
+          css={styles.notiIcon}
+          onClick={() => router.push("/notifications")}
+        >
           {" "}
           <NotiIcon />
         </div>
@@ -40,6 +43,10 @@ const MorePage = () => {
         <Link href={"/announcement"} css={styles.navLink}>
           <AnnouncementIcon />
           <span>Announcement</span>
+        </Link>
+        <Link href={"/team"} css={styles.navLink}>
+          <TeamIcon />
+          <span>Team</span>
         </Link>
       </div>
     </Layout>
@@ -134,11 +141,12 @@ const styles = {
     margin: 10px;
   `,
   bodyContainer: css`
-    margin: 20px;
+    display: flex;
+    gap: 30px;
     border-radius: 10px;
     padding: 20px;
     background: #fff;
-    height:50vh;
+    height: 50vh;
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
   `,
   navLink: css`
