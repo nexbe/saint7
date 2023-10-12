@@ -34,7 +34,7 @@ const LeaveHistory = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Leave History"} href={"/home"} />
+        <HeaderNoti title={"Leave History"} href={"/eLeave"} />
         <div css={styles.bodyContainer}>
           <div css={styles.statusContainer} className="primary-text">
             <div css={styles.statusHeader}>
