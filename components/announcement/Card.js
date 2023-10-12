@@ -4,18 +4,28 @@ import { css } from "@emotion/react";
 import ActiveIcon from "../../public/icons/activeIcon";
 import ProfileIcon from "../../public/icons/profileIcon";
 import ViewModal from "./ViewModal";
+import dayjs from "dayjs";
+var relativeTime = require("dayjs/plugin/relativeTime");
+dayjs.extend(relativeTime);
 
-const Card = ({ isActive }) => {
+const Card = ({ isActive, data, markAsRead }) => {
   const [modal, setModal] = useState(false);
+
+  const calculateTime = (time) => {
+    const date = dayjs(time);
+    const difference = date.fromNow();
+    return difference;
+  };
+
   return (
-    <div css={styles.wrapper(isActive)}>
+    <div css={styles.wrapper(!isActive)} onClick={markAsRead}>
       <div css={styles.header}>
-        {isActive && <ActiveIcon />}
-        <span>A Continually Unfolding History</span>
+        {!isActive && <ActiveIcon />}
+        <span>{data.attributes?.title}</span>
       </div>
       <p css={styles.paragraph}>
-        A single building occupies the hillside at Hillview a historic
-        240 hectare former sheep farm on Tasmanias Bruny Island...{" "}
+        {data?.attributes?.description?.slice(0, 150)}
+        {"   "}
         <b style={{ color: "#386FFF" }} onClick={() => setModal(true)}>
           View More
         </b>
@@ -23,11 +33,21 @@ const Card = ({ isActive }) => {
       <div css={styles.info}>
         <div>
           <ProfileIcon />
-          <span style={{ marginLeft: "9px" }}>Jonah Johnson</span>
+          <span style={{ marginLeft: "9px" }}>
+            {
+              data.attributes?.users_permissions_users?.data?.[0]?.attributes
+                ?.username
+            }
+          </span>
         </div>
-        <span>1 hour ago</span>
+        <span>{calculateTime(data.attributes?.createdAt)}</span>
       </div>
-      <ViewModal modal={modal} setModal={setModal} />
+      <ViewModal
+        modal={modal}
+        setModal={setModal}
+        data={data}
+        time={calculateTime(data.attributes?.createdAt)}
+      />
     </div>
   );
 };

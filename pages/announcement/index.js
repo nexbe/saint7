@@ -1,27 +1,55 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
 import SearchIcon from "../../public/icons/searchIcon";
 import Card from "../../components/announcement/Card";
+import useAnnouncement from "../../store/announcement";
 
 const Announcement = () => {
+  const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
+    useAnnouncement();
+  const [searchValue, setSearchValue] = useState('');
+  const [data, setData] = useState(announcements);
+  // console.log("=>", announcements);
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+ 
+  useEffect(() => {
+    const filteredData = data.filter((data) => {
+      return data.attributes?.title?.toLowerCase()?.includes(searchValue?.toLowerCase())
+    })
+    //console.log(searchValue)
+    if (searchValue === "") {
+      setData(announcements); 
+    } else {
+      setData(filteredData);
+    }
+  },[searchValue])
+
   return (
     <Layout>
       <HeaderNoti title={"Announcement"} href={"/more"} />
       <div css={styles.wrapper}>
         <div css={styles.searchBox}>
-          <input type="text" placeholder="Search fields" />
+          <input type="text" placeholder="Search fields" onChange={(e) => setSearchValue(e.target.value)} value={searchValue} />
           <label css={styles.searchIcon}>
             <SearchIcon />
           </label>
         </div>
         <div css={styles.cardContainer}>
-        <Card isActive={true}/>
-        <Card isActive={true}/>
-        <Card isActive={false}/>
-        <Card isActive={false}/>
+          {data?.map((announcement) => {
+            return (
+              <Card
+                isActive={announcement?.isRead}
+                data={announcement}
+                markAsRead={() => markAnnouncementAsRead(announcement.id)}
+                key={announcement.id}
+              />
+            );
+          })}
         </div>
       </div>
     </Layout>
@@ -75,11 +103,11 @@ const styles = {
     position: absolute;
     margin: 10px;
   `,
-  cardContainer:css`
-    display:flex;
-    flex-direction:column;
-    gap:20px;
+  cardContainer: css`
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     max-height: 72vh;
     overflow-y: scroll;
-  `
+  `,
 };
