@@ -1,5 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
+import { css } from "@emotion/react";
+
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import Card from "../../components/documents/Card";
@@ -7,11 +10,25 @@ import BatteryWarningIcon from "../../public/icons/batteryWarningIcon";
 import LightningIcon from "../../public/icons/lightningIcon";
 import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
-import { css } from "@emotion/react";
 import AddDocModal from "../../components/documents/AddDocModal";
 import EditDocModal from "../../components/documents/EditDocModal";
+import documentStore from "../../store/document";
+import userStore from "../../store/auth";
 
 const Documents = () => {
+  const apolloClient = useApolloClient();
+  const { getAllDocuments, DocumentInfo: documentInfo } = documentStore(
+    (state) => state
+  );
+  const { user } = userStore((state) => state);
+
+  useEffect(() => {
+    getAllDocuments({
+      apolloClient,
+      where: { userId: user.id },
+    });
+  }, [user]);
+
   const [addModal, setAddModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -19,80 +36,62 @@ const Documents = () => {
 
   return (
     <Layout>
-      <HeaderNoti title={"Documents"} href={"/home"} />
-      <div css={styles.actions}>
-        <button css={styles.actionBtn(true)} onClick={() => setAddModal(true)}>
-          ADD NEW DOCUMENT
-        </button>
-        <button
-          css={styles.actionBtn(isEdit)}
-          onClick={() => setIsEdit(!isEdit)}>
-          <EditIcon />
-        </button>
-        <button
-          css={styles.actionBtn(isDelete)}
-          onClick={() => setIsDelete(!isDelete)}>
-          <DeleteIcon />
-        </button>
-      </div>
       <div css={styles.wrapper}>
-        <Card
-          id={0}
-          title={"Initiate evacuation procedures"}
-          body={
-            "Activate the building evacuation alarm or PA system to alert occupants to evacuate Follow predetermined evacuation routes and assist others in exiting the building safely.Close doors and windows to help contain the fire, if safe to do so"
-          }
-          isEdit={isEdit}
-          setEditModal={setEditModal}
-          isDelete={isDelete}
-          icon={<BatteryWarningIcon />}
-        />
-        <Card
-          id={1}
-          title={"Notify emergency services"}
-          body={
-            "Activate the building evacuation alarm or PA system to alert occupants to evacuate Follow predetermined evacuation routes and assist others in exiting the building safely.Close doors and windows to help contain the fire, if safe to do so"
-          }
-          isEdit={isEdit}
-          setEditModal={setEditModal}
-          isDelete={isDelete}
-          icon={<LightningIcon />}
-        />
-        <Card
-          id={2}
-          title={"Initiate evacuation procedures"}
-          body={
-            "Activate the building evacuation alarm or PA system to alert occupants to evacuate Follow predetermined evacuation routes and assist others in exiting the building safely.Close doors and windows to help contain the fire, if safe to do so"
-          }
-          isEdit={isEdit}
-          setEditModal={setEditModal}
-          isDelete={isDelete}
-          icon={<BatteryWarningIcon />}
-        />
-        <Card
-          id={3}
-          title={"Notify emergency services"}
-          body={
-            "Activate the building evacuation alarm or PA system to alert occupants to evacuate Follow predetermined evacuation routes and assist others in exiting the building safely.Close doors and windows to help contain the fire, if safe to do so"
-          }
-          isEdit={isEdit}
-          setEditModal={setEditModal}
-          isDelete={isDelete}
-          icon={<LightningIcon />}
-        />
-      </div>
-      <div>
-        {isDelete && (
-          <div css={styles.deleteAction}>
-            <button onClick={() => setIsDelete(false)} css={styles.cancelBtn}>
-              Cancel
+        <HeaderNoti title={"Documents"} href={"/home"} />
+        <div css={styles.bodyContainer}>
+          <div
+            css={styles.actions}
+            style={{
+              display: "none",
+            }}
+          >
+            <button
+              css={styles.actionBtn(true)}
+              onClick={() => setAddModal(true)}
+            >
+              ADD NEW DOCUMENT
             </button>
-            <button css={styles.deleteBtn}>Delete</button>
+            <button
+              css={styles.actionBtn(isEdit)}
+              onClick={() => setIsEdit(!isEdit)}
+            >
+              <EditIcon />
+            </button>
+            <button
+              css={styles.actionBtn(isDelete)}
+              onClick={() => setIsDelete(!isDelete)}
+            >
+              <DeleteIcon />
+            </button>
           </div>
-        )}
+          <div>
+            {documentInfo?.map((eachDocument, index) => {
+              return (
+                <Card
+                  id={eachDocument.id}
+                  title={eachDocument.title}
+                  body={eachDocument.description}
+                  attachment={eachDocument.attachment[0].url}
+                  isEdit={isEdit}
+                  setEditModal={setEditModal}
+                  isDelete={isDelete}
+                  icon={<BatteryWarningIcon />}
+                />
+              );
+            })}
+          </div>
+          {isDelete && (
+            <div css={styles.actionButton}>
+              <button css={styles.cancelBtn} onClick={() => setIsDelete(false)}>
+                Cancel
+              </button>
+              <button css={styles.deleteBtn}>Delete</button>
+            </div>
+          )}
+          <AddDocModal modal={addModal} setModal={setAddModal} />
+          <EditDocModal modal={editModal} setModal={setEditModal} />
+        </div>
       </div>
-      <AddDocModal modal={addModal} setModal={setAddModal} />
-      <EditDocModal modal={editModal} setModal={setEditModal} />
     </Layout>
   );
 };
@@ -101,14 +100,42 @@ export default Documents;
 
 const styles = {
   wrapper: css`
-    max-height: 60vh;
-    overflow-y: scroll;
+    flex: 1 1 auto;
+    height: 0px;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background: var(--background);
+  `,
+  bodyContainer: css`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 200px;
+    margin: 10px;
+    font-family: Inter;
+    font-style: normal;
+    ::-webkit-scrollbar {
+      width: 2px;
+      background-color: transparent;
+    }
+    .bodyContainer::-webkit-scrollbar-thumb {
+      border-radius: 2px;
+      background-color: var(--font-gray);
+    }
   `,
   actions: css`
     display: flex;
     flex-direction: row;
     gap: 9px;
-    margin: 20px;
+    margin: 10px;
+    justify-content: space-between;
+    align-items: center;
+    button {
+      padding: 10px;
+    }
   `,
   actionBtn: (active) => css`
     border-radius: 10px;
@@ -117,33 +144,35 @@ const styles = {
     cursor: pointer;
     padding: 12px;
     border: none;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 700;
+    height: 46px;
+    align-items: center;
   `,
-
+  actionButton: css`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    button {
+      border-radius: 10px;
+      padding: 3px 40px;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      min-width: 120px;
+      box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
+        0px 4px 6px 0px rgba(50, 50, 93, 0.11);
+    }
+  `,
   cancelBtn: css`
-    border: 2px solid #a0aec0;
-    color: #a0aec0;
-    border-radius: 10px;
-    cursor: pointer;
-    width: 40%;
-    padding: 12px;
-    background: transparent;
+    border: 1px solid rgba(160, 174, 192, 1);
+    color: var(--dark-gray);
   `,
   deleteBtn: css`
     border: none;
-    color: #fff;
+    color: var(--white);
     background: var(--primary);
-    border-radius: 10px;
-    cursor: pointer;
-    width: 40%;
-    padding: 12px;
-  `,
-  deleteAction: css`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 5px;
-    gap: 9px;
   `,
 };
