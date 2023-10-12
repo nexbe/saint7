@@ -11,22 +11,23 @@ const Announcement = () => {
   const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
     useAnnouncement();
   const [searchValue, setSearchValue] = useState('');
-  const [data, setData] = useState(announcements);
+  const [data, setData] = useState([]);
   // console.log("=>", announcements);
   useEffect(() => {
     fetchAnnouncements();
   }, []);
  
   useEffect(() => {
+    setData(announcements);
+  }, [announcements]);
+  
+  useEffect(() => {
     const filteredData = data.filter((data) => {
       return data.attributes?.title?.toLowerCase()?.includes(searchValue?.toLowerCase())
     })
     //console.log(searchValue)
-    if (searchValue === "") {
-      setData(announcements); 
-    } else {
-      setData(filteredData);
-    }
+    setData(searchValue === "" ? announcements : filteredData);
+
   },[searchValue])
 
   return (
