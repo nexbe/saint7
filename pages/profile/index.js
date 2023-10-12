@@ -285,7 +285,11 @@ const Profile = () => {
             <div style={{ display: showAchievementDetail ? "block" : "none" }}>
               {certificateInfo?.map((eachCertificate, index) => {
                 return (
-                  <div className="d-flex" style={{ margin: "5px 0" }}>
+                  <div
+                    className="d-flex"
+                    style={{ margin: "5px 0" }}
+                    key={index}
+                  >
                     <div css={styles.certificateDetail}>
                       <label className="secondary-text">
                         <AchievementIcon /> {eachCertificate.name}

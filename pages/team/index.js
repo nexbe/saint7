@@ -93,6 +93,7 @@ const Team = () => {
             {teamList?.map((eachMember, index) => {
               return (
                 <div
+                  key={index}
                   css={styles.teamList}
                   onClick={() => router.push("/profile")}
                 >

@@ -68,6 +68,7 @@ const Documents = () => {
             {documentInfo?.map((eachDocument, index) => {
               return (
                 <Card
+                  key={index}
                   id={eachDocument.id}
                   title={eachDocument.title}
                   body={eachDocument.description}
