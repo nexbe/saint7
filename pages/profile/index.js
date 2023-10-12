@@ -132,10 +132,10 @@ const Profile = () => {
             </div>
             <p style={{ marginTop: "5px" }}>
               <label className="header-text">
-                {profileInfo[0].firstName} {profileInfo[0].lastName}
+                {profileInfo[0]?.firstName} {profileInfo[0]?.lastName}
               </label>
               <label className="secondary-text">
-                Employee ID: {profileInfo[0].id}
+                Employee ID: {profileInfo[0]?.id}
               </label>
             </p>
             <div
@@ -197,7 +197,7 @@ const Profile = () => {
                   <input
                     type="email"
                     className="primary-text"
-                    defaultValue={profileInfo[0].user.email}
+                    defaultValue={profileInfo[0]?.user.email}
                     disabled={!personalEdit}
                   />
                 </div>
@@ -210,7 +210,7 @@ const Profile = () => {
                   <input
                     type="text"
                     className="primary-text"
-                    defaultValue={profileInfo[0].contactNumber}
+                    defaultValue={profileInfo[0]?.contactNumber}
                     disabled={!personalEdit}
                   />
                 </div>
@@ -223,7 +223,7 @@ const Profile = () => {
                   <input
                     type="text"
                     className="primary-text"
-                    defaultValue={profileInfo[0].position}
+                    defaultValue={profileInfo[0]?.position}
                     disabled={!personalEdit}
                   />
                 </div>
@@ -235,7 +235,13 @@ const Profile = () => {
                 <div css={styles.formFlexChildDiv}>
                   <label>
                     <DatePicker
-                      selected={startDate ?? new Date(profileInfo[0].joinDate)}
+                      selected={
+                        startDate
+                          ? startDate
+                          : profileInfo[0]?.joinDate
+                          ? new Date(profileInfo[0]?.joinDate)
+                          : ""
+                      }
                       className="primary-text"
                       onChange={handleStartDateChange}
                       dateFormat="dd MMM yyyy"
