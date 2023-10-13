@@ -31,7 +31,7 @@ export default Card;
 const styles = {
   wrapper: css`
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.8);
+    background: #fff;
     padding: 15px;
     color: #000;
   `,
@@ -72,7 +72,6 @@ const styles = {
     }
   `,
   viewSlipBtn: css`
-    padding: 5px;
     border-radius: 4px;
     border: 2px solid #a0aec0;
     background: transparent;
@@ -82,7 +81,7 @@ const styles = {
     text-align: center;
     cursor: pointer;
     margin-top: 15px;
-    height: 40px;
+    height: 30px;
     max-width: 200px;
     min-width: 90px;
   `,
