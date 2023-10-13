@@ -31,7 +31,7 @@ export default Card;
 const styles = {
   wrapper: css`
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.8);
+    background: #fff;
     padding: 15px;
     color: #000;
   `,
@@ -43,12 +43,13 @@ const styles = {
   info: css`
     display: flex;
     flex-direction: row;
+    justify-content:space-between;
     gap: 20px;
 
     ul {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 9px;
       padding-left:0rem;
       margin-top: 5px;
     }
@@ -65,14 +66,13 @@ const styles = {
       padding-left: 20px;
     }
     span {
-      min-width: 125px;
+      min-width: 110px;
       text-align: left;
       margin-right: 10px;
       display: inline-block;
     }
   `,
   viewSlipBtn: css`
-    padding: 5px;
     border-radius: 4px;
     border: 2px solid #a0aec0;
     background: transparent;
@@ -82,7 +82,7 @@ const styles = {
     text-align: center;
     cursor: pointer;
     margin-top: 15px;
-    height: 40px;
+    height: 30px;
     max-width: 200px;
     min-width: 90px;
   `,
