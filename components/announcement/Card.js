@@ -16,7 +16,6 @@ const Card = ({ isActive, data, markAsRead }) => {
     const difference = date.fromNow();
     return difference;
   };
-
   return (
     <div css={styles.wrapper(!isActive)} onClick={markAsRead}>
       <div css={styles.header}>
@@ -32,7 +31,15 @@ const Card = ({ isActive, data, markAsRead }) => {
       </p>
       <div css={styles.info}>
         <div>
-          <ProfileIcon />
+          {data?.attributes?.users_permissions_users?.data[0]?.attributes
+            .profile?.data?.attributes.photo ? (
+            <img
+              src={`${process.env.NEXT_PUBLIC_APP_URL}${data?.attributes?.users_permissions_users?.data[0]?.attributes.profile.data?.attributes.photo?.data?.attributes.url}`}
+              css={styles.profile}
+            />
+          ) : (
+            <ProfileIcon />
+          )}
           <span style={{ marginLeft: "9px" }}>
             {
               data.attributes?.users_permissions_users?.data?.[0]?.attributes
@@ -94,5 +101,10 @@ const styles = {
       font-size: 12px;
       font-weight: 400;
     }
+  `,
+  profile: css`
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
   `,
 };

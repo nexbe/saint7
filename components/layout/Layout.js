@@ -22,7 +22,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     width: 100%;
-    background: var(--background-color);
+    background: var(--background);
     overflow-x: hidden;
     overflow-y: hidden;
   `,

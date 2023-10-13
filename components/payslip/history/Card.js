@@ -43,12 +43,13 @@ const styles = {
   info: css`
     display: flex;
     flex-direction: row;
+    justify-content:space-between;
     gap: 20px;
 
     ul {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 9px;
       padding-left:0rem;
       margin-top: 5px;
     }
@@ -65,7 +66,7 @@ const styles = {
       padding-left: 20px;
     }
     span {
-      min-width: 125px;
+      min-width: 110px;
       text-align: left;
       margin-right: 10px;
       display: inline-block;
