@@ -7,39 +7,38 @@ import _ from "lodash";
 
 import UploadIcon from "../../public/icons/uploadIcon";
 
-export const UploadedFiles = memo(
-  ({ fileList = {}, setFileList = () => {} }) => {
-    const [opened, openHandlers] = useDisclosure(false);
-    const fileListArr = _.entries(fileList);
+export const UploadedFiles = memo(function UploadedFiles({
+  fileList = {},
+  setFileList = () => {},
+}) {
+  const [opened, openHandlers] = useDisclosure(false);
+  const fileListArr = _.entries(fileList);
 
-    const removeFile = (id) => {
-      delete fileList[id];
-      setFileList({ ...fileList });
-    };
+  const removeFile = (id) => {
+    delete fileList[id];
+    setFileList({ ...fileList });
+  };
 
-    return (
-      <div css={styles.container}>
-        <div css={styles.selectedFilesContainer}>
-          <label className="secondary-text">
-            Attach Documents <span style={{ color: "#ec1c24" }}>*</span>
-          </label>
-          <div css={styles.selectedFiles}>
-            {fileListArr.map(([id, file]) => (
-              <FilePreview
-                size={computeFileSize(file?.size)}
-                fileName={file?.name}
-                src={
-                  window !== undefined ? window.URL.createObjectURL(file) : ""
-                }
-                onRemove={() => {
-                  removeFile(id);
-                }}
-                file={file}
-                key={id}
-              />
-            ))}
-          </div>
-          {/* {fileListArr.length !== 0 && (
+  return (
+    <div css={styles.container}>
+      <div css={styles.selectedFilesContainer}>
+        <label className="secondary-text">
+          Attach Documents <span style={{ color: "#ec1c24" }}>*</span>
+        </label>
+        <div css={styles.selectedFiles}>
+          {fileListArr.map(([id, file]) => (
+            <FilePreview
+              fileName={file?.name}
+              src={window !== undefined ? window.URL.createObjectURL(file) : ""}
+              onRemove={() => {
+                removeFile(id);
+              }}
+              file={file}
+              key={id}
+            />
+          ))}
+        </div>
+        {/* {fileListArr.length !== 0 && (
             // <button
             //   onClick={openHandlers.toggle}
             //   css={styles.toggleUploadFilesButton}
@@ -63,18 +62,12 @@ export const UploadedFiles = memo(
               />
             </label>
           )} */}
-        </div>
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 
-const computeFileSize = (byte) => {
-  if (byte * 0.001 >= 1024) {
-    return (byte * 0.001 * 0.001).toFixed(2) + " Mb";
-  }
-  return (byte * 0.001).toFixed(2) + " Kb";
-};
+UploadedFiles.displayName = "UploadedFiles";
 
 const styles = {
   container: css`
