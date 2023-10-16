@@ -6,7 +6,7 @@ import OpenEyeIcon from "../../public/icons/OpenEyeIcon";
 import CloseEyeSlashIcon from "../../public/icons/CloseEyeSlashIcon";
 import ConfirmPasswordModal from "../../components/auth/ConfirmPasswordModal";
 
-const createNewPassword = () => {
+const CreateNewPassword = () => {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +61,7 @@ const createNewPassword = () => {
   );
 };
 
-export default createNewPassword;
+export default CreateNewPassword;
 
 const styles = {
   wrapper: css`
