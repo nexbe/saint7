@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
 
@@ -14,9 +13,9 @@ const ConfirmModal = ({ modal, setModal, setEditModal }) => {
   };
   return (
     <Modal isOpen={modal} toggle={toggle} css={styles.wrapper}>
-      <div css={styles.info}>
+      <div className="primary-text" css={styles.confirmText}>
         <span>Are you sure you want to leave this page?</span>
-        <p>Changes made to this page haven’t been saved yet. </p>
+        <label>Changes made to this page haven’t been saved yet.</label>
       </div>
       <div css={styles.actions}>
         <div onClick={openEditModal}>Cancel</div>
@@ -46,14 +45,15 @@ const styles = {
       margin-top: 5%;
     }
   `,
-  info: css`
+  confirmText: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 25px;
     span {
       font-size: 14px;
       font-weight: 400;
-    }
-    p {
-      font-size: 16px;
-      font-weight: 600;
+      line-height: 40px;
     }
   `,
   actions: css`
