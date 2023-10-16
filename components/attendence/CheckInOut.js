@@ -2,7 +2,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Card from "../../components/documents/Card";
-import CalendarIcon from "../../public/icons/CalendarIcon";
+import CalendarIcon from "../../public/icons/calendarIcon";
 import LocationIcon from "../../public/icons/locationIcon";
 import ScanIcon from "../../public/icons/scanIcon";
 import { css } from "@emotion/react";
