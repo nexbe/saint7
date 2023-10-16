@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { CREATE_USER, GET_USER } from "../graphql/mutations/user";
 import client from "../graphql/apolloClient";
+import { setCookie , parseCookies} from "nookies";
+
+const cookies = parseCookies();
 
 const useAuth = create((set, get) => ({
   user: {
@@ -8,7 +11,7 @@ const useAuth = create((set, get) => ({
     username: "",
     email: "",
     password: "",
-    jwt: null,
+    jwt: cookies.jwt || null,
     role: "",
   },
   register: async (data, router) => {
@@ -56,6 +59,10 @@ const useAuth = create((set, get) => ({
           },
         }));
         set({ user: response.data.login.user });
+        setCookie(null, 'jwt', response.data.login.jwt , {
+          maxAge: 30 * 24 * 60 * 60,
+          path:'/'
+        })
       }
       router.push("/home");
     } catch (err) {
