@@ -18,7 +18,7 @@ const CheckInOut = () => {
       </div>
 
       <div>
-        <button css={styles.wrapper} onClick={() => router.push("/checkin")}>
+        <button css={styles.wrapper} onClick={() => router.push("/checkin/qrcode")}>
           <ScanIcon />
           Check In
         </button>

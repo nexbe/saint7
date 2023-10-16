@@ -44,6 +44,7 @@ const styles = {
   `,
   tabComponent: css`
     display: flex;
+    justify-content:space-around;
     flex-direction: row;
     border-bottom: 0.4px solid #2f4858;
     background: #e3f3ff;
