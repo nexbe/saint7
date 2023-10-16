@@ -10,32 +10,38 @@ import useAnnouncement from "../../store/announcement";
 const Announcement = () => {
   const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
     useAnnouncement();
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [data, setData] = useState([]);
   // console.log("=>", announcements);
   useEffect(() => {
     fetchAnnouncements();
   }, []);
- 
+
   useEffect(() => {
     setData(announcements);
   }, [announcements]);
-  
+
   useEffect(() => {
     const filteredData = data.filter((data) => {
-      return data.attributes?.title?.toLowerCase()?.includes(searchValue?.toLowerCase())
-    })
+      return data.attributes?.title
+        ?.toLowerCase()
+        ?.includes(searchValue?.toLowerCase());
+    });
     //console.log(searchValue)
     setData(searchValue === "" ? announcements : filteredData);
-
-  },[searchValue])
+  }, [searchValue]);
 
   return (
     <Layout>
       <HeaderNoti title={"Announcement"} href={"/more"} />
       <div css={styles.wrapper}>
         <div css={styles.searchBox}>
-          <input type="text" placeholder="Search fields" onChange={(e) => setSearchValue(e.target.value)} value={searchValue} />
+          <input
+            type="text"
+            placeholder="Search fields"
+            onChange={(e) => setSearchValue(e.target.value)}
+            value={searchValue}
+          />
           <label css={styles.searchIcon}>
             <SearchIcon />
           </label>
@@ -51,6 +57,7 @@ const Announcement = () => {
               />
             );
           })}
+          {data && data.length === 0 && <b css={styles.notFound}>No Results</b>}
         </div>
       </div>
     </Layout>
@@ -110,5 +117,14 @@ const styles = {
     gap: 20px;
     max-height: 72vh;
     overflow-y: scroll;
+  `,
+  notFound: css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #b3b3b3;
+    font-size: 20px;
+    font-weight: 600;
   `,
 };

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import client from "../graphql/apolloClient";
-import { GET_ANNOUNCEMENTS } from "../graphql/query/announcement";
+import { GET_ANNOUNCEMENTS } from "../graphql/queries/announcement";
 
 const useAnnouncement = create((set) => ({
   announcements: [],
