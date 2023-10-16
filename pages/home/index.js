@@ -117,10 +117,7 @@ const Home = () => {
                 <button
                   onClick={() => {
                     router.push({
-                      pathname: "/profile",
-                      query: {
-                        selectedProfile: selectedProfile,
-                      },
+                      pathname: "/attendance"
                     });
                   }}
                 >
