@@ -2,12 +2,29 @@
 import React, { useState } from "react";
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
+import { useMutation } from "@apollo/client";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+
 import CloseIcon from "../../public/icons/closeIcon";
 import UploadIcon from "../../public/icons/uploadIcon";
 import PdfIcon from "../../public/icons/pdfIcon";
+import documentStore from "../../store/document";
+import { CREATE_DOCUMENT } from "../../graphql/mutations/document";
 
-const AddDocModal = ({ modal, setModal }) => {
+const AddDocModal = ({ modal, setModal, userId }) => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
+  const router = useRouter();
+  const { createDocument, getAllCertificates } = documentStore(
+    (state) => state
+  );
+  const [createDocumentAction] = useMutation(CREATE_DOCUMENT);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [saveAction, setSaveAction] = useState(false);
   const toggle = () => {
     setModal(!modal);
   };
@@ -21,9 +38,20 @@ const AddDocModal = ({ modal, setModal }) => {
     setSelectedImage(null);
   };
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    setModal(false);
+  const onSubmit = async (data) => {
+    if (!!saveAction) {
+      await createDocument({
+        createDocumentAction,
+        data: {
+          title: data.title,
+          description: data.description,
+          users_permissions_users: userId,
+          publishedAt: new Date().toISOString(),
+        },
+      });
+      setModal(false);
+      router.push("/documents");
+    }
   };
 
   return (
@@ -34,12 +62,23 @@ const AddDocModal = ({ modal, setModal }) => {
           <CloseIcon />
         </div>
       </div>
-      <form css={styles.formStyle} onSubmit={onSubmitHandler}>
+      <form css={styles.formStyle} onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="title">
             Title <span>*</span>
           </label>
-          <input type="text" id="title" aria-label="title" required />
+          <input
+            type="text"
+            id="title"
+            {...register("title", {
+              required: "Please enter title",
+            })}
+          />
+          {saveAction && errors.title && (
+            <label className="secondary-text" style={{ color: "red" }}>
+              {errors.title.message}
+            </label>
+          )}
         </div>
         <div>
           <label htmlFor="description">
@@ -48,17 +87,30 @@ const AddDocModal = ({ modal, setModal }) => {
           <input
             type="text"
             id="description"
-            aria-label="description"
-            required
+            {...register("description", {
+              required: "Please enter description",
+            })}
           />
+          {saveAction && errors.description && (
+            <label className="secondary-text" style={{ color: "red" }}>
+              {errors.description.message}
+            </label>
+          )}
         </div>
         <div>
           <label htmlFor="documents">
             Attach Documents <span>*</span>
           </label>
-          <div css={styles.dropzone}>
+          <div
+            css={styles.dropzone}
+            style={{
+              border:
+                saveAction && errors.attachment
+                  ? "2px dashed red"
+                  : "2px dashed #ccc",
+            }}
+          >
             {selectedImage && (
-              //console.log(URL.createObjectURL(image))
               <div css={styles.imageContainer}>
                 <PdfIcon />
                 <div onClick={handleRemoveImage} css={styles.closeIcon}>
@@ -74,6 +126,9 @@ const AddDocModal = ({ modal, setModal }) => {
                   accept=".pdf"
                   multiple={true}
                   onChange={handleFileChange}
+                  {...register("attachment", {
+                    required: true,
+                  })}
                 />
               </label>
             )}
@@ -93,7 +148,13 @@ const AddDocModal = ({ modal, setModal }) => {
           </div>
         </div>
         <div>
-          <button css={styles.btn} type="submit">
+          <button
+            css={styles.btn}
+            type="submit"
+            onClick={() => {
+              setSaveAction(true);
+            }}
+          >
             Add New
           </button>
         </div>
@@ -124,27 +185,25 @@ const styles = {
   `,
   actions: css`
     color: #2f4858;
-    margin: 20px;
+    margin: 10px 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
     h4 {
       font-size: 18px;
       font-weight: 600;
     }
-
     div {
       cursor: pointer;
     }
   `,
   formStyle: css`
     color: #2f4858;
-    margin: 20px;
+    margin: 10px 20px;
     div {
       display: flex;
       flex-direction: column;
-      margin-top: 20px;
+      margin-top: 10px;
     }
     input {
       border-top: 0px;
@@ -160,9 +219,11 @@ const styles = {
     span {
       color: #ec1c24;
     }
+    .form-invalid {
+      border-bottom: 1px solid red;
+    }
   `,
   dropzone: css`
-    border: 2px dashed #ccc;
     padding: 30px;
     margin-bottom: 20px;
     width: 100%;

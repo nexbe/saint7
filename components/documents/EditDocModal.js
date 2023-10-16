@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
 import UploadIcon from "../../public/icons/uploadIcon";
-import ConfirmModal from "./ConfirmModal";
+import ConfirmModal from "../Modal/ConfirmModal";
 import PdfIcon from "../../public/icons/pdfIcon";
 
 const EditDocModal = ({ modal, setModal }) => {
