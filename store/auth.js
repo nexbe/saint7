@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { CREATE_USER, GET_USER } from "../graphql/mutations/user";
 import client from "../graphql/apolloClient";
-import { setCookie , parseCookies} from "nookies";
+import { setCookie, parseCookies } from "nookies";
+import { GET_USER_INFO } from "../graphql/queries/profile";
 
 const cookies = parseCookies();
 
@@ -45,8 +46,19 @@ const useAuth = create((set, get) => ({
         mutation: GET_USER,
         variables: data,
       });
-      console.log("=>", response);
-      if (!response.errors) {
+      
+        const roleRes = await client.query({
+          query: GET_USER_INFO,
+          fetchPolicy: "network-only",
+          context:{
+            headers:{
+              Authorization : `Bearer ${response.data.login.jwt}`
+            }
+          }
+        });
+        // console.log("=>", roleRes);
+    
+      if (!response.errors && roleRes) {
         set((state) => ({
           ...state,
           user: {
@@ -55,14 +67,14 @@ const useAuth = create((set, get) => ({
             username: response.data.login.user.username,
             email: response.data.login.user.email,
             jwt: response.data.login.jwt,
-            role: response.data.login.user.role,
+            role: roleRes.data?.me.role,
           },
         }));
         set({ user: response.data.login.user });
-        setCookie(null, 'jwt', response.data.login.jwt , {
+        setCookie(null, "jwt", response.data.login.jwt, {
           maxAge: 30 * 24 * 60 * 60,
-          path:'/'
-        })
+          path: "/",
+        });
       }
       router.push("/home");
     } catch (err) {

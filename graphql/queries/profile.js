@@ -44,3 +44,18 @@ export const GET_PROFILE_BY_ID = gql`
     }
   }
 `;
+
+export const GET_USER_INFO = gql`
+  query {
+    me {
+      id
+      username
+      email
+      role {
+        id
+        name
+        description
+      }
+    }
+  }
+`;
