@@ -1,7 +1,10 @@
 import { gql } from "@apollo/client";
 export const GET_CERTIFICATE_BY_ID = gql`
   query ($userId: ID!) {
-    certificates(filters: { users_permissions_user: { id: { eq: $userId } } }) {
+    certificates(
+      filters: { users_permissions_user: { id: { eq: $userId } } }
+      sort: ["createdAt:desc"]
+    ) {
       data {
         id
         attributes {
@@ -18,6 +21,7 @@ export const GET_CERTIFICATE_BY_ID = gql`
             }
           }
           publishedAt
+          createdAt
         }
       }
     }

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import showDefaultNoti from "../utils/notifications";
 import { GET_CERTIFICATE_BY_ID } from "../graphql/queries/certificate";
 import { sanitizeResults } from "../utils/sanitizer";
 
@@ -30,9 +29,7 @@ const certificatestore = create((set, get) => ({
       }).then((value) => {
         set({ loading: false });
       });
-    } catch (error) {
-      showDefaultNoti(error.message, "error");
-    }
+    } catch (error) {}
   },
 
   updateCertificate: async ({
@@ -50,11 +47,8 @@ const certificatestore = create((set, get) => ({
         },
       }).then((value) => {
         set({ loading: false });
-        showDefaultNoti("Certificate added successfully.", "success");
       });
-    } catch (error) {
-      showDefaultNoti(error.message, "error");
-    }
+    } catch (error) {}
   },
 
   deleteCertificate: async ({ deleteCertificateAction, certificateRow }) => {
@@ -67,9 +61,7 @@ const certificatestore = create((set, get) => ({
       }).then((value) => {
         set({ loading: false });
       });
-    } catch (error) {
-      showDefaultNoti(error.message, "error");
-    }
+    } catch (error) {}
   },
 
   fetch: false,
