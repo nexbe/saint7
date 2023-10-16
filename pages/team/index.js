@@ -3,65 +3,47 @@ import { css } from "@emotion/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { FaStar } from "react-icons/fa";
+import { useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import SearchIcon from "../../public/icons/searchIcon";
+import userStore from "../../store/user";
+import authStore from "../../store/auth";
+import NoDataIcon from "/public/icons/noDataIcon";
 
 const Team = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
+  const { user } = authStore((state) => state);
   const [addFavourite, setAddFavourite] = useState(false);
-  const teamData = [
-    {
-      id: "#E-00001",
-      name: "John Smith",
-    },
-    {
-      id: "#E-00002",
-      name: "William Rodriguez",
-    },
-    {
-      id: "#E-00003",
-      name: "Jonah Johnson",
-    },
-    {
-      id: "#E-00004",
-      name: "Christopher Young",
-    },
-    {
-      id: "#E-00005",
-      name: "Daniel Adams",
-    },
-    {
-      id: "#E-00006",
-      name: "Ethan Thompson",
-    },
-    {
-      id: "#E-00007",
-      name: "James Collins",
-    },
-    {
-      id: "#E-00008",
-      name: "Matthew Campbell",
-    },
-    {
-      id: "#E-00009",
-      name: "Michael Turner",
-    },
-  ];
   const [filterTerm, setFilterTerm] = useState("");
-  const [teamList, setTeamList] = useState(teamData);
+
+  useEffect(() => {
+    getAllUsers({
+      apolloClient,
+      where: {},
+    });
+  }, [user]);
 
   const handleFilterChange = (event) => {
     const term = event.target.value;
     setFilterTerm(term);
-
-    // Filter the data based on the filterTerm
-    const filteredResults = teamData.filter((item) =>
-      item?.name?.toLowerCase().includes(term?.toLowerCase())
-    );
-    setTeamList(filteredResults);
   };
+
+  const teamLists = !!filterTerm
+    ? userInfo.filter(
+        (item) =>
+          item?.profile.firstName
+            ?.toLowerCase()
+            .includes(filterTerm?.toLowerCase()) ||
+          item?.profile.lastName
+            ?.toLowerCase()
+            .includes(filterTerm?.toLowerCase())
+      )
+    : userInfo;
 
   return (
     <Layout>
@@ -90,18 +72,42 @@ const Team = () => {
                 }}
               />
             </div>
-            {teamList?.map((eachMember, index) => {
-              return (
-                <div
-                  key={index}
-                  css={styles.teamList}
-                  onClick={() => router.push("/profile")}
-                >
-                  <img src="images/defaultImage.jpg" />
-                  <label className="primary-text">{eachMember.name}</label>
-                </div>
-              );
-            })}
+            {teamLists &&
+              teamLists?.map((eachMember, index) => {
+                return (
+                  <div
+                    key={index}
+                    css={styles.teamList}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/profile",
+                        query: {
+                          userId: eachMember?.id,
+                        },
+                      })
+                    }
+                  >
+                    <img
+                      src={
+                        eachMember?.profile?.photo?.url
+                          ? `${process.env.NEXT_PUBLIC_APP_URL}${eachMember?.profile?.photo.url}`
+                          : "images/defaultImage.jpg"
+                      }
+                    />
+                    <label className="primary-text">
+                      {eachMember?.profile?.firstName}{" "}
+                      {eachMember?.profile?.lastName}
+                    </label>
+                  </div>
+                );
+              })}
+            {teamLists && teamLists.length == 0 && (
+              <div css={styles.noDataContainer} className="primary-text">
+                <NoDataIcon />
+                <label>Nothing Here to show</label>
+                <label>You don’t have any report request</label>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -202,5 +208,11 @@ const styles = {
       height: 30px;
       border-radius: 40px;
     }
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

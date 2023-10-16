@@ -1,29 +1,60 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
+import dayjs from "dayjs";
+
 import Layout from "../../components/layout/Layout";
-import ProfileIcon from "/public/icons/profileIcon";
 import NotiIcon from "/public/icons/notiIcon";
 import SearchIcon from "../../public/icons/searchIcon";
 import AnnouncementIcon from "../../public/icons/announcementIcon";
 import TeamIcon from "../../public/icons/teamIcon";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import profileStore from "../../store/profile";
+import userStore from "../../store/auth";
 
 const MorePage = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const {
+    getAllProfiles,
+    ProfileInfo: profileInfo,
+    loading,
+  } = profileStore((state) => state);
+  const { user } = userStore((state) => state);
+
+  useEffect(() => {
+    getAllProfiles({
+      apolloClient,
+      where: { userId: user.id },
+    });
+  }, [user]);
 
   return (
     <Layout>
       <div css={styles.headerContainer}>
         <div>
-          <div css={styles.profileInfo}>
+          <div className="d-flex" css={styles.profileInfo}>
             <label>
-              <ProfileIcon />
-              <span css={styles.welcomeText}>Welcome !</span>
+              <img
+                src={
+                  profileInfo[0]?.photo?.url
+                    ? `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
+                    : "images/defaultImage.jpg"
+                }
+              />
             </label>
-            <span className="header-text">John Smith</span>
+            <div className="d-flex" style={{ flexDirection: "column" }}>
+              <span css={styles.welcomeText}>Welcome !</span>
+              <span className="header-text">
+                {profileInfo[0]?.firstName} {profileInfo[0]?.lastName}
+              </span>
+            </div>
           </div>
-          <div css={styles.timeText}>Friday, 26th May 2023</div>
+          <div css={styles.timeText}>
+            {dayjs(new Date()).format(" dddd, DD MMMM YYYY")}
+          </div>
         </div>
         <div
           css={styles.notiIcon}
@@ -33,18 +64,12 @@ const MorePage = () => {
           <NotiIcon />
         </div>
       </div>
-      <div css={styles.searchBox}>
-        <input type="text" placeholder="Search fields" />
-        <label css={styles.searchIcon}>
-          <SearchIcon />
-        </label>
-      </div>
       <div css={styles.bodyContainer}>
         <Link href={"/announcement"} css={styles.navLink}>
           <AnnouncementIcon />
           <span>Announcement</span>
         </Link>
-        <Link href={"/team"} css={styles.navLink}>
+        <Link href={"/team"} css={styles.navLink} style={{ display: "none" }}>
           <TeamIcon />
           <span>Team</span>
         </Link>
@@ -61,36 +86,25 @@ const styles = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 30px;
-    margin: 0;
-    background: var(--primary);
-    min-height: 90px;
+    gap: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 20px;
     color: var(--white);
-    font-family: Inter;
-    font-style: normal;
-    border-radius: 20px 20px 0 0;
+    background: var(--primary);
+    line-height: 20px;
+    height: 90px;
   `,
   profileInfo: css`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-weight: 600;
-    width: 100%;
-    .header-text {
-      margin-left: 50px;
-      margin-top: -20px;
-    }
-    svg {
-      align-items: center;
+    padding-top: 5px;
+    img {
       width: 50px;
       height: 50px;
+      border-radius: 40px;
     }
     span {
-      padding-left: 10px;
+      padding-left: 15px;
     }
-  `,
-  notiIcon: css`
-    cursor: pointer;
   `,
   welcomeText: css`
     font-size: 12px;
@@ -98,55 +112,16 @@ const styles = {
   `,
   timeText: css`
     font-size: 14px;
-  `,
-  searchBox: css`
-    margin: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-
-    @media (min-width: 900px) {
-      margin: 40px;
-      width: 80%;
-    }
-
-    input {
-      height: 30px;
-      width: 100%;
-      padding: 20px 12px;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      flex-shrink: 0;
-      border-radius: 10px;
-      border: 1px solid var(--dark-gray);
-      background: var(--white);
-      ::placeholder {
-        color: var(--dark-gray);
-        font-family: Open Sans;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 400;
-        padding-left: 18px;
-      }
-      :focus {
-        border: 1px solid var(--primary);
-        outline: none;
-      }
-    }
-  `,
-  searchIcon: css`
-    position: absolute;
-    margin: 10px;
+    padding-top: 5px;
   `,
   bodyContainer: css`
     display: flex;
     gap: 30px;
     border-radius: 10px;
+    margin: 20px;
     padding: 20px;
     background: #fff;
-    height: 50vh;
+    height: 70vh;
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
   `,
   navLink: css`
