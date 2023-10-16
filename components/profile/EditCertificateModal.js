@@ -6,15 +6,15 @@ import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
-import ConfirmModal from "./ConfirmModal";
+import ConfirmModal from "../Modal/ConfirmModal";
 
 const EditCertificateModal = ({
   selectedCertificate,
   isOpen = false,
-  close = () => {},
+  setEditModalOpen,
 }) => {
   const [selectedDate, setSelectedDate] = useState(
-    new Date(selectedCertificate.expiredDate)
+    new Date(selectedCertificate.expiryDate)
   );
   const [selectedFile, setSelectedFile] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -37,101 +37,106 @@ const EditCertificateModal = ({
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
+  const toggle = () => {
+    setEditModalOpen(!isOpen);
+  };
+  const handleEditModalClose = () => {
+    setConfirmOpen(true);
+    setEditModalOpen(false);
+  };
 
   return (
-    <Modal size="md" isOpen={isOpen} toggle={close} css={styles.modal}>
-      <div css={styles.formContent}>
-        <div className="primary-text" css={styles.formHeader}>
-          Edit Certifications{" "}
-          <IoCloseSharp
-            size={20}
-            color="rgba(117, 117, 117, 1)"
-            onClick={() => {
-              // close();
-              setConfirmOpen(!confirmOpen);
-            }}
-          />
-        </div>
-        {confirmOpen && (
-          <ConfirmModal
-            isOpen={confirmOpen}
-            setConfirmOpen={setConfirmOpen}
-            close={() => {
-              close();
-            }}
-          />
-        )}
-        <div className="formFlex">
-          <div className="d-flex">
-            <label className="secondary-text">
-              Name <span>*</span>
-            </label>
+    <>
+      <Modal size="md" isOpen={isOpen} toggle={toggle} css={styles.modal}>
+        <div css={styles.formContent}>
+          <div className="primary-text" css={styles.formHeader}>
+            Edit Certifications{" "}
+            <IoCloseSharp
+              size={20}
+              color="rgba(117, 117, 117, 1)"
+              onClick={handleEditModalClose}
+            />
           </div>
-          <input
-            type={"text"}
-            className="secondary-text"
-            defaultValue={selectedCertificate.name}
-          />
-        </div>
-        <div className="formFlex">
-          <div className="d-flex">
-            <label className="secondary-text">
-              Expired Date <span>*</span>
-            </label>
-          </div>
-          <DatePicker
-            defaultValue={selectedCertificate.expiredDate}
-            selected={selectedDate}
-            onChange={handleDateChange}
-            dateFormat="dd/MM/yyyy"
-          />
-        </div>
-        <div className="formFlex" style={{ border: "none" }}>
-          <div>
-            <label className="secondary-text">
-              Attach Documents <span>*</span>
-            </label>
 
-            <div css={styles.attchBox}>
-              {selectedFile && (
-                <div css={styles.imageContainer}>
-                  {isImage ? (
-                    <img
-                      src={URL.createObjectURL(selectedFile)}
-                      alt="Selected"
-                      css={styles.selectedImage}
-                    />
-                  ) : (
-                    <div css={styles.fileIconContainer}>
-                      <AiOutlineFilePdf color={"#1E3C72"} size={80} />
+          <div className="formFlex">
+            <div className="d-flex">
+              <label className="secondary-text">
+                Name <span>*</span>
+              </label>
+            </div>
+            <input
+              type={"text"}
+              className="secondary-text"
+              defaultValue={selectedCertificate.name}
+            />
+          </div>
+          <div className="formFlex">
+            <div className="d-flex">
+              <label className="secondary-text">
+                Expired Date <span>*</span>
+              </label>
+            </div>
+            <DatePicker
+              defaultValue={selectedCertificate.expiredDate}
+              selected={selectedDate}
+              onChange={handleDateChange}
+              dateFormat="dd/MM/yyyy"
+            />
+          </div>
+          <div className="formFlex" style={{ border: "none" }}>
+            <div>
+              <label className="secondary-text">
+                Attach Documents <span>*</span>
+              </label>
+
+              <div css={styles.attchBox}>
+                {selectedFile && (
+                  <div css={styles.imageContainer}>
+                    {isImage ? (
+                      <img
+                        src={URL.createObjectURL(selectedFile)}
+                        alt="Selected"
+                        css={styles.selectedImage}
+                      />
+                    ) : (
+                      <div css={styles.fileIconContainer}>
+                        <AiOutlineFilePdf color={"#1E3C72"} size={80} />
+                      </div>
+                    )}
+
+                    <div onClick={handleRemoveFile} css={styles.closeIcon}>
+                      <IoCloseSharp size={20} color="#F6302B" />
                     </div>
-                  )}
-
-                  <div onClick={handleRemoveFile} css={styles.closeIcon}>
-                    <IoCloseSharp size={20} color="#F6302B" />
                   </div>
-                </div>
-              )}
-              {!selectedFile && (
-                <label css={styles.attachBtn}>
-                  Browse File
-                  <input
-                    type="file"
-                    accept={`application/pdf, image/*`}
-                    onChange={handleFileChange}
-                  />
-                </label>
-              )}
+                )}
+                {!selectedFile && (
+                  <label css={styles.attachBtn}>
+                    Browse File
+                    <input
+                      type="file"
+                      accept={`application/pdf, image/*`}
+                      onChange={handleFileChange}
+                    />
+                  </label>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div css={styles.actionButton}>
-        <button css={styles.addBtn} onClick={() => close()}>
-          Save
-        </button>
-      </div>
-    </Modal>
+        <div css={styles.actionButton}>
+          <button css={styles.addBtn} onClick={() => close()}>
+            Save
+          </button>
+        </div>
+      </Modal>
+      {confirmOpen && (
+        <ConfirmModal
+          modal={confirmOpen}
+          setModal={setConfirmOpen}
+          setEditModal={setEditModalOpen}
+        />
+      )}
+    </>
   );
 };
 

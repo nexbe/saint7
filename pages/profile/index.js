@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { FaPlus, FaStar } from "react-icons/fa";
 import { PiPencilSimpleLineLight, PiPencilSimpleLight } from "react-icons/pi";
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -12,7 +12,6 @@ import dayjs from "dayjs";
 
 import Layout from "../../components/layout/Layout";
 import BackIcon from "/public/icons/backArrow";
-import ProfileIcon from "/public/icons/profileIcon";
 import UserIcon from "/public/icons/userIcon";
 import ArrowDownIcon from "/public/icons/arrowDownIcon";
 import ArrowUpIcon from "/public/icons/arrowUpIcon";
@@ -21,10 +20,13 @@ import CertificationIcon from "/public/icons/certificationIcon";
 import CameraIcon from "/public/icons/cameraIcon";
 import AddCertificateModal from "../../components/profile/AddCertificateModal";
 import EditCertificateModal from "../../components/profile/EditCertificateModal";
-import DeleteCertificateModal from "../../components/profile/DeleteCertificateModal";
+import DeleteModal from "../../components/Modal/DeleteModal";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import certificateStore from "../../store/certificate";
+import { UPDATE_PROFILE } from "../../graphql/mutations/profile";
+import { uploadFile } from "../../components/upload/upload";
+import { DELETE_CERTIFICATE } from "../../graphql/mutations/certificate";
 
 const Profile = () => {
   const router = useRouter();
@@ -35,18 +37,34 @@ const Profile = () => {
     getAllProfiles,
     ProfileInfo: profileInfo,
     loading,
+    updateProfile,
   } = profileStore((state) => state);
+  const [updateProfileAction, { loadProfile, errProfile }] =
+    useMutation(UPDATE_PROFILE);
+  const [deleteCertificateAction] = useMutation(DELETE_CERTIFICATE);
   const { user } = userStore((state) => state);
 
   useEffect(() => {
-    getAllProfiles({
-      apolloClient,
-      where: { userId: user.id },
-    });
-    getAllCertificates({
-      apolloClient,
-      where: { userId: user.id },
-    });
+    if (!!router.query.userId) {
+      getAllProfiles({
+        apolloClient,
+        where: { userId: router.query.userId },
+      });
+      getAllCertificates({
+        apolloClient,
+        where: { userId: router.query.userId },
+      });
+      console.log("query id...", router.query.userId);
+    } else {
+      getAllProfiles({
+        apolloClient,
+        where: { userId: user.id },
+      });
+      getAllCertificates({
+        apolloClient,
+        where: { userId: user.id },
+      });
+    }
   }, [user, router]);
 
   const [showProfileDetail, setShowProfileDetail] = useState(false);
@@ -61,6 +79,8 @@ const Profile = () => {
   const [startDate, setStartDate] = useState(null);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [addFavourite, setAddFavourite] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState(null);
+  const [image, setImage] = useState();
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -83,6 +103,45 @@ const Profile = () => {
     setSelectedImage(file);
   };
 
+  useEffect(() => {
+    if (!!profileInfo[0]?.photo.url)
+      setImage(
+        `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
+      );
+  }, [user]);
+
+  const onPreviewImage = async (e) => {
+    const selectedImage = e.target.files[0];
+    if (e.target.name === "file") {
+      var file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+    const formData = new FormData();
+    formData.append("files", selectedImage);
+    formData.append("ref", "personal-information");
+    const response = await uploadFile(formData);
+    let json = await response.json();
+    let imageId = json[0].id;
+    await updateProfileAction({
+      variables: {
+        id: profileInfo[0]?.id,
+        data: {
+          photo: imageId,
+        },
+      },
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    await deleteCertificateAction({
+      variables: { id: selectedCertificate?.id },
+    });
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -100,34 +159,30 @@ const Profile = () => {
         >
           <div css={styles.profileContent}>
             <div css={styles.attachBox}>
-              {/* {selectedImage && (
-                <div css={styles.imageContainer}>
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Selected"
-                    css={styles.selectedImage}
-                  />
-                </div>
-              )} */}
-
               <label css={styles.attachBtn}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
                 <span>
-                  <img
-                    src={
-                      profileInfo[0]?.photo.url
-                        ? `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
-                        : "images/defaultImage.jpg"
-                    }
-                  />
+                  {profileInfo[0]?.photo.url ? (
+                    <img src={image} css={styles.roundedImage} alt="" />
+                  ) : (
+                    <img
+                      src={"images/defaultImage.jpg"}
+                      css={styles.roundedImage}
+                    />
+                  )}
                   <span css={styles.cameraIcon}>
                     <CameraIcon />
                   </span>
                 </span>
+
+                <input
+                  type="file"
+                  id="file-upload"
+                  name="file"
+                  onChange={(e) => {
+                    onPreviewImage(e);
+                    setSelectedFiles(e.target.files[0]);
+                  }}
+                />
               </label>
             </div>
             <p style={{ marginTop: "5px" }}>
@@ -197,7 +252,7 @@ const Profile = () => {
                   <input
                     type="email"
                     className="primary-text"
-                    defaultValue={profileInfo[0]?.user.email}
+                    value={profileInfo[0]?.user.email}
                     disabled={!personalEdit}
                   />
                 </div>
@@ -210,7 +265,7 @@ const Profile = () => {
                   <input
                     type="text"
                     className="primary-text"
-                    defaultValue={profileInfo[0]?.contactNumber}
+                    value={profileInfo[0]?.contactNumber}
                     disabled={!personalEdit}
                   />
                 </div>
@@ -223,7 +278,7 @@ const Profile = () => {
                   <input
                     type="text"
                     className="primary-text"
-                    defaultValue={profileInfo[0]?.position}
+                    value={profileInfo[0]?.position}
                     disabled={!personalEdit}
                   />
                 </div>
@@ -316,6 +371,7 @@ const Profile = () => {
                           setSelectedCertificate(eachCertificate);
                           editCertificateModal();
                         }}
+                        style={{ marginRight: "3px" }}
                       />
                       <RiDeleteBinLine
                         size={20}
@@ -332,15 +388,16 @@ const Profile = () => {
               {editModalOpen && (
                 <EditCertificateModal
                   isOpen={editModalOpen}
-                  close={() => setEditModalOpen(!editModalOpen)}
+                  setEditModalOpen={setEditModalOpen}
                   selectedCertificate={selectedCertificate}
                 />
               )}
               {deleteModalOpen && (
-                <DeleteCertificateModal
+                <DeleteModal
                   isOpen={deleteModalOpen}
                   close={() => setDeleteModalOpen(!deleteModalOpen)}
-                  selectedCertificate={selectedCertificate}
+                  handleDeleteConfirm={handleDeleteConfirm}
+                  selectedData={selectedCertificate}
                 />
               )}
               <div
@@ -562,10 +619,11 @@ const styles = {
     }
   `,
   attachBtn: css`
+    padding-bottom: 15px;
     input {
       display: none;
       position: relative;
-      margin-top: -40px;
+      margin-top: -30px;
       margin-left: -7px;
       width: 60px;
       height: 60px;
@@ -610,14 +668,15 @@ const styles = {
   actionBox: css`
     display: flex;
     margin-left: auto;
-    gap: 10px;
     cursor: pointer;
+    width: 15%;
   `,
   certificateDetail: css`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     line-height: 25px;
+    width: 80%;
     label {
       display: flex;
       justify-content: flex-start;

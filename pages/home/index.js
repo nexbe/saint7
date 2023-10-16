@@ -201,9 +201,6 @@ const styles = {
       padding-left: 15px;
     }
   `,
-  notiIcon: css`
-    cursor: pointer;
-  `,
   welcomeText: css`
     font-size: 12px;
     font-weight: 500;

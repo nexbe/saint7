@@ -6,14 +6,15 @@ import { css } from "@emotion/react";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
-import { AiOutlineFilePdf } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
 import { useMutation } from "@apollo/client";
+import _ from "lodash";
 
-import ConfirmModal from "./ConfirmModal";
 import certificateStore from "../../store/certificate";
 import { CREATE_CERTIFICATE } from "../../graphql/mutations/certificate";
-import showDefaultNoti from "../../utils/notifications";
+import { UploadedFiles } from "../upload/uploadFiles";
+import { Upload } from "../upload/uploadFile";
+import { uploadFile } from "../upload/upload";
 
 const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
   const {
@@ -22,16 +23,15 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
     formState: { errors },
   } = useForm();
   const router = useRouter();
-  const { createCertificate, getAllCertificates } = certificateStore(
-    (state) => state
-  );
-  const [createCertificateAction, { loadCertificate, errCertificate }] =
-    useMutation(CREATE_CERTIFICATE);
+  const { createCertificate } = certificateStore((state) => state);
+  const [createCertificateAction] = useMutation(CREATE_CERTIFICATE);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFile, setSelectedFile] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [saveAction, setSaveAction] = useState(false);
+
+  const [fileList, setFileList] = useState([]);
+  let fileListArr = _.entries(fileList);
 
   const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg"];
   const isImage = FILE_EXTENSIONS.some((extension) =>
@@ -52,19 +52,47 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
 
   const onSubmit = async (data) => {
     if (!!saveAction) {
+      let filesArrToSend = [];
+      for (let file of fileListArr) {
+        let fileData = {};
+        let uploadFiles = {};
+        const formData = new FormData();
+        formData.append("files", file[1]);
+        const response = await uploadFile(formData);
+        const json = await response.json();
+        if (response.status === 200) {
+          const term = json[0].id;
+          fileData.attachment = term;
+          filesArrToSend.push(json[0]);
+          uploadFiles[term] = file;
+        }
+      }
       await createCertificate({
         createCertificateAction,
         data: {
           name: data.name,
           expiryDate: new Date(selectedDate).toISOString(),
           users_permissions_user: userId,
+          attachement: filesArrToSend?.map((eachFile) => {
+            return +eachFile?.id;
+          }),
           publishedAt: new Date().toISOString(),
         },
       });
       close();
       router.push("/profile");
-      showDefaultNoti("Certificate added successfully.", "success");
     }
+  };
+
+  const onChange = async (e) => {
+    const selectedFiles = [...e.target.files];
+    const uploadedFiles = {};
+
+    for (let file of selectedFiles) {
+      uploadedFiles[0] = file;
+    }
+
+    setFileList({ ...fileList, ...uploadedFiles });
   };
 
   return (
@@ -77,20 +105,10 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
               size={20}
               color="rgba(117, 117, 117, 1)"
               onClick={() => {
-                // close();
-                setConfirmOpen(!confirmOpen);
-              }}
-            />
-          </div>
-          {confirmOpen && (
-            <ConfirmModal
-              isOpen={confirmOpen}
-              setConfirmOpen={setConfirmOpen}
-              close={() => {
                 close();
               }}
             />
-          )}
+          </div>
           <div className="formFlex">
             <div className="d-flex">
               <label className="secondary-text">
@@ -100,6 +118,7 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
             <input
               type={"text"}
               className="secondary-text"
+              required
               {...register("name", {
                 required: true,
               })}
@@ -115,48 +134,16 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
               selected={selectedDate}
               onChange={handleDateChange}
               dateFormat="dd/MM/yyyy"
+              required={true}
             />
           </div>
-          <div className="formFlex" style={{ border: "none" }}>
-            <div>
-              <label className="secondary-text">
-                Attach Documents <span>*</span>
-              </label>
-
-              <div css={styles.attchBox}>
-                {selectedFile && (
-                  <div css={styles.imageContainer}>
-                    {isImage ? (
-                      <img
-                        src={URL.createObjectURL(selectedFile)}
-                        alt="Selected"
-                        css={styles.selectedImage}
-                      />
-                    ) : (
-                      <div css={styles.fileIconContainer}>
-                        <AiOutlineFilePdf color={"#1E3C72"} size={80} />
-                      </div>
-                    )}
-
-                    <div onClick={handleRemoveFile} css={styles.closeIcon}>
-                      <IoCloseSharp size={20} color="#F6302B" />
-                    </div>
-                  </div>
-                )}
-                {!selectedFile && (
-                  <label css={styles.attachBtn}>
-                    Browse File
-                    <input
-                      type="file"
-                      accept={`application/pdf, image/*`}
-                      onChange={handleFileChange}
-                      multiple
-                    />
-                  </label>
-                )}
-              </div>
+          {fileListArr?.length > 0 ? (
+            <UploadedFiles fileList={fileList} setFileList={setFileList} />
+          ) : (
+            <div className={styles.addNoteUploadContainer}>
+              <Upload onChange={onChange} />
             </div>
-          </div>
+          )}
         </div>
         <div css={styles.actionButton}>
           <button
@@ -227,66 +214,5 @@ const styles = {
       color: var(--white);
       background: var(--primary);
     }
-  `,
-  attchBox: css`
-    border: 2px dashed #ccc;
-    padding: 10px;
-    margin-bottom: 20px;
-    width: 100%;
-    margin-top: 10px;
-    justify-content: start;
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    border: 2px dashed #d6e2ea;
-    background: var(--white);
-    box-shadow: 0px 4px 4px 0px rgba(117, 139, 154, 0.08);
-  `,
-  attachBtn: css`
-    display: inline-block;
-    padding: 8px 16px;
-    font-weight: bold;
-    color: #5e72e4;
-    font-weight: 600;
-    font-size: 16px;
-    text-align: center;
-    text-decoration: underline;
-    cursor: pointer;
-    border: none;
-    background: none;
-    outline: none;
-
-    input {
-      display: none;
-    }
-  `,
-  selectedImage: css`
-    width: 95px;
-    height: 100px;
-    border-radius: 16px;
-    background: #e3f3ff;
-  `,
-  imageContainer: css`
-    position: relative;
-    justify-content: start;
-  `,
-  closeIcon: css`
-    position: absolute;
-    top: 0;
-    right: 50px;
-    cursor: pointer;
-    padding: 0;
-
-    @media (min-width: 440px) {
-      left: 10%;
-    }
-  `,
-  fileIconContainer: css`
-    width: 95px;
-    height: 100px;
-    display: grid;
-    place-items: center;
-    border-radius: 16px;
-    background: #e3f3ff;
   `,
 };

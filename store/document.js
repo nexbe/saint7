@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import showDefaultNoti from "../utils/notifications";
 import { GET_DOCUMENT_BY_ID } from "../graphql/queries/document";
 import { sanitizeResults } from "../utils/sanitizer";
 
@@ -30,9 +29,7 @@ const documentstore = create((set, get) => ({
       }).then((value) => {
         set({ loading: false });
       });
-    } catch (error) {
-      showDefaultNoti(error.message, "error");
-    }
+    } catch (error) {}
   },
 
   updateDocument: async ({
@@ -51,9 +48,7 @@ const documentstore = create((set, get) => ({
       }).then((value) => {
         set({ loading: false });
       });
-    } catch (error) {
-      showDefaultNoti(error.message, "error");
-    }
+    } catch (error) {}
   },
 
   deleteDocument: async ({ deleteDocumentAction, documentRow }) => {
@@ -66,9 +61,7 @@ const documentstore = create((set, get) => ({
       }).then((value) => {
         set({ loading: false });
       });
-    } catch (error) {
-      showDefaultNoti(error.message, "error");
-    }
+    } catch (error) {}
   },
 
   fetch: false,

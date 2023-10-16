@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
 import { css } from "@emotion/react";
+import { useRouter } from "next/router";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -12,10 +13,13 @@ import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
 import AddDocModal from "../../components/documents/AddDocModal";
 import EditDocModal from "../../components/documents/EditDocModal";
+import DeleteModal from "../../components/Modal/DeleteModal";
 import documentStore from "../../store/document";
 import userStore from "../../store/auth";
+import NoDataIcon from "/public/icons/noDataIcon";
 
 const Documents = () => {
+  const router = useRouter();
   const apolloClient = useApolloClient();
   const { getAllDocuments, DocumentInfo: documentInfo } = documentStore(
     (state) => state
@@ -27,11 +31,12 @@ const Documents = () => {
       apolloClient,
       where: { userId: user.id },
     });
-  }, [user]);
+  }, [user, router]);
 
   const [addModal, setAddModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
 
   return (
@@ -39,12 +44,7 @@ const Documents = () => {
       <div css={styles.wrapper}>
         <HeaderNoti title={"Documents"} href={"/home"} />
         <div css={styles.bodyContainer}>
-          <div
-            css={styles.actions}
-            style={{
-              display: "none",
-            }}
-          >
+          <div css={styles.actions} style={{ display: "none" }}>
             <button
               css={styles.actionBtn(true)}
               onClick={() => setAddModal(true)}
@@ -65,32 +65,57 @@ const Documents = () => {
             </button>
           </div>
           <div>
-            {documentInfo?.map((eachDocument, index) => {
-              return (
-                <Card
-                  key={index}
-                  id={eachDocument.id}
-                  title={eachDocument.title}
-                  body={eachDocument.description}
-                  attachment={eachDocument.attachment[0].url}
-                  isEdit={isEdit}
-                  setEditModal={setEditModal}
-                  isDelete={isDelete}
-                  icon={<BatteryWarningIcon />}
-                />
-              );
-            })}
+            {documentInfo &&
+              documentInfo?.map((eachDocument, index) => {
+                return (
+                  <Card
+                    key={index}
+                    id={eachDocument.id}
+                    title={eachDocument.title}
+                    body={eachDocument.description}
+                    attachment={eachDocument?.attachment[0]?.url}
+                    isEdit={isEdit}
+                    setEditModal={setEditModal}
+                    isDelete={isDelete}
+                    icon={<BatteryWarningIcon />}
+                  />
+                );
+              })}
+            {documentInfo && documentInfo.length == 0 && (
+              <div css={styles.noDataContainer} className="primary-text">
+                <NoDataIcon />
+                <label>Nothing Here to show</label>
+                <label>You don’t have any report request</label>
+              </div>
+            )}
           </div>
           {isDelete && (
             <div css={styles.actionButton}>
               <button css={styles.cancelBtn} onClick={() => setIsDelete(false)}>
                 Cancel
               </button>
-              <button css={styles.deleteBtn}>Delete</button>
+              <button
+                css={styles.deleteBtn}
+                onClick={() => {
+                  setDeleteModal(!deleteModal);
+                }}
+              >
+                Delete
+              </button>
             </div>
           )}
-          <AddDocModal modal={addModal} setModal={setAddModal} />
+          <AddDocModal
+            modal={addModal}
+            setModal={setAddModal}
+            userId={user?.id}
+          />
           <EditDocModal modal={editModal} setModal={setEditModal} />
+          {deleteModal && (
+            <DeleteModal
+              isOpen={deleteModal}
+              close={() => setDeleteModal(!deleteModal)}
+            />
+          )}
         </div>
       </div>
     </Layout>
@@ -175,5 +200,11 @@ const styles = {
     border: none;
     color: var(--white);
     background: var(--primary);
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };
