@@ -48,7 +48,7 @@ const Verification = () => {
   const onSubmitHandler = (e) => {
     e.preventDefault();
     if (firstDigit && secDigit && thirdDigit && fourthDigit) {
-      router.push("/home");
+      router.push("/auth/createNewPassword");
     }
   };
 
