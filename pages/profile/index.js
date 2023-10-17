@@ -178,7 +178,7 @@ const Profile = () => {
                     setSelectedFiles(e.target.files[0]);
                   }}
                   disabled={
-                    router.query.message === "Team" &&
+                    router?.query?.message === "Team" &&
                     profileInfo[0]?.user?.id != user?.id
                       ? true
                       : false
@@ -200,7 +200,7 @@ const Profile = () => {
               style={{
                 display:
                   router.query.message === "Team" ||
-                  user?.role.name === "Manager"
+                  user?.role?.name === "Manager"
                     ? "block"
                     : "none",
               }}
@@ -211,7 +211,7 @@ const Profile = () => {
               style={{
                 display:
                   router.query.message === "Team" &&
-                  user?.role.name === "Manager"
+                  user?.role?.name === "Manager"
                     ? "block"
                     : "none",
               }}
@@ -264,7 +264,7 @@ const Profile = () => {
                   <input
                     type="email"
                     className="primary-text"
-                    value={profileInfo[0]?.user.email}
+                    value={profileInfo[0]?.user?.email}
                     disabled={!personalEdit}
                   />
                 </div>
