@@ -18,6 +18,10 @@ export const GET_CERTIFICATE_BY_ID = gql`
           attachement {
             data {
               id
+              attributes {
+                name
+                url
+              }
             }
           }
           publishedAt

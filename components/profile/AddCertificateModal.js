@@ -27,25 +27,11 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
   const [createCertificateAction] = useMutation(CREATE_CERTIFICATE);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedFile, setSelectedFile] = useState(null);
   const [saveAction, setSaveAction] = useState(false);
 
   const [fileList, setFileList] = useState([]);
   let fileListArr = _.entries(fileList);
 
-  const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg"];
-  const isImage = FILE_EXTENSIONS.some((extension) =>
-    selectedFile?.name?.endsWith(extension)
-  );
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-  };
-
-  const handleRemoveFile = () => {
-    setSelectedFile(null);
-  };
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
