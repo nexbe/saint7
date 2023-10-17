@@ -9,7 +9,7 @@ const ConfirmPasswordModal = ({ modal, setModal, password }) => {
 
   const onSubmitHandler = () => {
     setModal(false);
-    router.push("/home");
+    router.push("/");
   };
   return (
     <Modal isOpen={modal} toggle={() => setModal(!modal)} css={styles.wrapper}>

@@ -2,15 +2,17 @@
 import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import useAuth from "../../store/auth";
 
 const ResetPassword = () => {
+  const {getOTP} = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
     if (email) {
-      router.push("/auth/verification");
+      getOTP({email: email}, router)
     }
   };
 

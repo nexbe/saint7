@@ -2,9 +2,11 @@
 import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import useAuth from "../../store/auth";
 
 const Verification = () => {
   const router = useRouter();
+  const { verifyOTP, otpEmail, resendOTP, user} = useAuth();
   const [time, setTime] = useState({ minutes: 0, seconds: 59 });
   const [firstDigit, setFirstDigit] = useState(null);
   const [secDigit, setSecDigit] = useState(null);
@@ -26,7 +28,7 @@ const Verification = () => {
     }, 1000);
 
     return () => clearInterval(startCounting);
-  }, [time]);
+  }, [time, resendOTP]);
 
   const focusHandler = (event) => {
     const currentInput = event.target;
@@ -42,13 +44,22 @@ const Verification = () => {
   };
 
   const resendHandler = () => {
-    router.push("/auth/resetPassword")
+    resendOTP({
+      input: {
+        identifier : otpEmail.email.email || user.email
+      }
+    }, router)
   };
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    if (firstDigit && secDigit && thirdDigit && fourthDigit) {
-      router.push("/auth/createNewPassword");
+    if (firstDigit && secDigit && thirdDigit && fourthDigit && otpEmail) {
+      verifyOTP({
+        input: {
+          identifier : otpEmail.email.email,
+          otpCode : `${firstDigit}${secDigit}${thirdDigit}${fourthDigit}`
+        }
+      },router)
     }
   };
 

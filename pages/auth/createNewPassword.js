@@ -5,9 +5,11 @@ import React, { useState } from "react";
 import OpenEyeIcon from "../../public/icons/OpenEyeIcon";
 import CloseEyeSlashIcon from "../../public/icons/CloseEyeSlashIcon";
 import ConfirmPasswordModal from "../../components/auth/ConfirmPasswordModal";
+import useAuth from "../../store/auth";
 
 const CreateNewPassword = () => {
   const router = useRouter();
+  const {createNewPassword , verifiedOtpUserData} = useAuth();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [modal, setModal] = useState(false);
@@ -15,6 +17,11 @@ const CreateNewPassword = () => {
   const onSubmitHandler = (e) => {
     e.preventDefault();
     if (password) {
+      createNewPassword({
+        password: password,
+        passwordConfirmation: password,
+        code: verifiedOtpUserData.data.code
+      })
       setModal(true)
     }
   };
@@ -51,7 +58,7 @@ const CreateNewPassword = () => {
           <button id="reset" type="submit" css={styles.loginBtn}>
             Continue
           </button>
-          <div css={styles.backBtn} onClick={() => router.push("/auth/verification")}>
+          <div css={styles.backBtn} onClick={() => router.push("/auth/resetPassword")}>
             Back
           </div>
         </form>
