@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useDisclosure } from "@mantine/hooks";
-import { AiOutlineFilePdf } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
+
+import PdfIcon from "../../public/icons/pdfIcon";
 
 export const FilePreview = ({ onRemove, src, fileName, size }) => {
   const [hover, handlers] = useDisclosure(false);
@@ -20,10 +21,10 @@ export const FilePreview = ({ onRemove, src, fileName, size }) => {
         <img css={styles.previewImage} src={src} />
       ) : (
         <div css={styles.fileIconContainer}>
-          <AiOutlineFilePdf color={"#1E3C72"} size={80} />
+          <PdfIcon />
         </div>
       )}
-      <div css={[styles.showFileDetail, styles.f16_600]}>
+      <div css={styles.selectedFileName}>
         <button type="button" onClick={onRemove} css={styles.removeButton}>
           <IoCloseSharp size={20} color="#F6302B" />
         </button>
@@ -36,7 +37,6 @@ const styles = {
   selectedFile: css`
     display: flex;
     flex-direction: column;
-    background-color: #e3f0ff;
     position: relative;
     transition: all 150ms ease;
     border-radius: 4px 4px 0px 0px;
@@ -49,13 +49,15 @@ const styles = {
     z-index: 2;
   `,
   fileIconContainer: css`
-    width: 95px;
+    width: 90px;
     height: 100px;
     display: grid;
     place-items: center;
+    border-radius: 10px;
+    background: #e3f3ff;
   `,
   previewImage: css`
-    width: 125px;
+    width: 90px;
     height: 100px;
     object-fit: cover;
     border: 1px solid #e3f0ff;
@@ -70,36 +72,17 @@ const styles = {
     place-items: center;
     border: 0;
     outline: none;
-    background: #fafcff;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05),
-      inset 2px 2px 2px rgba(0, 0, 0, 0.15), inset -2px -2px 2px #ffffff;
-    border-radius: 8px;
-    margin: auto auto 0;
-  `,
-  showFileDetail: css`
-    opacity: 0;
-    width: 100%;
-    height: 100%;
+    background: none;
     position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    background-color: #e3f0ff;
-    padding: 15px 15px 20px;
+    margin-top: -7rem;
+    right: 30px;
+  `,
+  selectedFileName: css`
     color: #1e3c72;
-    transition: all 150ms ease;
-    border-radius: 4px 4px 0px 0px;
-  `,
-  f16_600: css`
-    font-size: 16px;
-    font-weight: 600;
-  `,
-  fileIconContainer: css`
-    width: 95px;
-    height: 100px;
-    display: grid;
-    place-items: center;
+    padding: 12px 15px;
+    width: 125px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   `,
 };

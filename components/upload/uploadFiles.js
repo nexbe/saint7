@@ -4,8 +4,10 @@ import { css } from "@emotion/react";
 import { useDisclosure } from "@mantine/hooks";
 import { FilePreview } from "./filePreview";
 import _ from "lodash";
+import { v4 as uuid } from "uuid";
 
 import UploadIcon from "../../public/icons/uploadIcon";
+import { uploadFile } from "../upload/upload";
 
 export const UploadedFiles = memo(function UploadedFiles({
   fileList = {},
@@ -17,6 +19,29 @@ export const UploadedFiles = memo(function UploadedFiles({
   const removeFile = (id) => {
     delete fileList[id];
     setFileList({ ...fileList });
+  };
+
+  const onChange = async (e) => {
+    const selectedFiles = [...e.target.files];
+    console.log("selectedFiles..", selectedFiles);
+    const uploadedFiles = {};
+
+    for (let file of selectedFiles) {
+      const fileData = {};
+      const formData = new FormData();
+      formData.append("files", file);
+      const response = await uploadFile(formData);
+      console.log("response..", response);
+      const json = await response.json();
+      console.log("json..", json);
+      if (response.status === 200) {
+        const term = json[0].id;
+        fileData.attachment = term;
+        uploadedFiles[json[0].id] = file;
+      }
+    }
+    setFileList({ ...fileList, ...uploadedFiles });
+    console.log("file lsit...", fileList);
   };
 
   return (
@@ -38,30 +63,27 @@ export const UploadedFiles = memo(function UploadedFiles({
             />
           ))}
         </div>
-        {/* {fileListArr.length !== 0 && (
-            // <button
-            //   onClick={openHandlers.toggle}
-            //   css={styles.toggleUploadFilesButton}
-            // >
-            //   <AiOutlinePlus color="#1E3C72" />
-            //   Upload another file
-            // </button>
-            <label css={styles.uploadBtn}>
-              <UploadIcon /> Upload file
-              <input
-                disabled={loading}
-                accept={`application/pdf, image/*`}
-                onChange={async (e) => {
-                  setLoading(true);
-                  await onChange(e);
-                  setLoading(false);
-                }}
-                type="file"
-                css={styles.fileInput}
-                multiple
-              />
-            </label>
-          )} */}
+        {fileListArr.length !== 0 && (
+          // <button
+          //   onClick={openHandlers.toggle}
+          //   css={styles.toggleUploadFilesButton}
+          // >
+          //   <AiOutlinePlus color="#1E3C72" />
+          //   Upload another file
+          // </button>
+          <label css={styles.uploadBtn}>
+            <UploadIcon /> Upload file
+            <input
+              accept={`application/pdf, image/*`}
+              onChange={async (e) => {
+                await onChange(e);
+              }}
+              type="file"
+              css={styles.fileInput}
+              multiple
+            />
+          </label>
+        )}
       </div>
     </div>
   );

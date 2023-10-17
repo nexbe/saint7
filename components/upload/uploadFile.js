@@ -43,7 +43,7 @@ export const Upload = ({ onChange }) => {
 const styles = {
   uploadContainer: css`
     width: 100%;
-    min-height: 85px;
+    min-height: 120px;
     background: var(--white);
     box-shadow: 0px 4px 4px 0px rgba(117, 139, 154, 0.08);
     border: 2px dashed #d6e2ea;

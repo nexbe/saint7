@@ -45,7 +45,7 @@ const Profile = () => {
   const { user } = userStore((state) => state);
 
   useEffect(() => {
-    if (!!router.query.userId) {
+    if (!!router.query.message) {
       getAllProfiles({
         apolloClient,
         where: { userId: router.query.userId },
@@ -54,7 +54,6 @@ const Profile = () => {
         apolloClient,
         where: { userId: router.query.userId },
       });
-      console.log("query id...", router.query.userId);
     } else {
       getAllProfiles({
         apolloClient,
@@ -98,11 +97,6 @@ const Profile = () => {
     setDeleteModalOpen(!deleteModalOpen);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedImage(file);
-  };
-
   useEffect(() => {
     if (!!profileInfo[0]?.photo.url)
       setImage(
@@ -140,6 +134,7 @@ const Profile = () => {
     await deleteCertificateAction({
       variables: { id: selectedCertificate?.id },
     });
+    router.push("/profile");
   };
 
   return (
@@ -182,6 +177,12 @@ const Profile = () => {
                     onPreviewImage(e);
                     setSelectedFiles(e.target.files[0]);
                   }}
+                  disabled={
+                    router.query.message === "Team" &&
+                    profileInfo[0]?.user?.id != user?.id
+                      ? true
+                      : false
+                  }
                 />
               </label>
             </div>
@@ -194,15 +195,26 @@ const Profile = () => {
               </label>
             </p>
             <div
-              style={{ display: "none" }}
               css={styles.editIcon}
               onClick={() => setProfileEdit(true)}
-              // style={{ display: profileEdit ? "none" : "block" }}
+              style={{
+                display:
+                  router.query.message === "Team" ||
+                  user?.role.name === "Manager"
+                    ? "block"
+                    : "none",
+              }}
             >
               <PiPencilSimpleLineLight color="rgba(47, 72, 88, 1)" size={20} />
             </div>
             <div
-              style={{ display: "none" }}
+              style={{
+                display:
+                  router.query.message === "Team" &&
+                  user?.role.name === "Manager"
+                    ? "block"
+                    : "none",
+              }}
               css={styles.starIcon}
               onClick={() => {
                 setAddFavourite(!addFavourite);
@@ -390,6 +402,7 @@ const Profile = () => {
                   isOpen={editModalOpen}
                   setEditModalOpen={setEditModalOpen}
                   selectedCertificate={selectedCertificate}
+                  userId={user?.id}
                 />
               )}
               {deleteModalOpen && (
@@ -506,6 +519,7 @@ const styles = {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 110px;
     @media (max-width: 700px) {
       width: 90%;
     }
