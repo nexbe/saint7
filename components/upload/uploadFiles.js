@@ -4,7 +4,6 @@ import { css } from "@emotion/react";
 import { useDisclosure } from "@mantine/hooks";
 import { FilePreview } from "./filePreview";
 import _ from "lodash";
-import { v4 as uuid } from "uuid";
 
 import UploadIcon from "../../public/icons/uploadIcon";
 import { uploadFile } from "../upload/upload";
