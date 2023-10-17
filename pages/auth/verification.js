@@ -2,9 +2,11 @@
 import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import useAuth from "../../store/auth";
 
 const Verification = () => {
   const router = useRouter();
+  const { verifyOTP } = useAuth();
   const [time, setTime] = useState({ minutes: 0, seconds: 59 });
   const [firstDigit, setFirstDigit] = useState(null);
   const [secDigit, setSecDigit] = useState(null);
@@ -48,7 +50,9 @@ const Verification = () => {
   const onSubmitHandler = (e) => {
     e.preventDefault();
     if (firstDigit && secDigit && thirdDigit && fourthDigit) {
-      router.push("/auth/createNewPassword");
+      verifyOTP({
+        input: `${firstDigit}${secDigit}${thirdDigit}${fourthDigit}`
+      },router)
     }
   };
 

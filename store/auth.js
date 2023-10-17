@@ -3,6 +3,7 @@ import { CREATE_USER, GET_USER } from "../graphql/mutations/user";
 import client from "../graphql/apolloClient";
 import { setCookie, parseCookies } from "nookies";
 import { GET_USER_INFO } from "../graphql/queries/profile";
+import { GET_OTP, VERIFY_OTP } from "../graphql/mutations/password";
 
 const cookies = parseCookies();
 const userData = cookies.user ? JSON.parse(cookies.user) : null;
@@ -87,6 +88,34 @@ const useAuth = create((set, get) => ({
     }
   },
   setUser: (user) => set({ user }),
+  getOTP: async(email, router) => {
+    try{
+      const response = await client.mutate({
+        mutation: GET_OTP,
+        variables: email
+      })
+      if(!response.errors){
+        console.log(response.data.forgotPassword.data?.message)
+        router.push('/auth/verification')
+      }
+    }catch(err){
+      throw new Error("Sending OTP failed")
+    }
+  },
+  verifyOTP : async (code, router) => {
+    try{
+      const response = await client.mutate(({
+        mutation: VERIFY_OTP,
+        variables: code
+      }))
+      if(!response.errors){
+        console.log("OTP Verified")
+        router.push('/auth/createNewPassword')
+      }
+    }catch(err){
+      throw new Error("Verifing the OTP code failed")
+    }
+  }
 }));
 
 export default useAuth;
