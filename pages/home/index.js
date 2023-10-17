@@ -55,7 +55,9 @@ const Home = () => {
               <div className="d-flex" style={{ flexDirection: "column" }}>
                 <span css={styles.welcomeText}>Welcome !</span>
                 <span className="header-text">
-                  {profileInfo[0]?.firstName} {profileInfo[0]?.lastName}
+                  {!!profileInfo[0]?.firstName || !!profileInfo[0]?.lastName
+                    ? profileInfo[0]?.firstName + " " + profileInfo[0]?.lastName
+                    : user?.username}
                 </span>
               </div>
             </div>
@@ -117,7 +119,7 @@ const Home = () => {
                 <button
                   onClick={() => {
                     router.push({
-                      pathname: "/attendance"
+                      pathname: "/attendance",
                     });
                   }}
                 >

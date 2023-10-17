@@ -1,16 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import { useState } from "react";
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
 import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import _ from "lodash";
 
 import CloseIcon from "../../public/icons/closeIcon";
-import UploadIcon from "../../public/icons/uploadIcon";
-import PdfIcon from "../../public/icons/pdfIcon";
 import documentStore from "../../store/document";
 import { CREATE_DOCUMENT } from "../../graphql/mutations/document";
+import { UploadedFiles } from "../upload/uploadFiles";
+import { Upload } from "../upload/uploadFile";
+import { uploadFile } from "../upload/upload";
 
 const AddDocModal = ({ modal, setModal, userId }) => {
   const {
@@ -25,6 +27,9 @@ const AddDocModal = ({ modal, setModal, userId }) => {
   const [createDocumentAction] = useMutation(CREATE_DOCUMENT);
   const [selectedImage, setSelectedImage] = useState(null);
   const [saveAction, setSaveAction] = useState(false);
+  const [fileList, setFileList] = useState([]);
+  let fileListArr = _.entries(fileList);
+
   const toggle = () => {
     setModal(!modal);
   };
@@ -40,18 +45,47 @@ const AddDocModal = ({ modal, setModal, userId }) => {
 
   const onSubmit = async (data) => {
     if (!!saveAction) {
+      let filesArrToSend = [];
+      for (let file of fileListArr) {
+        let fileData = {};
+        let uploadFiles = {};
+        const formData = new FormData();
+        formData.append("files", file[1]);
+        const response = await uploadFile(formData);
+        const json = await response.json();
+        if (response.status === 200) {
+          const term = json[0].id;
+          fileData.attachment = term;
+          filesArrToSend.push(json[0]);
+          uploadFiles[term] = file;
+        }
+      }
       await createDocument({
         createDocumentAction,
         data: {
           title: data.title,
           description: data.description,
           users_permissions_users: userId,
+          attachment: filesArrToSend?.map((eachFile) => {
+            return +eachFile?.id;
+          }),
           publishedAt: new Date().toISOString(),
         },
       });
       setModal(false);
       router.push("/documents");
     }
+  };
+
+  const onChange = async (e) => {
+    const selectedFiles = [...e.target.files];
+    const uploadedFiles = {};
+
+    for (let file of selectedFiles) {
+      uploadedFiles[0] = file;
+    }
+
+    setFileList({ ...fileList, ...uploadedFiles });
   };
 
   return (
@@ -97,56 +131,13 @@ const AddDocModal = ({ modal, setModal, userId }) => {
             </label>
           )}
         </div>
-        <div>
-          <label htmlFor="documents">
-            Attach Documents <span>*</span>
-          </label>
-          <div
-            css={styles.dropzone}
-            style={{
-              border:
-                saveAction && errors.attachment
-                  ? "2px dashed red"
-                  : "2px dashed #ccc",
-            }}
-          >
-            {selectedImage && (
-              <div css={styles.imageContainer}>
-                <PdfIcon />
-                <div onClick={handleRemoveImage} css={styles.closeIcon}>
-                  <CloseIcon />
-                </div>
-              </div>
-            )}
-            {!selectedImage && (
-              <label css={styles.browseBtn}>
-                Browse Picture
-                <input
-                  type="file"
-                  accept=".pdf"
-                  multiple={true}
-                  onChange={handleFileChange}
-                  {...register("attachment", {
-                    required: true,
-                  })}
-                />
-              </label>
-            )}
-            {selectedImage && (
-              <div>
-                <label css={styles.uploadBtn}>
-                  <UploadIcon />
-                  Upload file
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                  />
-                </label>
-              </div>
-            )}
+        {fileListArr?.length > 0 ? (
+          <UploadedFiles fileList={fileList} setFileList={setFileList} />
+        ) : (
+          <div className={styles.addNoteUploadContainer}>
+            <Upload onChange={onChange} />
           </div>
-        </div>
+        )}
         <div>
           <button
             css={styles.btn}
