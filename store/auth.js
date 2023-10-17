@@ -5,15 +5,16 @@ import { setCookie, parseCookies } from "nookies";
 import { GET_USER_INFO } from "../graphql/queries/profile";
 
 const cookies = parseCookies();
+const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
 const useAuth = create((set, get) => ({
   user: {
-    id: "",
-    username: "",
-    email: "",
-    password: "",
+    id: userData ? userData.id : null,
+    username: userData ? userData.username : null,
+    email: userData ? userData.email : null,
+    password: userData ? userData.password : null,
     jwt: cookies.jwt || null,
-    role: "",
+    role: userData ? userData.role : null,
   },
   register: async (data, router) => {
     try {
@@ -70,11 +71,15 @@ const useAuth = create((set, get) => ({
             role: roleRes.data?.me.role,
           },
         }));
-        set({ user: response.data.login.user });
+        const userData = JSON.stringify(get().user)
         setCookie(null, "jwt", response.data.login.jwt, {
           maxAge: 30 * 24 * 60 * 60,
           path: "/",
         });
+        setCookie(null, "user", userData, {
+          maxAge: 30 * 24 * 60 * 60,
+          path: "/",
+        })
       }
       router.push("/home");
     } catch (err) {

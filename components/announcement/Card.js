@@ -32,7 +32,7 @@ const Card = ({ isActive, data, markAsRead }) => {
       <div css={styles.info}>
         <div>
           {data?.attributes?.users_permissions_users?.data[0]?.attributes
-            .profile?.data?.attributes.photo ? (
+            .profile?.data?.attributes.photo.data?.attributes.url ? (
             <img
               src={`${process.env.NEXT_PUBLIC_APP_URL}${data?.attributes?.users_permissions_users?.data[0]?.attributes.profile.data?.attributes.photo?.data?.attributes.url}`}
               css={styles.profile}
