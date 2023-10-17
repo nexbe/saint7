@@ -1,5 +1,5 @@
-import Head from 'next/head'
-import Login from '../components/auth/Login'
+import Head from "next/head";
+import Login from "../components/auth/Login";
 
 export default function Home() {
   return (
@@ -14,5 +14,5 @@ export default function Home() {
         <Login />
       </main>
     </div>
-  )
+  );
 }
