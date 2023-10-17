@@ -83,6 +83,7 @@ const Team = () => {
                         pathname: "/profile",
                         query: {
                           userId: eachMember?.id,
+                          message: "Team",
                         },
                       })
                     }
@@ -95,8 +96,12 @@ const Team = () => {
                       }
                     />
                     <label className="primary-text">
-                      {eachMember?.profile?.firstName}{" "}
-                      {eachMember?.profile?.lastName}
+                      {!!eachMember?.profile?.firstName ||
+                      !!eachMember?.profile?.lastName
+                        ? eachMember?.profile?.firstName +
+                          " " +
+                          eachMember?.profile?.lastName
+                        : eachMember?.username}
                     </label>
                   </div>
                 );

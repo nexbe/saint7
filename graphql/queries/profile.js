@@ -36,6 +36,14 @@ export const GET_PROFILE_BY_ID = gql`
               attributes {
                 username
                 email
+                role {
+                  data {
+                    id
+                    attributes {
+                      name
+                    }
+                  }
+                }
               }
             }
           }

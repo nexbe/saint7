@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { Modal } from "reactstrap";
 import { css } from "@emotion/react";
-import { useRouter } from "next/router";
 
 const DeleteCertificateModal = ({
   selectedData,
@@ -9,11 +8,9 @@ const DeleteCertificateModal = ({
   close = () => {},
   handleDeleteConfirm = {},
 }) => {
-  const router = useRouter();
   const handlConfirm = () => {
     handleDeleteConfirm();
     close();
-    router.push("/profile");
   };
 
   return (

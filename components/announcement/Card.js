@@ -31,15 +31,15 @@ const Card = ({ isActive, data, markAsRead }) => {
       </p>
       <div css={styles.info}>
         <div>
-          {data?.attributes?.users_permissions_users?.data[0]?.attributes
-            .profile?.data?.attributes.photo.data?.attributes.url ? (
-            <img
-              src={`${process.env.NEXT_PUBLIC_APP_URL}${data?.attributes?.users_permissions_users?.data[0]?.attributes.profile.data?.attributes.photo?.data?.attributes.url}`}
-              css={styles.profile}
-            />
-          ) : (
-            <ProfileIcon />
-          )}
+          <img
+            src={
+              data?.attributes?.users_permissions_users?.data[0]?.attributes
+                .profile?.data?.attributes.photo.data?.attributes.url
+                ? `${process.env.NEXT_PUBLIC_APP_URL}${data?.attributes?.users_permissions_users?.data[0]?.attributes.profile.data?.attributes.photo?.data?.attributes.url}`
+                : "images/defaultImage.jpg"
+            }
+            css={styles.profile}
+          />
           <span style={{ marginLeft: "9px" }}>
             {
               data.attributes?.users_permissions_users?.data?.[0]?.attributes
@@ -96,7 +96,7 @@ const styles = {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
+    margin:15px; 
     span {
       font-size: 12px;
       font-weight: 400;

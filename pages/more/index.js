@@ -69,10 +69,12 @@ const MorePage = () => {
           <AnnouncementIcon />
           <span>Announcement</span>
         </Link>
-        <Link href={"/team"} css={styles.navLink} style={{ display: "none" }}>
-          <TeamIcon />
-          <span>Team</span>
-        </Link>
+        {user?.role?.name === "Manager" && (
+          <Link href={"/team"} css={styles.navLink}>
+            <TeamIcon />
+            <span>Team</span>
+          </Link>
+        )}
       </div>
     </Layout>
   );

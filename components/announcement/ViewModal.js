@@ -20,7 +20,15 @@ const ViewModal = ({ modal, setModal, data, time }) => {
       <p css={styles.paragraph}>{data?.attributes?.description}</p>
       <div css={styles.info}>
         <div>
-          <ProfileIcon />
+          <img
+            src={
+              data?.attributes?.users_permissions_users?.data[0]?.attributes
+                .profile?.data?.attributes.photo.data?.attributes.url
+                ? `${process.env.NEXT_PUBLIC_APP_URL}${data?.attributes?.users_permissions_users?.data[0]?.attributes.profile.data?.attributes.photo?.data?.attributes.url}`
+                : "images/defaultImage.jpg"
+            }
+            css={styles.profile}
+          />
           <span style={{ marginLeft: "9px" }}>
             {" "}
             {
@@ -74,10 +82,16 @@ const styles = {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin:15px; 
 
     span {
       font-size: 12px;
       font-weight: 400;
     }
+  `,
+  profile: css`
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
   `,
 };
