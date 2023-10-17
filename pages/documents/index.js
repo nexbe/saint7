@@ -8,7 +8,6 @@ import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import Card from "../../components/documents/Card";
 import BatteryWarningIcon from "../../public/icons/batteryWarningIcon";
-import LightningIcon from "../../public/icons/lightningIcon";
 import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
 import AddDocModal from "../../components/documents/AddDocModal";
@@ -44,26 +43,28 @@ const Documents = () => {
       <div css={styles.wrapper}>
         <HeaderNoti title={"Documents"} href={"/home"} />
         <div css={styles.bodyContainer}>
-          <div css={styles.actions} style={{ display: "none" }}>
-            <button
-              css={styles.actionBtn(true)}
-              onClick={() => setAddModal(true)}
-            >
-              ADD NEW DOCUMENT
-            </button>
-            <button
-              css={styles.actionBtn(isEdit)}
-              onClick={() => setIsEdit(!isEdit)}
-            >
-              <EditIcon />
-            </button>
-            <button
-              css={styles.actionBtn(isDelete)}
-              onClick={() => setIsDelete(!isDelete)}
-            >
-              <DeleteIcon />
-            </button>
-          </div>
+          {user?.role?.name === "Manager" && (
+            <div css={styles.actions}>
+              <button
+                css={styles.actionBtn(true)}
+                onClick={() => setAddModal(true)}
+              >
+                ADD NEW DOCUMENT
+              </button>
+              <button
+                css={styles.actionBtn(isEdit)}
+                onClick={() => setIsEdit(!isEdit)}
+              >
+                <EditIcon />
+              </button>
+              <button
+                css={styles.actionBtn(isDelete)}
+                onClick={() => setIsDelete(!isDelete)}
+              >
+                <DeleteIcon />
+              </button>
+            </div>
+          )}
           <div>
             {documentInfo &&
               documentInfo?.map((eachDocument, index) => {
