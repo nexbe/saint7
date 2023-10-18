@@ -12,6 +12,7 @@ import SearchIcon from "../../public/icons/searchIcon";
 import AddAnnouncementModal from "../../components/announcement/AddAnnouncementModal";
 import EditAnnouncementModal from "../../components/announcement/EditAnnouncementModal";
 import DeleteModal from "../../components/Modal/DeleteModal";
+import useLongPress from "../useLongPress";
 
 const Announcement = () => {
   const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
@@ -23,8 +24,10 @@ const Announcement = () => {
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
+  const [longPressCount, setlongPressCount] = useState(0);
   const { user } = useAuth();
   console.log("=>", user.role?.name);
+  console.log("del", isDelete)
   useEffect(() => {
     fetchAnnouncements();
   }, []);
@@ -43,11 +46,26 @@ const Announcement = () => {
     setData(searchValue === "" ? announcements : filteredData);
   }, [searchValue]);
 
+  // long press
+  const options = {
+    shouldPreventDefault: true,
+    delay: 1000,
+  };
+
+  const onLongPress = () => {
+    console.log("pressing");
+    setIsDelete(!isDelete);
+    setlongPressCount(longPressCount + 1);
+  };
+
+  console.log(longPressCount);
+  const longPressEvent = useLongPress({ onLongPress, options });
+
   return (
     <Layout>
       <HeaderNoti title={"Announcement"} href={"/more"} />
       <div css={styles.wrapper}>
-        {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
+        {/* {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
           <div css={styles.actions}>
             <button
               css={styles.actionBtn(true)}
@@ -65,7 +83,7 @@ const Announcement = () => {
               <DeleteIcon />
             </button>
           </div>
-        )}
+        )} */}
         <div css={styles.searchBox}>
           <input
             type="text"
@@ -80,15 +98,17 @@ const Announcement = () => {
         <div css={styles.cardContainer}>
           {data?.map((announcement) => {
             return (
-              <Card
-                isActive={announcement?.isRead}
-                data={announcement}
-                setEditModal={setEditModal}
-                isEdit={isEdit}
-                isDelete={isDelete}
-                markAsRead={() => markAnnouncementAsRead(announcement.id)}
-                key={announcement.id}
-              />
+                <button style={{border:"none"}}>
+                <Card
+                  isActive={announcement?.isRead}
+                  data={announcement}
+                  setEditModal={setEditModal}
+                  isEdit={isEdit}
+                  isDelete={isDelete}
+                  markAsRead={() => markAnnouncementAsRead(announcement.id)}
+                  key={announcement.id}
+                />
+                </button>
             );
           })}
           {data && data.length === 0 && <b css={styles.notFound}>No Results</b>}
@@ -157,8 +177,9 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    max-height: 72vh;
-    overflow-y: scroll;
+    max-height: 63vh;
+    height: 100%;
+    overflow-y:scroll;
   `,
   notFound: css`
     display: flex;
