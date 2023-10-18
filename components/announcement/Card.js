@@ -2,15 +2,23 @@
 import React, { useState } from "react";
 import { css } from "@emotion/react";
 import ActiveIcon from "../../public/icons/activeIcon";
-import ProfileIcon from "../../public/icons/profileIcon";
+import EditPencil from "../../public/icons/editPencil";
 import ViewModal from "./ViewModal";
 import dayjs from "dayjs";
+import { Input } from "reactstrap";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
-const Card = ({ isActive, data, markAsRead }) => {
+const Card = ({
+  isActive,
+  data,
+  markAsRead,
+  setEditModal,
+  isDelete,
+  isEdit,
+}) => {
   const [modal, setModal] = useState(false);
-
+  const [isChecked, setIsChecked] = useState(false);
   const calculateTime = (time) => {
     const date = dayjs(time);
     const difference = date.fromNow();
@@ -19,8 +27,27 @@ const Card = ({ isActive, data, markAsRead }) => {
   return (
     <div css={styles.wrapper(!isActive)} onClick={markAsRead}>
       <div css={styles.header}>
-        {!isActive && <ActiveIcon />}
+         {isDelete && (
+            <div style={{marginTop:"-9px"}}>
+              <Input
+                type="checkbox"
+                id="status"
+                name="status"
+                checked={isChecked}
+                onChange={(e) => setIsChecked(!isChecked)}
+                style={{ border: "2px solid #000" }}
+              />
+            </div>
+          )}
+        {!isActive && !isDelete && <ActiveIcon />}
         <span>{data.attributes?.title}</span>
+        {isEdit && (
+          <div
+            onClick={() => setEditModal(true)}
+            style={{ marginTop: "-12px", marginLeft: "9px" }}>
+            <EditPencil />
+          </div>
+        )}
       </div>
       <p css={styles.paragraph}>
         {data?.attributes?.description?.slice(0, 150)}
@@ -96,7 +123,7 @@ const styles = {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin:15px; 
+    margin: 15px;
     span {
       font-size: 12px;
       font-weight: 400;

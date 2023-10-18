@@ -10,6 +10,8 @@ import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
 import SearchIcon from "../../public/icons/searchIcon";
 import AddAnnouncementModal from "../../components/announcement/AddAnnouncementModal";
+import EditAnnouncementModal from "../../components/announcement/EditAnnouncementModal";
+import DeleteModal from "../../components/Modal/DeleteModal";
 
 const Announcement = () => {
   const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
@@ -49,20 +51,17 @@ const Announcement = () => {
           <div css={styles.actions}>
             <button
               css={styles.actionBtn(true)}
-              onClick={() => setAddModal(true)}
-            >
+              onClick={() => setAddModal(true)}>
               ADD ANNOUNCEMENT
             </button>
             <button
               css={styles.actionBtn(isEdit)}
-              onClick={() => setIsEdit(!isEdit)}
-            >
+              onClick={() => setIsEdit(!isEdit)}>
               <EditIcon />
             </button>
             <button
               css={styles.actionBtn(isDelete)}
-              onClick={() => setIsDelete(!isDelete)}
-            >
+              onClick={() => setIsDelete(!isDelete)}>
               <DeleteIcon />
             </button>
           </div>
@@ -84,6 +83,9 @@ const Announcement = () => {
               <Card
                 isActive={announcement?.isRead}
                 data={announcement}
+                setEditModal={setEditModal}
+                isEdit={isEdit}
+                isDelete={isDelete}
                 markAsRead={() => markAnnouncementAsRead(announcement.id)}
                 key={announcement.id}
               />
@@ -93,6 +95,13 @@ const Announcement = () => {
         </div>
       </div>
       <AddAnnouncementModal modal={addModal} setModal={setAddModal} />
+      <EditAnnouncementModal modal={editModal} setModal={setEditModal} />
+      {deleteModal && (
+        <DeleteModal
+          isOpen={deleteModal}
+          close={() => setDeleteModal(!deleteModal)}
+        />
+      )}
     </Layout>
   );
 };
@@ -163,7 +172,7 @@ const styles = {
   actions: css`
     display: flex;
     flex-direction: row;
-    margin-bottom:9px;
+    margin-bottom: 9px;
     justify-content: space-between;
     align-items: center;
     button {
