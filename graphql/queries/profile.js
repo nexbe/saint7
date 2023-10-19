@@ -8,6 +8,7 @@ export const GET_PROFILE_BY_ID = gql`
           firstName
           lastName
           gender
+          updatedAt
           photo {
             data {
               id

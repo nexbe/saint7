@@ -32,18 +32,13 @@ const profileStore = create((set, get) => ({
     } catch (error) {}
   },
 
-  updateProfile: async ({
-    updateProfileAction,
-    selectedProfileRow,
-    profileData,
-    status = "update",
-  }) => {
+  updateProfile: async ({ updateProfileAction, id, profileData }) => {
     set({ loading: true });
     try {
       await updateProfileAction({
         variables: {
           data: profileData,
-          id: selectedProfileRow.id,
+          id: id,
         },
       }).then((value) => {
         set({ loading: false });
