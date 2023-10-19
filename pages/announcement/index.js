@@ -12,7 +12,7 @@ import SearchIcon from "../../public/icons/searchIcon";
 import AddAnnouncementModal from "../../components/announcement/AddAnnouncementModal";
 import EditAnnouncementModal from "../../components/announcement/EditAnnouncementModal";
 import DeleteModal from "../../components/Modal/DeleteModal";
-import useLongPress from "../useLongPress";
+import useLongPress from "../../components/announcement/useLongPress";
 
 const Announcement = () => {
   const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
@@ -65,7 +65,7 @@ const Announcement = () => {
     <Layout>
       <HeaderNoti title={"Announcement"} href={"/more"} />
       <div css={styles.wrapper}>
-        {/* {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
+        {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
           <div css={styles.actions}>
             <button
               css={styles.actionBtn(true)}
@@ -83,7 +83,7 @@ const Announcement = () => {
               <DeleteIcon />
             </button>
           </div>
-        )} */}
+        )} 
         <div css={styles.searchBox}>
           <input
             type="text"
