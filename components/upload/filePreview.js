@@ -18,7 +18,9 @@ export const FilePreview = ({ onRemove, src, fileName, size }) => {
       onMouseLeave={() => setTimeout(handlers.close, 150)}
     >
       {isImage ? (
-        <img css={styles.previewImage} src={src} />
+        <div css={styles.fileIconContainer}>
+          <img css={styles.previewImage} src={src} />
+        </div>
       ) : (
         <div css={styles.fileIconContainer}>
           <PdfIcon />
@@ -26,7 +28,7 @@ export const FilePreview = ({ onRemove, src, fileName, size }) => {
       )}
       <div css={styles.selectedFileName}>
         <button type="button" onClick={onRemove} css={styles.removeButton}>
-          <IoCloseSharp size={20} color="#F6302B" />
+          <IoCloseSharp size={22} color="rgba(117, 117, 117, 1)" />
         </button>
       </div>
     </div>
@@ -40,7 +42,8 @@ const styles = {
     position: relative;
     transition: all 150ms ease;
     border-radius: 4px 4px 0px 0px;
-
+    width: 110px;
+    height: 140px;
     &:hover > div {
       opacity: 1;
     }
@@ -55,10 +58,11 @@ const styles = {
     place-items: center;
     border-radius: 10px;
     background: #e3f3ff;
+    padding: 22px 10px 8px;
   `,
   previewImage: css`
-    width: 90px;
-    height: 100px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
     border: 1px solid #e3f0ff;
     filter: drop-shadow(0px 4px 16px rgba(5, 14, 37, 0.05));
@@ -74,8 +78,8 @@ const styles = {
     outline: none;
     background: none;
     position: absolute;
-    margin-top: -7rem;
-    right: 30px;
+    top: -4px;
+    right: 18px;
   `,
   selectedFileName: css`
     color: #1e3c72;

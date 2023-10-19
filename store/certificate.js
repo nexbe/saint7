@@ -34,16 +34,15 @@ const certificatestore = create((set, get) => ({
 
   updateCertificate: async ({
     updateCertificateAction,
-    selectedcertificateRow,
+    id,
     certificateData,
-    status = "update",
   }) => {
     set({ loading: true });
     try {
       await updateCertificateAction({
         variables: {
           data: certificateData,
-          id: selectedcertificateRow.id,
+          id,
         },
       }).then((value) => {
         set({ loading: false });

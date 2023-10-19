@@ -7,7 +7,7 @@ export const Upload = ({ onChange }) => {
   const [loading, setLoading] = useState(false);
   return (
     <>
-      <label className="secondary-text">
+      <label className="secondary-text" style={{ marginTop: "10px" }}>
         Attach Documents <span style={{ color: "#ec1c24" }}>*</span>
       </label>
       <div css={styles.uploadContainer}>
