@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import client from "../graphql/apolloClient";
 import { GET_ANNOUNCEMENTS } from "../graphql/queries/announcement";
+import {
+  CREATE_ANNOUNCEMENT,
+  DELETE_ANNOUNCEMENT,
+  UPDATE_ANNOUNCEMENT,
+} from "../graphql/mutations/announcement";
 
 const useAnnouncement = create((set) => ({
   announcements: [],
@@ -31,6 +36,38 @@ const useAnnouncement = create((set) => ({
           : announcement
       ),
     }));
+  },
+  createAnnouncement: async (data) => {
+    try {
+      const response = await client.mutate({
+        mutation: CREATE_ANNOUNCEMENT,
+        variables: data,
+      });
+    } catch (err) {
+      console.log("creating announcement", err);
+    }
+  },
+  updateAnnouncement: async (data) => {
+    try {
+      const response = await client.mutate({
+        mutation: UPDATE_ANNOUNCEMENT,
+        variables: data,
+      });
+    } catch (err) {
+      console.log("update", err);
+    }
+  },
+  deleteAnnouncement: async (id) => {
+    try {
+      const response = await client.mutate({
+        mutation: DELETE_ANNOUNCEMENT,
+        variables: {
+          id: id,
+        },
+      });
+    } catch (err) {
+      console.log("delete", err);
+    }
   },
 }));
 
