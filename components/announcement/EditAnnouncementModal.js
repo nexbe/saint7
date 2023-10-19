@@ -5,12 +5,14 @@ import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
 import ConfirmModal from "../Modal/ConfirmModal";
 import useAnnouncement from "../../store/announcement";
+import { useRouter } from "next/router";
 
 const EditAnnouncementModal = ({ modal, setModal, data }) => {
+  const router = useRouter();
   const [title, setTitle] = useState(data?.attributes?.title);
   const [description, setDescription] = useState(data?.attributes?.description);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
-  const { updateAnnouncement } = useAnnouncement();
+  const { updateAnnouncement, errorUpdateAnnouncement } = useAnnouncement();
   const toggle = () => {
     setModal(!modal);
   };
@@ -38,6 +40,15 @@ const EditAnnouncementModal = ({ modal, setModal, data }) => {
     }
     )}
     setModal(false);
+    router.push({
+      pathname: `/announcement`,
+      query: {
+        message: !errorUpdateAnnouncement ? "Success!" : "Apologies!",
+        belongTo: !errorUpdateAnnouncement ? "Announcement" : "error",
+        action: "edit",
+        userId: data.id,
+      },
+    })
   };
   return (
     <>

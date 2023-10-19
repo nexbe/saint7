@@ -4,12 +4,14 @@ import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
 import useAnnouncement from "../../store/announcement";
+import { useRouter } from "next/router";
 
 const AddAnnouncementModal = ({ modal, setModal, userId }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const { createAnnouncement } = useAnnouncement();
-
+  const { createAnnouncement , errorCreateAnnouncement} = useAnnouncement();
+  const router = useRouter();
+  console.log(errorCreateAnnouncement)
   const toggle = () => {
     setModal(!modal);
   };
@@ -26,6 +28,15 @@ const AddAnnouncementModal = ({ modal, setModal, userId }) => {
         },
       });
       setModal(false)
+      router.push({
+        pathname: `/announcement`,
+        query: {
+          message: !errorCreateAnnouncement ? "Success!" : "Apologies!",
+          belongTo: !errorCreateAnnouncement ? "Announcement" : "error",
+          action: "create",
+          userId: userId,
+        },
+      })
     }
   };
   

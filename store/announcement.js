@@ -9,10 +9,13 @@ import {
 
 const useAnnouncement = create((set) => ({
   announcements: [],
+  errorCreateAnnouncement:null,
+  errorUpdateAnnouncement:null,
   fetchAnnouncements: async () => {
     try {
       const response = await client.query({
         query: GET_ANNOUNCEMENTS,
+        fetchPolicy: "network-only",
       });
       if (!response.error) {
         const announcementsWithReadStatus =
@@ -44,6 +47,10 @@ const useAnnouncement = create((set) => ({
         variables: data,
       });
     } catch (err) {
+        set((state) => ({
+          ...state,
+          errorCreateAnnouncement: err
+        }))
       console.log("creating announcement", err);
     }
   },
@@ -54,6 +61,10 @@ const useAnnouncement = create((set) => ({
         variables: data,
       });
     } catch (err) {
+      set((state) => ({
+        ...state,
+        errorUpdateAnnouncement: err
+      }))
       console.log("update", err);
     }
   },

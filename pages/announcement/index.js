@@ -12,6 +12,8 @@ import SearchIcon from "../../public/icons/searchIcon";
 import AddAnnouncementModal from "../../components/announcement/AddAnnouncementModal";
 import EditAnnouncementModal from "../../components/announcement/EditAnnouncementModal";
 import DeleteModal from "../../components/Modal/DeleteModal";
+import NotificationBox from "../../components/notification/NotiBox";
+import { useRouter } from "next/router";
 
 const Announcement = () => {
   const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
@@ -23,13 +25,13 @@ const Announcement = () => {
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-  const [selectedData, setSelectedData] = useState('');
+  const [selectedData, setSelectedData] = useState("");
   const { user } = useAuth();
-  console.log("=>", user.role?.name);
-  console.log("del", isDelete)
+  const router = useRouter();
+  console.log(router)
   useEffect(() => {
     fetchAnnouncements();
-  }, []);
+  }, [setAddModal, addModal, router, setDeleteModal, setEditModal]);
 
   useEffect(() => {
     setData(announcements);
@@ -49,7 +51,13 @@ const Announcement = () => {
     <Layout>
       <HeaderNoti title={"Announcement"} href={"/more"} />
       <div css={styles.wrapper}>
-      {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
+      <NotificationBox
+        message={router.query.message}
+        belongTo={router.query.belongTo}
+        timeout={5000}
+        action={router.query.action}
+      />
+        {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
           <div css={styles.actions}>
             <button
               css={styles.actionBtn(true)}
@@ -67,7 +75,7 @@ const Announcement = () => {
               <DeleteIcon />
             </button>
           </div>
-        )} 
+        )}
         <div css={styles.searchBox}>
           <input
             type="text"
@@ -98,14 +106,22 @@ const Announcement = () => {
           {data && data.length === 0 && <b css={styles.notFound}>No Results</b>}
         </div>
       </div>
-      <AddAnnouncementModal modal={addModal} setModal={setAddModal} userId={user?.id}/>
+      <AddAnnouncementModal
+        modal={addModal}
+        setModal={setAddModal}
+        userId={user?.id}
+      />
       {deleteModal && (
         <DeleteModal
           isOpen={deleteModal}
           close={() => setDeleteModal(!deleteModal)}
         />
       )}
-      <EditAnnouncementModal modal={editModal} setModal={setEditModal} data={selectedData}/> 
+      <EditAnnouncementModal
+        modal={editModal}
+        setModal={setEditModal}
+        data={selectedData}
+      />
     </Layout>
   );
 };
