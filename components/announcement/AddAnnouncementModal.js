@@ -3,14 +3,29 @@ import React, { useState } from "react";
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
+import useAnnouncement from "../../store/announcement";
 
-const AddAnnouncementModal = ({ modal, setModal }) => {
+const AddAnnouncementModal = ({ modal, setModal, userId }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const { createAnnouncement } = useAnnouncement();
 
   const toggle = () => {
     setModal(!modal);
   };
+
+  const onSubmitHandler = () => {
+    if(title && description){
+      createAnnouncement({
+        data : {
+          title : title,
+          description : description,
+          users_permissions_users: userId,
+          publishedAt: new Date().toISOString()
+        }
+      })
+    }
+  }
   return (
     <Modal isOpen={modal} toggle={toggle} css={styles.wrapper}>
       <div css={styles.actions}>

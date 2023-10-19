@@ -114,7 +114,7 @@ const Announcement = () => {
           {data && data.length === 0 && <b css={styles.notFound}>No Results</b>}
         </div>
       </div>
-      <AddAnnouncementModal modal={addModal} setModal={setAddModal} />
+      <AddAnnouncementModal modal={addModal} setModal={setAddModal} userId={user?.id}/>
       <EditAnnouncementModal modal={editModal} setModal={setEditModal} />
       {deleteModal && (
         <DeleteModal
