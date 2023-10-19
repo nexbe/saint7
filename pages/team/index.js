@@ -20,6 +20,17 @@ const Team = () => {
   const { user } = authStore((state) => state);
   const [addFavourite, setAddFavourite] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
+  const teamLists = !!filterTerm
+    ? userInfo.filter(
+        (item) =>
+          item?.profile.firstName
+            ?.toLowerCase()
+            .includes(filterTerm?.toLowerCase()) ||
+          item?.profile.lastName
+            ?.toLowerCase()
+            .includes(filterTerm?.toLowerCase())
+      )
+    : userInfo;
 
   useEffect(() => {
     getAllUsers({
@@ -32,18 +43,6 @@ const Team = () => {
     const term = event.target.value;
     setFilterTerm(term);
   };
-
-  const teamLists = !!filterTerm
-    ? userInfo.filter(
-        (item) =>
-          item?.profile.firstName
-            ?.toLowerCase()
-            .includes(filterTerm?.toLowerCase()) ||
-          item?.profile.lastName
-            ?.toLowerCase()
-            .includes(filterTerm?.toLowerCase())
-      )
-    : userInfo;
 
   return (
     <Layout>
@@ -83,7 +82,7 @@ const Team = () => {
                         pathname: "/profile",
                         query: {
                           userId: eachMember?.id,
-                          message: "Team",
+                          team: "Team",
                         },
                       })
                     }
@@ -98,9 +97,9 @@ const Team = () => {
                     <label className="primary-text">
                       {!!eachMember?.profile?.firstName ||
                       !!eachMember?.profile?.lastName
-                        ? eachMember?.profile?.firstName +
-                          " " +
-                          eachMember?.profile?.lastName
+                        ? (eachMember?.profile?.firstName ?? "") +
+                          (eachMember?.profile?.firstName ? " " : "") +
+                          (eachMember?.profile?.lastName ?? "")
                         : eachMember?.username}
                     </label>
                   </div>

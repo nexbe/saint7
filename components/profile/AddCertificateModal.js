@@ -24,7 +24,8 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
   } = useForm();
   const router = useRouter();
   const { createCertificate } = certificateStore((state) => state);
-  const [createCertificateAction] = useMutation(CREATE_CERTIFICATE);
+  const [createCertificateAction, errCreateCertificate] =
+    useMutation(CREATE_CERTIFICATE);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [saveAction, setSaveAction] = useState(false);
@@ -58,7 +59,7 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
         data: {
           name: data.name,
           expiryDate: new Date(selectedDate).toISOString(),
-          users_permissions_user: userId,
+          users_permissions_user: +userId,
           attachement: filesArrToSend?.map((eachFile) => {
             return +eachFile?.id;
           }),
@@ -66,7 +67,15 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
         },
       });
       close();
-      router.push("/profile");
+      router.push({
+        pathname: `/profile`,
+        query: {
+          message: errCreateCertificate ? "Success!" : "Apologies!",
+          belongTo: errCreateCertificate ? "Certificate" : "error",
+          action: "create",
+          userId: userId,
+        },
+      });
     }
   };
 

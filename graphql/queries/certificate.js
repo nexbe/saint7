@@ -10,6 +10,9 @@ export const GET_CERTIFICATE_BY_ID = gql`
         attributes {
           name
           expiryDate
+          publishedAt
+          createdAt
+          updatedAt
           users_permissions_user {
             data {
               id
@@ -24,8 +27,6 @@ export const GET_CERTIFICATE_BY_ID = gql`
               }
             }
           }
-          publishedAt
-          createdAt
         }
       }
     }

@@ -22,17 +22,13 @@ export const UploadedFiles = memo(function UploadedFiles({
 
   const onChange = async (e) => {
     const selectedFiles = [...e.target.files];
-    console.log("selectedFiles..", selectedFiles);
     const uploadedFiles = {};
-
     for (let file of selectedFiles) {
       const fileData = {};
       const formData = new FormData();
       formData.append("files", file);
       const response = await uploadFile(formData);
-      console.log("response..", response);
       const json = await response.json();
-      console.log("json..", json);
       if (response.status === 200) {
         const term = json[0].id;
         fileData.attachment = term;
@@ -40,7 +36,6 @@ export const UploadedFiles = memo(function UploadedFiles({
       }
     }
     setFileList({ ...fileList, ...uploadedFiles });
-    console.log("file lsit...", fileList);
   };
 
   return (
@@ -61,28 +56,21 @@ export const UploadedFiles = memo(function UploadedFiles({
               key={id}
             />
           ))}
+          {fileListArr.length !== 0 && (
+            <label css={styles.uploadBtn}>
+              <UploadIcon /> Upload file
+              <input
+                accept={`application/pdf, image/*`}
+                onChange={async (e) => {
+                  await onChange(e);
+                }}
+                type="file"
+                css={styles.fileInput}
+                multiple
+              />
+            </label>
+          )}
         </div>
-        {fileListArr.length !== 0 && (
-          // <button
-          //   onClick={openHandlers.toggle}
-          //   css={styles.toggleUploadFilesButton}
-          // >
-          //   <AiOutlinePlus color="#1E3C72" />
-          //   Upload another file
-          // </button>
-          <label css={styles.uploadBtn}>
-            <UploadIcon /> Upload file
-            <input
-              accept={`application/pdf, image/*`}
-              onChange={async (e) => {
-                await onChange(e);
-              }}
-              type="file"
-              css={styles.fileInput}
-              multiple
-            />
-          </label>
-        )}
       </div>
     </div>
   );
@@ -96,6 +84,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 30px;
+    margin-top: 10px;
   `,
   selectedFilesContainer: css`
     width: 100%;
@@ -116,31 +105,40 @@ const styles = {
     text-decoration: underline;
   `,
   selectedFiles: css`
-    width: 100%;
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex: 1;
+    overflow-y: hidden;
+    overflow-x: auto;
     width: 100%;
-    min-height: 85px;
+    height: 150px;
     background: var(--white);
     box-shadow: 0px 4px 4px 0px rgba(117, 139, 154, 0.08);
     border: 2px dashed #d6e2ea;
     padding: 10px;
     margin-bottom: 20px;
     margin-top: 10px;
+    ::-webkit-scrollbar {
+      height: 5px;
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      height: 5px;
+      border-radius: 10px;
+      background-color: var(--lighter-gray);
+    }
   `,
   uploadBtn: css`
-    display: inline-block;
-    padding: 8px 16px;
     color: #5e72e4;
     font-size: 14px;
+    padding: 3px;
     font-weight: 400;
     text-align: start;
     cursor: pointer;
     border: none;
     background: none;
     outline: none;
-
+    position: absolute;
+    margin-top: 6.5rem;
     input {
       display: none;
     }

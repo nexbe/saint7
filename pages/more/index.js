@@ -69,7 +69,7 @@ const MorePage = () => {
           <AnnouncementIcon />
           <span>Announcement</span>
         </Link>
-        {user?.role?.name === "Manager" && (
+        {user?.role?.name != "Guard" && (
           <Link href={"/team"} css={styles.navLink}>
             <TeamIcon />
             <span>Team</span>

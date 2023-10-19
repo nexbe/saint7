@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useApolloClient, useMutation } from "@apollo/client";
 import { FaPlus, FaStar } from "react-icons/fa";
@@ -9,6 +9,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import dayjs from "dayjs";
+import { useForm } from "react-hook-form";
 
 import Layout from "../../components/layout/Layout";
 import BackIcon from "/public/icons/backArrow";
@@ -21,6 +22,7 @@ import CameraIcon from "/public/icons/cameraIcon";
 import AddCertificateModal from "../../components/profile/AddCertificateModal";
 import EditCertificateModal from "../../components/profile/EditCertificateModal";
 import DeleteModal from "../../components/Modal/DeleteModal";
+import NotificationBox from "../../components/notification/NotiBox";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import certificateStore from "../../store/certificate";
@@ -39,13 +41,37 @@ const Profile = () => {
     loading,
     updateProfile,
   } = profileStore((state) => state);
-  const [updateProfileAction, { loadProfile, errProfile }] =
+  const [updateProfileAction, { errUploadProfile }] =
     useMutation(UPDATE_PROFILE);
-  const [deleteCertificateAction] = useMutation(DELETE_CERTIFICATE);
+  const [deleteCertificateAction, { errDeleteCertificate }] =
+    useMutation(DELETE_CERTIFICATE);
   const { user } = userStore((state) => state);
 
+  const selectedProfile = !!router.query.userId
+    ? profileInfo.filter((item) => {
+        if (item?.user?.id === router.query.userId) return item;
+      })
+    : profileInfo;
+
+  const [showProfileDetail, setShowProfileDetail] = useState(false);
+  const [profileEdit, setProfileEdit] = useState(false);
+  const [personalEdit, setPersonalEdit] = useState(false);
+  const [certificateEdit, setCertificateEdit] = useState(false);
+  const [showAchievementDetail, setShowAchievementDetail] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState(
+    profileInfo[0]?.joinDate ? new Date(profileInfo[0]?.joinDate) : null
+  );
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [addFavourite, setAddFavourite] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState(null);
+  const [image, setImage] = useState();
+  const [editConfirm, setEditConfirm] = useState(false);
+
   useEffect(() => {
-    if (!!router.query.message) {
+    if (!!router.query.userId) {
       getAllProfiles({
         apolloClient,
         where: { userId: router.query.userId },
@@ -65,21 +91,11 @@ const Profile = () => {
       });
     }
   }, [user, router]);
-
-  const [showProfileDetail, setShowProfileDetail] = useState(false);
-  const [profileEdit, setProfileEdit] = useState(false);
-  const [personalEdit, setPersonalEdit] = useState(false);
-  const [certificateEdit, setCertificateEdit] = useState(false);
-  const [showAchievementDetail, setShowAchievementDetail] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(profileInfo[0]?.photo.url);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [startDate, setStartDate] = useState(null);
-  const [selectedCertificate, setSelectedCertificate] = useState(null);
-  const [addFavourite, setAddFavourite] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState(null);
-  const [image, setImage] = useState();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -102,7 +118,7 @@ const Profile = () => {
       setImage(
         `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
       );
-  }, [user]);
+  }, [profileInfo[0]]);
 
   const onPreviewImage = async (e) => {
     const selectedImage = e.target.files[0];
@@ -128,13 +144,54 @@ const Profile = () => {
         },
       },
     });
+    router.push({
+      pathname: `/profile`,
+      query: {
+        message: !errUploadProfile ? "Success!" : "Apologies!",
+        belongTo: !errUploadProfile ? "uploadProfileSuccess" : "error",
+        userId: user?.id,
+      },
+    });
+  };
+
+  const onSubmit = async (data) => {
+    if (!!editConfirm) {
+      await updateProfile({
+        updateProfileAction,
+        id: profileInfo[0]?.id,
+        profileData: {
+          contactNumber: data.contactNumber,
+          position: data.position,
+          // user: { email: data.email },
+          joinDate: new Date(startDate).toISOString(),
+        },
+        updatedAt: new Date().toISOString(),
+      });
+      router.push({
+        pathname: `/profile`,
+        query: {
+          message: !errUploadProfile ? "Success!" : "Apologies!",
+          belongTo: !errUploadProfile ? "Personal" : "error",
+          userId: user?.id,
+          action: "edit",
+        },
+      });
+    }
   };
 
   const handleDeleteConfirm = async () => {
     await deleteCertificateAction({
-      variables: { id: selectedCertificate?.id },
+      variables: { id: +selectedCertificate?.id },
     });
-    router.push("/profile");
+    router.push({
+      pathname: ``,
+      query: {
+        message: !errDeleteCertificate ? "Success!" : "Apologies!",
+        belongTo: !errDeleteCertificate ? "Certificate" : "error",
+        action: "delete",
+        userId: user?.id,
+      },
+    });
   };
 
   return (
@@ -153,10 +210,16 @@ const Profile = () => {
           }}
         >
           <div css={styles.profileContent}>
+            <NotificationBox
+              message={router.query.message}
+              belongTo={router.query.belongTo}
+              timeout={5000}
+              action={router.query.action}
+            />
             <div css={styles.attachBox}>
               <label css={styles.attachBtn}>
                 <span>
-                  {profileInfo[0]?.photo.url ? (
+                  {selectedProfile[0]?.photo.url ? (
                     <img src={image} css={styles.roundedImage} alt="" />
                   ) : (
                     <img
@@ -178,7 +241,7 @@ const Profile = () => {
                     setSelectedFiles(e.target.files[0]);
                   }}
                   disabled={
-                    router?.query?.message === "Team" &&
+                    router?.query?.team === "Team" &&
                     profileInfo[0]?.user?.id != user?.id
                       ? true
                       : false
@@ -188,10 +251,15 @@ const Profile = () => {
             </div>
             <p style={{ marginTop: "5px" }}>
               <label className="header-text">
-                {profileInfo[0]?.firstName} {profileInfo[0]?.lastName}
+                {!!selectedProfile[0]?.firstName ||
+                !!selectedProfile[0]?.lastName
+                  ? (selectedProfile[0]?.firstName ?? "") +
+                    (selectedProfile[0]?.firstName ? " " : "") +
+                    (selectedProfile[0]?.lastName ?? "")
+                  : selectedProfile[0]?.user?.username}
               </label>
               <label className="secondary-text">
-                Employee ID: {profileInfo[0]?.id}
+                Employee ID: {selectedProfile[0]?.id}
               </label>
             </p>
             <div
@@ -199,8 +267,7 @@ const Profile = () => {
               onClick={() => setProfileEdit(true)}
               style={{
                 display:
-                  router.query.message === "Team" ||
-                  user?.role?.name === "Manager"
+                  router.query.team === "Team" || user?.role?.name != "Guard"
                     ? "block"
                     : "none",
               }}
@@ -210,8 +277,7 @@ const Profile = () => {
             <div
               style={{
                 display:
-                  router.query.message === "Team" &&
-                  user?.role?.name === "Manager"
+                  router.query.team === "Team" && user?.role?.name != "Guard"
                     ? "block"
                     : "none",
               }}
@@ -223,238 +289,258 @@ const Profile = () => {
               <FaStar size={20} color={addFavourite ? "#FA7E0B" : "#B3B3B3"} />
             </div>
           </div>
-
-          <div css={styles.infoContent} style={{ marginTop: "90px" }}>
-            <div css={styles.labelText} className="primary-text">
-              <label onClick={() => setShowProfileDetail(!showProfileDetail)}>
-                <UserIcon />
-                Personal Information
-              </label>
-              <div
-                style={{
-                  marginLeft: "auto",
-                  marginRight: "-40px",
-                  display: profileEdit ? "block" : "none",
-                }}
-                onClick={() => {
-                  setPersonalEdit(true);
-                  setShowProfileDetail(true);
-                }}
-              >
-                <PiPencilSimpleLineLight
-                  color="rgba(47, 72, 88, 1)"
-                  size={20}
-                />
-              </div>
-              <div
-                onClick={() => setShowProfileDetail(!showProfileDetail)}
-                style={{ marginLeft: "auto" }}
-              >
-                <button>
-                  {showProfileDetail ? <ArrowUpIcon /> : <ArrowDownIcon />}
-                </button>
-              </div>
-            </div>
-            <div style={{ display: showProfileDetail ? "block" : "none" }}>
-              <div css={styles.formFlexDiv}>
-                <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Emaill</label>
-                </div>
-                <div css={styles.formFlexChildDiv}>
-                  <input
-                    type="email"
-                    className="primary-text"
-                    value={profileInfo[0]?.user?.email}
-                    disabled={!personalEdit}
-                  />
-                </div>
-              </div>
-              <div css={styles.formFlexDiv}>
-                <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Contact Number</label>
-                </div>
-                <div css={styles.formFlexChildDiv}>
-                  <input
-                    type="text"
-                    className="primary-text"
-                    value={profileInfo[0]?.contactNumber}
-                    disabled={!personalEdit}
-                  />
-                </div>
-              </div>
-              <div css={styles.formFlexDiv}>
-                <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Position</label>
-                </div>
-                <div css={styles.formFlexChildDiv}>
-                  <input
-                    type="text"
-                    className="primary-text"
-                    value={profileInfo[0]?.position}
-                    disabled={!personalEdit}
-                  />
-                </div>
-              </div>
-              <div css={styles.formFlexDiv}>
-                <div css={styles.formFlexChildDiv}>
-                  <label className="primary-text">Joined Date</label>
-                </div>
-                <div css={styles.formFlexChildDiv}>
-                  <label>
-                    <DatePicker
-                      selected={
-                        startDate
-                          ? startDate
-                          : profileInfo[0]?.joinDate
-                          ? new Date(profileInfo[0]?.joinDate)
-                          : ""
-                      }
-                      className="primary-text"
-                      onChange={handleStartDateChange}
-                      dateFormat="dd MMM yyyy"
-                      disabled={!personalEdit}
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div css={styles.infoContent}>
-            <div
-              css={styles.labelText}
-              className="primary-text"
-              style={{ marginBottom: "10px" }}
-            >
-              <label
-                onClick={() => setShowAchievementDetail(!showAchievementDetail)}
-              >
-                <CertificationIcon />
-                Certifications and Licenses
-              </label>
-              <div
-                style={{
-                  marginLeft: "auto",
-                  display: profileEdit ? "block" : "none",
-                }}
-                onClick={() => {
-                  setCertificateEdit(true);
-                  setShowAchievementDetail(true);
-                }}
-              >
-                <PiPencilSimpleLineLight
-                  color="rgba(47, 72, 88, 1)"
-                  size={20}
-                />
-              </div>
-              <div
-                style={{ marginLeft: "auto" }}
-                onClick={() => setShowAchievementDetail(!showAchievementDetail)}
-              >
-                <button>
-                  {showAchievementDetail ? <ArrowUpIcon /> : <ArrowDownIcon />}
-                </button>
-              </div>
-            </div>
-            <div style={{ display: showAchievementDetail ? "block" : "none" }}>
-              {certificateInfo?.map((eachCertificate, index) => {
-                return (
-                  <div
-                    className="d-flex"
-                    style={{ margin: "5px 0" }}
-                    key={index}
-                  >
-                    <div css={styles.certificateDetail}>
-                      <label className="secondary-text">
-                        <AchievementIcon /> {eachCertificate.name}
-                      </label>
-                      <span className="secondary-text">
-                        Expired date:
-                        {dayjs(eachCertificate.expiryDate).format("DD/MM/YYYY")}
-                      </span>
-                    </div>
-                    <div
-                      css={styles.actionBox}
-                      style={{ display: certificateEdit ? "block" : "none" }}
-                    >
-                      <PiPencilSimpleLight
-                        size={20}
-                        color="rgba(47, 72, 88, 1)"
-                        onClick={() => {
-                          setSelectedCertificate(eachCertificate);
-                          editCertificateModal();
-                        }}
-                        style={{ marginRight: "3px" }}
-                      />
-                      <RiDeleteBinLine
-                        size={20}
-                        color="rgba(236, 28, 36, 1)"
-                        onClick={() => {
-                          setSelectedCertificate(eachCertificate);
-                          deleteCertificateModal();
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-              {editModalOpen && (
-                <EditCertificateModal
-                  isOpen={editModalOpen}
-                  setEditModalOpen={setEditModalOpen}
-                  selectedCertificate={selectedCertificate}
-                  userId={user?.id}
-                />
-              )}
-              {deleteModalOpen && (
-                <DeleteModal
-                  isOpen={deleteModalOpen}
-                  close={() => setDeleteModalOpen(!deleteModalOpen)}
-                  handleDeleteConfirm={handleDeleteConfirm}
-                  selectedData={selectedCertificate}
-                />
-              )}
-              <div
-                className="header-text"
-                css={styles.addBox}
-                onClick={addCertificateModal}
-              >
-                <label>
-                  <FaPlus color="var(--primary)" />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div css={styles.infoContent} style={{ marginTop: "90px" }}>
+              <div css={styles.labelText} className="primary-text">
+                <label onClick={() => setShowProfileDetail(!showProfileDetail)}>
+                  <UserIcon />
+                  Personal Information
                 </label>
-                Add More
+                <div
+                  style={{
+                    marginLeft: "auto",
+                    marginRight: "-40px",
+                    display: profileEdit ? "block" : "none",
+                  }}
+                  onClick={() => {
+                    setPersonalEdit(true);
+                    setShowProfileDetail(true);
+                  }}
+                >
+                  <PiPencilSimpleLineLight
+                    color="rgba(47, 72, 88, 1)"
+                    size={20}
+                  />
+                </div>
+                <div
+                  onClick={() => setShowProfileDetail(!showProfileDetail)}
+                  style={{ marginLeft: "auto" }}
+                >
+                  <button>
+                    {showProfileDetail ? <ArrowUpIcon /> : <ArrowDownIcon />}
+                  </button>
+                </div>
               </div>
-              {modalOpen && (
-                <AddCertificateModal
-                  isOpen={modalOpen}
-                  close={() => setModalOpen(!modalOpen)}
-                  userId={user?.id}
-                />
-              )}
+
+              <div style={{ display: showProfileDetail ? "block" : "none" }}>
+                <div css={styles.formFlexDiv}>
+                  <div css={styles.formFlexChildDiv}>
+                    <label className="primary-text">Emaill</label>
+                  </div>
+                  <div css={styles.formFlexChildDiv}>
+                    <input
+                      type="email"
+                      className="primary-text"
+                      defaultValue={selectedProfile[0]?.user?.email}
+                      disabled={!personalEdit}
+                      {...register("email", {
+                        required: false,
+                      })}
+                    />
+                  </div>
+                </div>
+                <div css={styles.formFlexDiv}>
+                  <div css={styles.formFlexChildDiv}>
+                    <label className="primary-text">Contact Number</label>
+                  </div>
+                  <div css={styles.formFlexChildDiv}>
+                    <input
+                      type="text"
+                      className="primary-text"
+                      disabled={!personalEdit}
+                      defaultValue={selectedProfile[0]?.contactNumber}
+                      {...register("contactNumber", {
+                        required: false,
+                      })}
+                    />
+                  </div>
+                </div>
+                <div css={styles.formFlexDiv}>
+                  <div css={styles.formFlexChildDiv}>
+                    <label className="primary-text">Position</label>
+                  </div>
+                  <div css={styles.formFlexChildDiv}>
+                    <input
+                      type="text"
+                      className="primary-text"
+                      disabled={!personalEdit}
+                      defaultValue={selectedProfile[0]?.position}
+                      {...register("position", {
+                        required: false,
+                      })}
+                    />
+                  </div>
+                </div>
+                <div css={styles.formFlexDiv}>
+                  <div css={styles.formFlexChildDiv}>
+                    <label className="primary-text">Joined Date</label>
+                  </div>
+                  <div css={styles.formFlexChildDiv}>
+                    <label>
+                      <DatePicker
+                        selected={startDate}
+                        className="primary-text"
+                        onChange={handleStartDateChange}
+                        dateFormat="dd MMM yyyy"
+                        disabled={!personalEdit}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div
-            css={styles.actionButton}
-            style={{ display: personalEdit ? "block" : "none" }}
-          >
-            <div>
-              <button
-                css={styles.cancelBtn}
-                onClick={() => {
-                  setPersonalEdit(false);
-                }}
+            <div css={styles.infoContent}>
+              <div
+                css={styles.labelText}
+                className="primary-text"
+                style={{ marginBottom: "10px" }}
               >
-                Cancel
-              </button>
-              <button
-                css={styles.addBtn}
-                onClick={() => {
-                  setPersonalEdit(false);
-                }}
+                <label
+                  onClick={() =>
+                    setShowAchievementDetail(!showAchievementDetail)
+                  }
+                >
+                  <CertificationIcon />
+                  Certifications and Licenses
+                </label>
+                <div
+                  style={{
+                    marginLeft: "auto",
+                    display: profileEdit ? "block" : "none",
+                  }}
+                  onClick={() => {
+                    setCertificateEdit(true);
+                    setShowAchievementDetail(true);
+                  }}
+                >
+                  <PiPencilSimpleLineLight
+                    color="rgba(47, 72, 88, 1)"
+                    size={20}
+                  />
+                </div>
+                <div
+                  style={{ marginLeft: "auto" }}
+                  onClick={() =>
+                    setShowAchievementDetail(!showAchievementDetail)
+                  }
+                >
+                  <button>
+                    {showAchievementDetail ? (
+                      <ArrowUpIcon />
+                    ) : (
+                      <ArrowDownIcon />
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div
+                style={{ display: showAchievementDetail ? "block" : "none" }}
               >
-                Confirm
-              </button>
+                {certificateInfo?.map((eachCertificate, index) => {
+                  return (
+                    <div
+                      className="d-flex"
+                      style={{ margin: "5px 0" }}
+                      key={index}
+                    >
+                      <div css={styles.certificateDetail}>
+                        <label className="secondary-text">
+                          <AchievementIcon /> {eachCertificate.name}
+                        </label>
+                        <span className="secondary-text">
+                          Expired date:
+                          {dayjs(eachCertificate.expiryDate).format(
+                            "DD/MM/YYYY"
+                          )}
+                        </span>
+                      </div>
+                      <div
+                        css={styles.actionBox}
+                        style={{ display: certificateEdit ? "block" : "none" }}
+                      >
+                        <PiPencilSimpleLight
+                          size={20}
+                          color="rgba(47, 72, 88, 1)"
+                          onClick={() => {
+                            setSelectedCertificate(eachCertificate);
+                            editCertificateModal();
+                          }}
+                          style={{ marginRight: "3px" }}
+                        />
+                        <RiDeleteBinLine
+                          size={20}
+                          color="rgba(236, 28, 36, 1)"
+                          onClick={() => {
+                            setSelectedCertificate(eachCertificate);
+                            deleteCertificateModal();
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+                {editModalOpen && (
+                  <EditCertificateModal
+                    isOpen={editModalOpen}
+                    setEditModalOpen={setEditModalOpen}
+                    selectedCertificate={selectedCertificate}
+                    userId={user?.id}
+                    close={() => setEditModalOpen(!editModalOpen)}
+                  />
+                )}
+                {deleteModalOpen && (
+                  <DeleteModal
+                    isOpen={deleteModalOpen}
+                    close={() => setDeleteModalOpen(!deleteModalOpen)}
+                    handleDeleteConfirm={handleDeleteConfirm}
+                    selectedData={[selectedCertificate]}
+                  />
+                )}
+
+                <div
+                  className="header-text"
+                  css={styles.addBox}
+                  onClick={addCertificateModal}
+                >
+                  <label>
+                    <FaPlus color="var(--primary)" />
+                  </label>
+                  Add More
+                </div>
+                {modalOpen && (
+                  <AddCertificateModal
+                    isOpen={modalOpen}
+                    close={() => setModalOpen(!modalOpen)}
+                    userId={user?.id}
+                  />
+                )}
+              </div>
             </div>
-          </div>
+            <div
+              css={styles.actionButton}
+              style={{ display: personalEdit ? "block" : "none" }}
+            >
+              <div>
+                <button
+                  css={styles.cancelBtn}
+                  onClick={() => {
+                    setPersonalEdit(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  css={styles.addBtn}
+                  onClick={() => {
+                    setPersonalEdit(false);
+                    setEditConfirm(true);
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </Layout>
@@ -477,7 +563,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     background: var(--primary);
-    height: 90px;
+    height: 95px;
   `,
   backIcon: css`
     position: absolute;
@@ -515,7 +601,7 @@ const styles = {
     background: var(--mobile-color-usage-white, #fff);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     position: absolute;
-    top: 80px;
+    margin-top: -25px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -624,7 +710,7 @@ const styles = {
   `,
   attachBox: css`
     position: absolute;
-    margin-top: -80px;
+    margin-top: -70px;
     cursor: pointer;
     img {
       width: 60px;

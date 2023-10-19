@@ -1,133 +1,216 @@
 /** @jsxImportSource @emotion/react */
 import { Modal } from "reactstrap";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 import { css } from "@emotion/react";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
-import { AiOutlineFilePdf } from "react-icons/ai";
+import { useMutation, useApolloClient } from "@apollo/client";
 import { IoCloseSharp } from "react-icons/io5";
 import ConfirmModal from "../Modal/ConfirmModal";
+import { UploadedFiles } from "../upload/uploadFiles";
+import { Upload } from "../upload/uploadFile";
+import { uploadFile } from "../upload/upload";
+import certificateStore from "../../store/certificate";
+import { UPDATE_CERTIFICATE } from "../../graphql/mutations/certificate";
 
 const EditCertificateModal = ({
   selectedCertificate,
   isOpen = false,
   setEditModalOpen,
+  userId,
+  close = () => {},
 }) => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: selectedCertificate?.name,
+    },
+  });
+  const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllCertificates, updateCertificate } = certificateStore(
+    (state) => state
+  );
+  const [updateCertificateAction, errEditCertificate] =
+    useMutation(UPDATE_CERTIFICATE);
   const [selectedDate, setSelectedDate] = useState(
     new Date(selectedCertificate.expiryDate)
   );
-  const [selectedFile, setSelectedFile] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [certificateData, setCertificateData] = useState();
+  const [saveAction, setSaveAction] = useState(false);
 
-  const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg"];
-  const isImage = FILE_EXTENSIONS.some((extension) =>
-    selectedFile?.name?.endsWith(extension)
-  );
+  const [fileList, setFileList] = useState([]);
+  let fileListArr = _.entries(fileList);
 
-  console.log("sele...", selectedCertificate);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-  };
-
-  const handleRemoveFile = () => {
-    setSelectedFile(null);
-  };
   const handleDateChange = (date) => {
     setSelectedDate(date);
-  };
-  const toggle = () => {
-    setEditModalOpen(!isOpen);
   };
   const handleEditModalClose = () => {
     setConfirmOpen(true);
     setEditModalOpen(false);
   };
 
+  const onChange = async (e) => {
+    const selectedFiles = [...e.target.files];
+    const uploadedFiles = {};
+
+    for (let file of selectedFiles) {
+      uploadedFiles[0] = file;
+    }
+
+    setFileList({ ...fileList, ...uploadedFiles });
+  };
+
+  const fetchExistingDataByID = async (id) => {
+    const attachmentInfo = await getAllCertificates({
+      apolloClient,
+      where: { userId: id },
+    });
+    setCertificateData(attachmentInfo[0]);
+  };
+
+  const downloadFile = async ({ fileName, url }) => {
+    const httpLink = `${process.env.NEXT_PUBLIC_APP_URL}${url}`;
+    return await fetch(httpLink)
+      .then((res) => res.blob())
+      .then((blob) => new File([blob], fileName));
+  };
+
+  const initializeFileList = async ({ fileUrl, fileName, index }) => {
+    const name = fileName ?? "";
+    const url = fileUrl ?? "";
+    const id = index;
+    const file = await downloadFile({ fileName: name, url: url });
+    fileList[id] = file;
+    setFileList({ ...fileList });
+  };
+  useMemo(() => {
+    certificateData?.attachement.map((eachAttach, index) => {
+      initializeFileList({
+        fileUrl: certificateData?.attachement[index]?.url,
+        fileName: certificateData?.attachement[index]?.name,
+        index: certificateData?.attachement[index]?.id,
+      });
+    });
+
+    fileListArr = _.entries(fileList);
+  }, [certificateData]);
+
+  useEffect(() => {
+    if (!!selectedCertificate) {
+      fetchExistingDataByID(selectedCertificate?.users_permissions_user?.id);
+    }
+  }, [selectedCertificate]);
+
+  const onSubmit = async (data) => {
+    if (!!saveAction) {
+      let filesArrToSend = [];
+      for (let file of fileListArr) {
+        let fileData = {};
+        let uploadFiles = {};
+        const formData = new FormData();
+        formData.append("files", file[1]);
+        const response = await uploadFile(formData);
+        const json = await response.json();
+        if (response.status === 200) {
+          const term = json[0].id;
+          fileData.attachment = term;
+          filesArrToSend.push(json[0]);
+          uploadFiles[term] = file;
+        }
+      }
+      await updateCertificate({
+        updateCertificateAction,
+        id: selectedCertificate?.id,
+        certificateData: {
+          name: data.name,
+          expiryDate: new Date(selectedDate).toISOString(),
+          attachement: filesArrToSend?.map((eachFile) => {
+            return +eachFile?.id;
+          }),
+        },
+        updatedAt: new Date().toISOString(),
+      });
+      close();
+      router.push({
+        pathname: `/profile`,
+        query: {
+          message: errEditCertificate ? "Success!" : "Apologies!",
+          belongTo: errEditCertificate ? "Certificate" : "error",
+          action: "edit",
+          userId: userId,
+        },
+      });
+    }
+  };
+
   return (
     <>
-      <Modal size="md" isOpen={isOpen} toggle={toggle} css={styles.modal}>
-        <div css={styles.formContent}>
-          <div className="primary-text" css={styles.formHeader}>
-            Edit Certifications{" "}
-            <IoCloseSharp
-              size={20}
-              color="rgba(117, 117, 117, 1)"
-              onClick={handleEditModalClose}
-            />
-          </div>
-
-          <div className="formFlex">
-            <div className="d-flex">
-              <label className="secondary-text">
-                Name <span>*</span>
-              </label>
+      <Modal size="md" isOpen={isOpen} toggle={close} css={styles.modal}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div css={styles.formContent}>
+            <div className="primary-text" css={styles.formHeader}>
+              Edit Certifications{" "}
+              <IoCloseSharp
+                size={20}
+                color="rgba(117, 117, 117, 1)"
+                onClick={handleEditModalClose}
+              />
             </div>
-            <input
-              type={"text"}
-              className="secondary-text"
-              defaultValue={selectedCertificate.name}
-            />
-          </div>
-          <div className="formFlex">
-            <div className="d-flex">
-              <label className="secondary-text">
-                Expired Date <span>*</span>
-              </label>
-            </div>
-            <DatePicker
-              defaultValue={selectedCertificate.expiredDate}
-              selected={selectedDate}
-              onChange={handleDateChange}
-              dateFormat="dd/MM/yyyy"
-            />
-          </div>
-          <div className="formFlex" style={{ border: "none" }}>
-            <div>
-              <label className="secondary-text">
-                Attach Documents <span>*</span>
-              </label>
 
-              <div css={styles.attchBox}>
-                {selectedFile && (
-                  <div css={styles.imageContainer}>
-                    {isImage ? (
-                      <img
-                        src={URL.createObjectURL(selectedFile)}
-                        alt="Selected"
-                        css={styles.selectedImage}
-                      />
-                    ) : (
-                      <div css={styles.fileIconContainer}>
-                        <AiOutlineFilePdf color={"#1E3C72"} size={80} />
-                      </div>
-                    )}
-
-                    <div onClick={handleRemoveFile} css={styles.closeIcon}>
-                      <IoCloseSharp size={20} color="#F6302B" />
-                    </div>
-                  </div>
-                )}
-                {!selectedFile && (
-                  <label css={styles.attachBtn}>
-                    Browse File
-                    <input
-                      type="file"
-                      accept={`application/pdf, image/*`}
-                      onChange={handleFileChange}
-                    />
-                  </label>
-                )}
+            <div className="formFlex">
+              <div className="d-flex">
+                <label className="secondary-text">
+                  Name <span>*</span>
+                </label>
               </div>
+              <input
+                type={"text"}
+                className="secondary-text"
+                required
+                {...register("name", {
+                  required: true,
+                })}
+              />
             </div>
+            <div className="formFlex">
+              <div className="d-flex">
+                <label className="secondary-text">
+                  Expired Date <span>*</span>
+                </label>
+              </div>
+              <DatePicker
+                selected={selectedDate ?? selectedCertificate.expiredDate}
+                onChange={handleDateChange}
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+
+            {fileListArr?.length > 0 ? (
+              <UploadedFiles fileList={fileList} setFileList={setFileList} />
+            ) : (
+              <div className={styles.addNoteUploadContainer}>
+                <Upload onChange={onChange} />
+              </div>
+            )}
           </div>
-        </div>
-        <div css={styles.actionButton}>
-          <button css={styles.addBtn} onClick={() => close()}>
-            Save
-          </button>
-        </div>
+          <div css={styles.actionButton}>
+            <button
+              css={styles.addBtn}
+              onClick={() => {
+                setSaveAction(true);
+              }}
+            >
+              Save
+            </button>
+          </div>
+        </form>
       </Modal>
       {confirmOpen && (
         <ConfirmModal

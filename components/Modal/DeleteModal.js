@@ -2,7 +2,7 @@
 import { Modal } from "reactstrap";
 import { css } from "@emotion/react";
 
-const DeleteCertificateModal = ({
+const DeleteModal = ({
   selectedData,
   isOpen = false,
   close = () => {},
@@ -19,7 +19,12 @@ const DeleteCertificateModal = ({
         <span>Delete Confirmation message</span>
         <label>
           Are you sure you want to permanently delete the{" "}
-          <label style={{ fontWeight: "700" }}>{selectedData?.name} </label>?
+          <label style={{ fontWeight: "700" }}>
+            {selectedData?.map((eachData) => {
+              return eachData?.name;
+            })}
+          </label>
+          ?
         </label>
       </div>
       <div css={styles.actions}>
@@ -30,7 +35,7 @@ const DeleteCertificateModal = ({
   );
 };
 
-export default DeleteCertificateModal;
+export default DeleteModal;
 
 const styles = {
   modal: css`
