@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OpenEyeIcon from "../../public/icons/OpenEyeIcon";
 import CloseEyeSlashIcon from "../../public/icons/CloseEyeSlashIcon";
 import ConfirmPasswordModal from "../../components/auth/ConfirmPasswordModal";
@@ -9,10 +9,11 @@ import useAuth from "../../store/auth";
 
 const CreateNewPassword = () => {
   const router = useRouter();
-  const {createNewPassword , verifiedOtpUserData} = useAuth();
+  const { createNewPassword, verifiedOtpUserData } = useAuth();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [modal, setModal] = useState(false);
+  const [error, setError] = useState(false);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
@@ -20,11 +21,19 @@ const CreateNewPassword = () => {
       createNewPassword({
         password: password,
         passwordConfirmation: password,
-        code: verifiedOtpUserData.data.code
-      })
-      setModal(true)
+        code: verifiedOtpUserData.data.code,
+      });
+      setModal(true);
     }
   };
+
+  useEffect(() => {
+    if (password && password.length < 6) {
+      setError(true);
+    }else{
+      setError(false);
+    }
+  }, [password]);
 
   return (
     <div css={styles.wrapper}>
@@ -53,17 +62,29 @@ const CreateNewPassword = () => {
                 {!showPassword ? <CloseEyeSlashIcon /> : <OpenEyeIcon />}
               </div>
             </div>
+            {error && (
+              <span style={{color:"#FB7777"}}>
+                Your password is too short. Please enter a password with at
+                least 6 characters.
+              </span>
+            )}
           </div>
 
           <button id="reset" type="submit" css={styles.loginBtn}>
             Continue
           </button>
-          <div css={styles.backBtn} onClick={() => router.push("/auth/resetPassword")}>
+          <div
+            css={styles.backBtn}
+            onClick={() => router.push("/auth/resetPassword")}>
             Back
           </div>
         </form>
       </div>
-      <ConfirmPasswordModal modal={modal} setModal={setModal} password={password} />
+      <ConfirmPasswordModal
+        modal={modal}
+        setModal={setModal}
+        password={password}
+      />
     </div>
   );
 };

@@ -11,7 +11,7 @@ const AddAnnouncementModal = ({ modal, setModal, userId }) => {
   const [description, setDescription] = useState("");
   const { createAnnouncement , errorCreateAnnouncement} = useAnnouncement();
   const router = useRouter();
-  console.log(errorCreateAnnouncement)
+  //console.log(errorCreateAnnouncement)
   const toggle = () => {
     setModal(!modal);
   };
@@ -28,6 +28,8 @@ const AddAnnouncementModal = ({ modal, setModal, userId }) => {
         },
       });
       setModal(false)
+      setTitle('');
+      setDescription('');
       router.push({
         pathname: `/announcement`,
         query: {

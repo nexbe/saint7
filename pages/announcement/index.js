@@ -28,7 +28,7 @@ const Announcement = () => {
   const [selectedData, setSelectedData] = useState("");
   const { user } = useAuth();
   const router = useRouter();
-  console.log(router)
+  console.log(router);
   useEffect(() => {
     fetchAnnouncements();
   }, [setAddModal, addModal, router, setDeleteModal, setEditModal]);
@@ -51,12 +51,14 @@ const Announcement = () => {
     <Layout>
       <HeaderNoti title={"Announcement"} href={"/more"} />
       <div css={styles.wrapper}>
-      <NotificationBox
-        message={router.query.message}
-        belongTo={router.query.belongTo}
-        timeout={5000}
-        action={router.query.action}
-      />
+        <div style={{ position: "relative", margin: "2px 10px" }}>
+          <NotificationBox
+            message={router.query.message}
+            belongTo={router.query.belongTo}
+            timeout={5000}
+            action={router.query.action}
+          />
+        </div>
         {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
           <div css={styles.actions}>
             <button
@@ -131,6 +133,7 @@ export default Announcement;
 const styles = {
   wrapper: css`
     margin: 20px;
+    position: relative;
   `,
   searchBox: css`
     margin-bottom: 20px;
