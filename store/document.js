@@ -32,18 +32,13 @@ const documentstore = create((set, get) => ({
     } catch (error) {}
   },
 
-  updateDocument: async ({
-    updateDocumentAction,
-    selectedDocumentRow,
-    documentData,
-    status = "update",
-  }) => {
+  updateDocument: async ({ updateDocumentAction, id, documentData }) => {
     set({ loading: true });
     try {
       await updateDocumentAction({
         variables: {
           data: documentData,
-          id: selectedDocumentRow.id,
+          id: id,
         },
       }).then((value) => {
         set({ loading: false });

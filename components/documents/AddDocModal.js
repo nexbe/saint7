@@ -19,12 +19,17 @@ const AddDocModal = ({ modal, setModal, userId }) => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      title: "",
+    },
+  });
   const router = useRouter();
   const { createDocument, getAllCertificates } = documentStore(
     (state) => state
   );
-  const [createDocumentAction] = useMutation(CREATE_DOCUMENT);
+  const [createDocumentAction, errCreateDocument] =
+    useMutation(CREATE_DOCUMENT);
   const [selectedImage, setSelectedImage] = useState(null);
   const [saveAction, setSaveAction] = useState(false);
   const [fileList, setFileList] = useState([]);
@@ -32,15 +37,6 @@ const AddDocModal = ({ modal, setModal, userId }) => {
 
   const toggle = () => {
     setModal(!modal);
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedImage(file);
-  };
-
-  const handleRemoveImage = () => {
-    setSelectedImage(null);
   };
 
   const onSubmit = async (data) => {
@@ -73,7 +69,14 @@ const AddDocModal = ({ modal, setModal, userId }) => {
         },
       });
       setModal(false);
-      router.push("/documents");
+      router.push({
+        pathname: `/documents`,
+        query: {
+          message: errCreateDocument ? "Success!" : "Apologies!",
+          belongTo: errCreateDocument ? "Document" : "error",
+          action: "create",
+        },
+      });
     }
   };
 
@@ -97,7 +100,7 @@ const AddDocModal = ({ modal, setModal, userId }) => {
         </div>
       </div>
       <form css={styles.formStyle} onSubmit={handleSubmit(onSubmit)}>
-        <div>
+        <div className="formFlex">
           <label htmlFor="title">
             Title <span>*</span>
           </label>
@@ -114,7 +117,7 @@ const AddDocModal = ({ modal, setModal, userId }) => {
             </label>
           )}
         </div>
-        <div>
+        <div className="formFlex">
           <label htmlFor="description">
             Description <span>*</span>
           </label>
@@ -138,7 +141,7 @@ const AddDocModal = ({ modal, setModal, userId }) => {
             <Upload onChange={onChange} />
           </div>
         )}
-        <div>
+        <div className="formFlex">
           <button
             css={styles.btn}
             type="submit"
@@ -176,7 +179,6 @@ const styles = {
   `,
   actions: css`
     color: #2f4858;
-    margin: 10px 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -191,7 +193,7 @@ const styles = {
   formStyle: css`
     color: #2f4858;
     margin: 10px 20px;
-    div {
+    .formFlex {
       display: flex;
       flex-direction: column;
       margin-top: 10px;

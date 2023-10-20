@@ -17,10 +17,9 @@ import { UPDATE_CERTIFICATE } from "../../graphql/mutations/certificate";
 
 const EditCertificateModal = ({
   selectedCertificate,
-  isOpen = false,
+  isOpen,
   setEditModalOpen,
   userId,
-  close = () => {},
 }) => {
   const {
     handleSubmit,
@@ -48,12 +47,16 @@ const EditCertificateModal = ({
   const [fileList, setFileList] = useState([]);
   let fileListArr = _.entries(fileList);
 
+  const toggle = () => {
+    setEditModalOpen(!isOpen);
+  };
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
   const handleEditModalClose = () => {
-    setConfirmOpen(true);
     setEditModalOpen(false);
+    setConfirmOpen(true);
   };
 
   const onChange = async (e) => {
@@ -152,16 +155,14 @@ const EditCertificateModal = ({
 
   return (
     <>
-      <Modal size="md" isOpen={isOpen} toggle={close} css={styles.modal}>
+      <Modal size="md" isOpen={isOpen} toggle={toggle} css={styles.modal}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div css={styles.formContent}>
             <div className="primary-text" css={styles.formHeader}>
               Edit Certifications{" "}
-              <IoCloseSharp
-                size={20}
-                color="rgba(117, 117, 117, 1)"
-                onClick={handleEditModalClose}
-              />
+              <div onClick={handleEditModalClose}>
+                <IoCloseSharp size={20} color="rgba(117, 117, 117, 1)" />
+              </div>
             </div>
 
             <div className="formFlex">

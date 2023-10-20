@@ -28,10 +28,10 @@ const DeleteModal = ({
               : selectedData?.map((eachData) => {
                   return eachData?.name;
                 })}
-          </label>
+          </label>{" "}
           {belongTo != "certificate" ? belongTo : ""}
           {belongTo != "certificate"
-            ? selectedData.length > 0
+            ? selectedData.length > 1
               ? "s"
               : ""
             : ""}

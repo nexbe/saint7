@@ -20,10 +20,8 @@ const NotificationBox = ({ message, belongTo, timeout, action }) => {
           ? router.push("/profile")
           : belongTo === "Document"
           ? router.push("/documents")
-          : belongTo == "manageEstimate"
-          ? router.push({ pathname: "/admin/sales/manageEstimate" })
-          : belongTo == "manageSupplier"
-          ? router.push({ pathname: "/admin/suppliers/manageSuppliers" })
+          : belongTo == "Announcement"
+          ? router.push("/announcement")
           : "";
       }, timeout);
     }

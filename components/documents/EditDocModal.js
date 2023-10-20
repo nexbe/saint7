@@ -1,32 +1,134 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
-import CloseIcon from "../../public/icons/closeIcon";
-import UploadIcon from "../../public/icons/uploadIcon";
-import ConfirmModal from "../Modal/ConfirmModal";
-import PdfIcon from "../../public/icons/pdfIcon";
+import { useMutation, useApolloClient } from "@apollo/client";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import _ from "lodash";
+import { IoCloseSharp } from "react-icons/io5";
 
-const EditDocModal = ({ modal, setModal }) => {
-  const [selectedImage, setSelectedImage] = useState(null);
+import ConfirmModal from "../Modal/ConfirmModal";
+import { UploadedFiles } from "../upload/uploadFiles";
+import { Upload } from "../upload/uploadFile";
+import documentStore from "../../store/document";
+import { UPDATE_DOCUMENT } from "../../graphql/mutations/document";
+import { uploadFile } from "../upload/upload";
+
+const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
+  const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllDocuments, updateDocument } = documentStore((state) => state);
+  const [updateDocumentAction, errEditDocument] = useMutation(UPDATE_DOCUMENT);
+
+  const [documentData, setDocumentData] = useState();
+  const [saveAction, setSaveAction] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [fileList, setFileList] = useState([]);
+  let fileListArr = _.entries(fileList);
 
   const toggle = () => {
     setModal(!modal);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedImage(file);
+  const onChange = async (e) => {
+    const selectedFiles = [...e.target.files];
+    const uploadedFiles = {};
+
+    for (let file of selectedFiles) {
+      uploadedFiles[0] = file;
+    }
+
+    setFileList({ ...fileList, ...uploadedFiles });
   };
 
-  const handleRemoveImage = () => {
-    setSelectedImage(null);
+  const fetchExistingDataByID = async (id) => {
+    const attachmentInfo = await getAllDocuments({
+      apolloClient,
+      where: { userId: id },
+    });
+    setDocumentData(attachmentInfo[0]);
   };
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    setModal(false);
+  const downloadFile = async ({ fileName, url }) => {
+    const httpLink = `${process.env.NEXT_PUBLIC_APP_URL}${url}`;
+    return await fetch(httpLink)
+      .then((res) => res.blob())
+      .then((blob) => new File([blob], fileName));
+  };
+
+  const initializeFileList = async ({ fileUrl, fileName, index }) => {
+    const name = fileName ?? "";
+    const url = fileUrl ?? "";
+    const id = index;
+    const file = await downloadFile({ fileName: name, url: url });
+    fileList[id] = file;
+    setFileList({ ...fileList });
+  };
+  useMemo(() => {
+    selectedDocument?.attachment.map((eachAttach, index) => {
+      initializeFileList({
+        fileUrl: selectedDocument?.attachment[index]?.url,
+        fileName: selectedDocument?.attachment[index]?.name,
+        index: selectedDocument?.attachment[index]?.id,
+      });
+    });
+
+    fileListArr = _.entries(fileList);
+  }, [documentData]);
+
+  useEffect(() => {
+    if (!!selectedDocument) {
+      fetchExistingDataByID(selectedDocument?.users_permissions_users[0]?.id);
+    }
+  }, [selectedDocument]);
+
+  const onSubmit = async (data) => {
+    if (!!saveAction) {
+      let filesArrToSend = [];
+      for (let file of fileListArr) {
+        let fileData = {};
+        let uploadFiles = {};
+        const formData = new FormData();
+        formData.append("files", file[1]);
+        const response = await uploadFile(formData);
+        const json = await response.json();
+        if (response.status === 200) {
+          const term = json[0].id;
+          fileData.attachment = term;
+          filesArrToSend.push(json[0]);
+          uploadFiles[term] = file;
+        }
+      }
+      await updateDocument({
+        updateDocumentAction,
+        id: selectedDocument?.id,
+        documentData: {
+          title: data.title,
+          description: data.description,
+          attachment: filesArrToSend?.map((eachFile) => {
+            return +eachFile?.id;
+          }),
+        },
+        updatedAt: new Date().toISOString(),
+      });
+      setModal(false);
+      setDocumentData(null);
+      router.push({
+        pathname: `/documents`,
+        query: {
+          message: errEditDocument ? "Success!" : "Apologies!",
+          belongTo: errEditDocument ? "Document" : "error",
+          action: "edit",
+          userId: userId,
+        },
+      });
+    }
   };
 
   const handleEditModalClose = () => {
@@ -36,79 +138,70 @@ const EditDocModal = ({ modal, setModal }) => {
 
   return (
     <>
-      <Modal isOpen={modal} toggle={toggle} css={styles.wrapper}>
-        <div css={styles.actions}>
-          <h4>Edit Document </h4>
-          <div onClick={handleEditModalClose}>
-            <CloseIcon />
-          </div>
-        </div>
-        <form css={styles.formStyle} onSubmit={onSubmitHandler}>
-          <div>
-            <label htmlFor="title">
-              Title <span>*</span>
-            </label>
-            <input type="text" id="title" aria-label="title" required />
-          </div>
-          <div>
-            <label htmlFor="description">
-              Description <span>*</span>
-            </label>
-            <input
-              type="text"
-              id="description"
-              aria-label="description"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="documents">
-              Attach Documents <span>*</span>
-            </label>
-            <div css={styles.dropzone}>
-              {selectedImage && (
-                //console.log(URL.createObjectURL(image))
-                <div css={styles.imageContainer}>
-                  <PdfIcon />
-
-                  <div onClick={handleRemoveImage} css={styles.closeIcon}>
-                    <CloseIcon />
-                  </div>
-                </div>
-              )}
-              {!selectedImage && (
-                <label css={styles.browseBtn}>
-                  Browse Picture
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    multiple={true}
-                    onChange={handleFileChange}
-                  />
-                </label>
-              )}
-              {selectedImage && (
-                <div>
-                  <label css={styles.uploadBtn}>
-                    <UploadIcon />
-                    Upload file
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      onChange={handleFileChange}
-                    />
-                  </label>
-                </div>
-              )}
+      <Modal size="md" isOpen={modal} toggle={toggle} css={styles.modal}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div css={styles.formContent}>
+            <div className="primary-text" css={styles.formHeader}>
+              Edit Document{" "}
+              <div onClick={handleEditModalClose}>
+                <IoCloseSharp size={20} color="rgba(117, 117, 117, 1)" />
+              </div>
             </div>
+
+            <div className="formFlex">
+              <div className="d-flex">
+                <label className="secondary-text">
+                  Title <span>*</span>
+                </label>
+              </div>
+              <input
+                type={"text"}
+                className="secondary-text"
+                defaultValue={selectedDocument?.title}
+                required
+                {...register("title", {
+                  required: true,
+                })}
+              />
+            </div>
+
+            <div className="formFlex">
+              <div className="d-flex">
+                <label className="secondary-text">
+                  Description <span>*</span>
+                </label>
+              </div>
+              <input
+                type={"text"}
+                className="secondary-text"
+                defaultValue={selectedDocument?.description}
+                required
+                {...register("description", {
+                  required: true,
+                })}
+              />
+            </div>
+            {fileListArr?.length > 0 ? (
+              <UploadedFiles fileList={fileList} setFileList={setFileList} />
+            ) : (
+              <div className={styles.addNoteUploadContainer}>
+                <Upload onChange={onChange} />
+              </div>
+            )}
           </div>
-          <div>
-            <button css={styles.btn} type="submit">
+          <div css={styles.actionButton}>
+            <button
+              css={styles.addBtn}
+              onClick={() => {
+                setSaveAction(true);
+              }}
+            >
               Save
             </button>
           </div>
         </form>
       </Modal>
+
       <ConfirmModal
         modal={openConfirmModal}
         setModal={setOpenConfirmModal}
@@ -121,75 +214,76 @@ const EditDocModal = ({ modal, setModal }) => {
 export default EditDocModal;
 
 const styles = {
-  wrapper: css`
-    margin-top: 40%;
-    padding: 20px;
-    border-radius: 16px;
-    background: #fff;
-    color: var(--primary-font);
-    box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
-    p {
-      margin: 20px;
-    }
+  modal: css`
     .modal-content {
-      border: none;
-    }
-    @media (min-width: 440px) {
-      margin-top: 5%;
+      border-radius: 8px;
+      margin-top: 8rem;
+      width: 100%;
+      background: var(--white);
+      padding: 12px;
     }
   `,
-  actions: css`
-    color: #2f4858;
-    margin: 20px;
+  formHeader: css`
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
-
-    h4 {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    div {
+    align-items: center;
+    svg {
       cursor: pointer;
     }
   `,
-  formStyle: css`
-    color: #2f4858;
-    margin: 20px;
-    div {
+  formContent: css`
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    .formFlex {
       display: flex;
       flex-direction: column;
-      margin-top: 20px;
-    }
-    input {
-      border-top: 0px;
-      border-left: 0px;
-      border-right: 0px;
+      padding-top: 10px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      outline: none;
-    }
-    label {
-      font-size: 16px;
-      font-weight: 600;
-    }
-    span {
-      color: #ec1c24;
+      span {
+        color: #ec1c24;
+      }
+      input {
+        border: none;
+        outline: none;
+      }
     }
   `,
-  dropzone: css`
+  actionButton: css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    button {
+      border-radius: 10px;
+      padding: 3px 30px;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
+        0px 4px 6px 0px rgba(50, 50, 93, 0.11);
+      border: none;
+      color: var(--white);
+      background: var(--primary);
+    }
+  `,
+  attchBox: css`
     border: 2px dashed #ccc;
-    padding: 30px;
+    padding: 10px;
     margin-bottom: 20px;
     width: 100%;
-    margin-top: 5px;
+    margin-top: 10px;
     justify-content: start;
     display: flex;
     flex-direction: column;
+    border-radius: 4px;
+    border: 2px dashed #d6e2ea;
+    background: var(--white);
+    box-shadow: 0px 4px 4px 0px rgba(117, 139, 154, 0.08);
   `,
-  browseBtn: css`
+  attachBtn: css`
     display: inline-block;
     padding: 8px 16px;
+    font-weight: bold;
     color: #5e72e4;
     font-weight: 600;
     font-size: 16px;
@@ -204,26 +298,11 @@ const styles = {
       display: none;
     }
   `,
-  uploadBtn: css`
-    display: inline-block;
-    padding: 8px 16px;
-    color: #5e72e4;
-    font-size: 14px;
-    font-weight: 400;
-    text-align: start;
-    cursor: pointer;
-    border: none;
-    background: none;
-    outline: none;
-
-    input {
-      display: none;
-    }
-  `,
   selectedImage: css`
-    max-width: 90px;
-    max-height: 90px;
+    width: 95px;
+    height: 100px;
     border-radius: 16px;
+    background: #e3f3ff;
   `,
   imageContainer: css`
     position: relative;
@@ -232,22 +311,20 @@ const styles = {
   closeIcon: css`
     position: absolute;
     top: 0;
-    right: 0;
+    right: 50px;
     cursor: pointer;
     padding: 0;
 
     @media (min-width: 440px) {
-      left: 20%;
+      left: 10%;
     }
   `,
-  btn: css`
-    border-radius: 10px;
-    color: #fff;
-    background: var(--primary);
-    cursor: pointer;
-    padding: 12px;
-    border: none;
-    font-size: 18px;
-    font-weight: 700;
+  fileIconContainer: css`
+    width: 95px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: #e3f3ff;
   `,
 };

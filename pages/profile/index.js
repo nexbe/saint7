@@ -485,7 +485,6 @@ const Profile = () => {
                     setEditModalOpen={setEditModalOpen}
                     selectedCertificate={selectedCertificate}
                     userId={user?.id}
-                    close={() => setEditModalOpen(!editModalOpen)}
                   />
                 )}
                 {deleteModalOpen && (
@@ -494,6 +493,7 @@ const Profile = () => {
                     close={() => setDeleteModalOpen(!deleteModalOpen)}
                     handleDeleteConfirm={handleDeleteConfirm}
                     selectedData={[selectedCertificate]}
+                    belongTo={"certificate"}
                   />
                 )}
 
