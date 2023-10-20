@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import {
   Accordion,
@@ -8,7 +8,9 @@ import {
   AccordionItem,
   Input,
 } from "reactstrap";
+
 import EditPencil from "../../public/icons/editPencil";
+import PdfIcon from "../../public/icons/pdfIcon";
 
 const Card = ({
   id,
@@ -19,9 +21,19 @@ const Card = ({
   isEdit,
   setEditModal,
   isDelete,
+  handleCheck,
+  isChecked,
+  eachDocument,
+  handleEdit,
 }) => {
   const [open, setOpen] = useState();
-  const [isChecked, setIsChecked] = useState();
+
+  const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif"];
+  const isImage = attachment?.map((eachAttach) => {
+    return FILE_EXTENSIONS.some((extension) =>
+      eachAttach.name?.endsWith(extension)
+    );
+  });
 
   const toggle = (id) => {
     if (open === id) {
@@ -31,28 +43,37 @@ const Card = ({
     }
   };
 
+  useEffect(() => {}, [isChecked]);
+
   return (
     <Accordion open={open} toggle={toggle} css={styles.wrapper}>
       <AccordionItem>
         <AccordionHeader targetId={id} css={styles.item}>
-          {!isDelete ? (
-            icon
-          ) : (
-            <div css={styles.checkBoxStyle}>
-              <Input
-                type="checkbox"
-                id="status"
-                name="status"
-                checked={isChecked}
-                style={{ border: "2px solid #000" }}
-              />
-            </div>
-          )}
-          {title}
+          <div style={{ width: "80%", gap: "5px" }} className="d-flex">
+            {" "}
+            {!isDelete ? (
+              icon
+            ) : (
+              <div css={styles.checkBoxStyle}>
+                <Input
+                  type="checkbox"
+                  id="status"
+                  name="status"
+                  onClick={() => handleCheck(id)}
+                  checked={isChecked}
+                  style={{ border: "2px solid #000" }}
+                />
+              </div>
+            )}
+            {title}
+          </div>
           {isEdit && (
             <div
               style={{ marginLeft: "auto", cursor: "pointer" }}
-              onClick={() => setEditModal(true)}
+              onClick={() => {
+                handleEdit(id);
+                setEditModal(true);
+              }}
             >
               <EditPencil />
             </div>
@@ -60,11 +81,18 @@ const Card = ({
         </AccordionHeader>
         <AccordionBody accordionId={id}>
           {body}
-          {attachment && (
-            <div>
-              <img src={`${process.env.NEXT_PUBLIC_APP_URL}${attachment}`} />
-            </div>
-          )}
+          <div className="fileIconContainer">
+            {attachment &&
+              attachment.map((eachAttach, index) => {
+                return isImage[index] ? (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_APP_URL}${eachAttach?.url}`}
+                  />
+                ) : (
+                  <PdfIcon />
+                );
+              })}
+          </div>
         </AccordionBody>
       </AccordionItem>
     </Accordion>
@@ -80,6 +108,7 @@ const styles = {
       padding: 0;
       border: 1px solid transparent;
       box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
+      
     }
     .accordion-button:not(.collapsed) {
       background: #fff;
@@ -102,10 +131,11 @@ const styles = {
       font-weight: 400;
       line-height: normal;
     }
-    img {
-      margin-top: 15px;
+    .fileIconContainer svg, img {
+      margin-top: 10px;
       width: 56px;
       height: 56px;
+      margin-right: 10px;
     }
   `,
 };

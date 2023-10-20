@@ -3,8 +3,6 @@ import { css } from "@emotion/react";
 import { useDisclosure } from "@mantine/hooks";
 import { IoCloseSharp } from "react-icons/io5";
 
-import PdfIcon from "../../public/icons/pdfIcon";
-
 export const FilePreview = ({ onRemove, src, fileName, size }) => {
   const [hover, handlers] = useDisclosure(false);
   const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif"];
@@ -17,15 +15,13 @@ export const FilePreview = ({ onRemove, src, fileName, size }) => {
       onMouseEnter={handlers.open}
       onMouseLeave={() => setTimeout(handlers.close, 150)}
     >
-      {isImage ? (
-        <div css={styles.fileIconContainer}>
-          <img css={styles.previewImage} src={src} />
-        </div>
-      ) : (
-        <div css={styles.fileIconContainer}>
-          <PdfIcon />
-        </div>
-      )}
+      <div css={styles.fileIconContainer}>
+        <img
+          css={styles.previewImage}
+          src={isImage ? src : "images/pdfIcon.png"}
+        />
+      </div>
+
       <div css={styles.selectedFileName}>
         <button type="button" onClick={onRemove} css={styles.removeButton}>
           <IoCloseSharp size={22} color="rgba(117, 117, 117, 1)" />

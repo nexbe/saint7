@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useEffect } from "react";
-import { useApolloClient } from "@apollo/client";
+import { useState, useEffect, useMemo } from "react";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
 
@@ -16,6 +16,10 @@ import DeleteModal from "../../components/Modal/DeleteModal";
 import documentStore from "../../store/document";
 import userStore from "../../store/auth";
 import NoDataIcon from "/public/icons/noDataIcon";
+import NotificationBox from "../../components/notification/NotiBox";
+import { DELETE_DOCUMENT } from "../../graphql/mutations/document";
+import EditPencil from "../../public/icons/editPencil";
+import BinIcon from "../../public/icons/binIcon";
 
 const Documents = () => {
   const router = useRouter();
@@ -23,27 +27,73 @@ const Documents = () => {
   const { getAllDocuments, DocumentInfo: documentInfo } = documentStore(
     (state) => state
   );
+  const [deleteDocumentAction, { errDeleteDocument }] =
+    useMutation(DELETE_DOCUMENT);
   const { user } = userStore((state) => state);
-
-  useEffect(() => {
-    getAllDocuments({
-      apolloClient,
-      where: { userId: user.id },
-    });
-  }, [user, router]);
 
   const [addModal, setAddModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState();
+  const [selectedDeletedData, setSelectedDeletedData] = useState([]);
+
+  useEffect(() => {
+    getAllDocuments({
+      apolloClient,
+      where: { userId: user.id },
+    });
+  }, [user, router.query]);
+
+  const handleCheck = (selectedId) => {
+    setSelectedDeletedData((prevData) => {
+      if (prevData?.includes(selectedId)) {
+        return prevData?.filter((id) => id !== selectedId);
+      } else {
+        return [...prevData, selectedId];
+      }
+    });
+  };
+
+  const handleDeleteConfirm = async (id) => {
+    await deleteDocumentAction({
+      variables: { id: id },
+    });
+    router.push({
+      pathname: `/documents`,
+      query: {
+        message: !errDeleteDocument ? "Success!" : "Apologies!",
+        belongTo: !errDeleteDocument ? "Document" : "error",
+        action: "delete",
+        userId: user?.id,
+      },
+    });
+  };
+
+  const handleEdit = (id) => {
+    if (isEdit) {
+      const filteredData = documentInfo.filter((data) => {
+        return data.id === id;
+      });
+      setSelectedDocument(filteredData[0]);
+    }
+  };
 
   return (
     <Layout>
       <div css={styles.wrapper}>
         <HeaderNoti title={"Documents"} href={"/home"} />
+        <div style={{ position: "relative", margin: "2px 10px" }}>
+          <NotificationBox
+            message={router.query.message}
+            belongTo={router.query.belongTo}
+            timeout={5000}
+            action={router.query.action}
+          />
+        </div>
         <div css={styles.bodyContainer}>
-          {user?.role?.name === "Manager" && (
+          {user?.role?.name != "Guard" && (
             <div css={styles.actions}>
               <button
                 css={styles.actionBtn(true)}
@@ -55,13 +105,13 @@ const Documents = () => {
                 css={styles.actionBtn(isEdit)}
                 onClick={() => setIsEdit(!isEdit)}
               >
-                <EditIcon />
+                {isEdit ? <EditIcon /> : <EditPencil />}
               </button>
               <button
                 css={styles.actionBtn(isDelete)}
                 onClick={() => setIsDelete(!isDelete)}
               >
-                <DeleteIcon />
+                {isDelete ? <DeleteIcon /> : <BinIcon />}
               </button>
             </div>
           )}
@@ -74,11 +124,15 @@ const Documents = () => {
                     id={eachDocument.id}
                     title={eachDocument.title}
                     body={eachDocument.description}
-                    attachment={eachDocument?.attachment[0]?.url}
+                    attachment={eachDocument?.attachment}
                     isEdit={isEdit}
                     setEditModal={setEditModal}
                     isDelete={isDelete}
                     icon={<BatteryWarningIcon />}
+                    handleCheck={handleCheck}
+                    handleEdit={handleEdit}
+                    isChecked={selectedDeletedData?.includes(eachDocument.id)}
+                    eachDocument={eachDocument}
                   />
                 );
               })}
@@ -110,11 +164,19 @@ const Documents = () => {
             setModal={setAddModal}
             userId={user?.id}
           />
-          <EditDocModal modal={editModal} setModal={setEditModal} />
+          <EditDocModal
+            modal={editModal}
+            setModal={setEditModal}
+            selectedDocument={selectedDocument}
+            userId={user?.id}
+          />
           {deleteModal && (
             <DeleteModal
               isOpen={deleteModal}
               close={() => setDeleteModal(!deleteModal)}
+              handleDeleteConfirm={handleDeleteConfirm}
+              selectedData={selectedDeletedData}
+              belongTo={"document"}
             />
           )}
         </div>
@@ -133,6 +195,7 @@ const styles = {
     flex-direction: column;
     margin: 0;
     background: var(--background);
+    position: relative;
   `,
   bodyContainer: css`
     display: flex;
@@ -167,7 +230,7 @@ const styles = {
   actionBtn: (active) => css`
     border-radius: 10px;
     color: #fff;
-    background: ${active ? "var(--primary)" : "#A0AEC0"};
+    background: ${active ? "var(--primary)" : "#E3F3FF"};
     cursor: pointer;
     padding: 12px;
     border: none;
