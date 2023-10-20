@@ -29,7 +29,7 @@ const Card = ({
   const [open, setOpen] = useState();
 
   const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif"];
-  const isImage = attachment.map((eachAttach) => {
+  const isImage = attachment?.map((eachAttach) => {
     return FILE_EXTENSIONS.some((extension) =>
       eachAttach.name?.endsWith(extension)
     );
