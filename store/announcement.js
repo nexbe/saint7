@@ -11,6 +11,7 @@ const useAnnouncement = create((set) => ({
   announcements: [],
   errorCreateAnnouncement:null,
   errorUpdateAnnouncement:null,
+  errorDeleteAnnouncement:null,
   fetchAnnouncements: async () => {
     try {
       const response = await client.query({
@@ -77,6 +78,10 @@ const useAnnouncement = create((set) => ({
         },
       });
     } catch (err) {
+      set((state) => ({
+        ...state,
+        errorDeleteAnnouncement: err
+      }))
       console.log("delete", err);
     }
   },

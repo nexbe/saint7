@@ -6,7 +6,6 @@ import ViewModal from "./ViewModal";
 import EditPencil from "../../public/icons/editPencil";
 import { Input } from "reactstrap";
 import dayjs from "dayjs";
-import EditAnnouncementModal from "./EditAnnouncementModal";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
@@ -18,11 +17,11 @@ const Card = ({
   editModal,
   isDelete,
   isEdit,
-  setSelectedData
+  setSelectedData,
+  isChecked,
+  handleSelect
 }) => {
   const [modal, setModal] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
- // const [selectedData,setSelectedData] = useState('');
 
   const calculateTime = (time) => {
     const date = dayjs(time);
@@ -39,7 +38,7 @@ const Card = ({
               id="status"
               name="status"
               checked={isChecked}
-              onChange={(e) => setIsChecked(!isChecked)}
+              onChange={handleSelect}
               style={{ border: "2px solid #000" }}
             />
           </div>
@@ -90,7 +89,6 @@ const Card = ({
         data={data}
         time={calculateTime(data.attributes?.createdAt)}
       />
-      {/* { editModal && <EditAnnouncementModal modal={editModal} setModal={setEditModal} data={data}/> } */}
     </div>
   );
 };

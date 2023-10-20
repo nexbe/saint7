@@ -7,9 +7,12 @@ const DeleteModal = ({
   isOpen = false,
   close = () => {},
   handleDeleteConfirm = {},
+  belongTo,
 }) => {
   const handlConfirm = () => {
-    handleDeleteConfirm();
+    selectedData.map((eachData, index) => {
+      handleDeleteConfirm(eachData);
+    });
     close();
   };
 
@@ -18,12 +21,20 @@ const DeleteModal = ({
       <div className="primary-text" css={styles.confirmText}>
         <span>Delete Confirmation message</span>
         <label>
-          Are you sure you want to permanently delete the{" "}
+          Are you sure you want to permanently delete these{" "}
           <label style={{ fontWeight: "700" }}>
-            {selectedData?.map((eachData) => {
-              return eachData?.name;
-            })}
+            {belongTo != "certificate"
+              ? selectedData && selectedData?.length
+              : selectedData?.map((eachData) => {
+                  return eachData?.name;
+                })}
           </label>
+          {belongTo != "certificate" ? belongTo : ""}
+          {belongTo != "certificate"
+            ? selectedData.length > 0
+              ? "s"
+              : ""
+            : ""}
           ?
         </label>
       </div>

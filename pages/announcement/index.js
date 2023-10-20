@@ -14,6 +14,8 @@ import EditAnnouncementModal from "../../components/announcement/EditAnnouncemen
 import DeleteModal from "../../components/Modal/DeleteModal";
 import NotificationBox from "../../components/notification/NotiBox";
 import { useRouter } from "next/router";
+import EditPencil from "../../public/icons/editPencil";
+import BinIcon from "../../public/icons/binIcon";
 
 const Announcement = () => {
   const { announcements, fetchAnnouncements, markAnnouncementAsRead } =
@@ -26,16 +28,19 @@ const Announcement = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [selectedData, setSelectedData] = useState("");
+  const [selectedDeletedData, setSelectedDeletedData] = useState([]);
   const { user } = useAuth();
+  const { deleteAnnouncement, errorDeleteAnnouncement } = useAnnouncement();
   const router = useRouter();
-  console.log(router);
+  //console.log(selectedDeletedData);
   useEffect(() => {
     fetchAnnouncements();
+    setSelectedDeletedData([]);
   }, [setAddModal, addModal, router, setDeleteModal, setEditModal]);
 
   useEffect(() => {
     setData(announcements);
-  }, [announcements]);
+  }, [announcements, router]);
 
   useEffect(() => {
     const filteredData = data.filter((data) => {
@@ -43,9 +48,32 @@ const Announcement = () => {
         ?.toLowerCase()
         ?.includes(searchValue?.toLowerCase());
     });
-    //console.log(searchValue)
     setData(searchValue === "" ? announcements : filteredData);
   }, [searchValue]);
+
+  //delete announcements
+  const handleSelect = (selectedId) => {
+    setSelectedDeletedData((prevData) => {
+      if (prevData?.includes(selectedId)) {
+        return prevData?.filter((id) => id !== selectedId);
+      } else {
+        return [...prevData, selectedId];
+      }
+    });
+  };
+  //handle delete
+  const handleDelete = (id) => {
+    deleteAnnouncement(id);
+    router.push({
+      pathname: `/announcement`,
+      query: {
+        message: !errorDeleteAnnouncement ? "Success!" : "Apologies!",
+        belongTo: !errorDeleteAnnouncement ? "Announcement" : "error",
+        action: "delete",
+        userId: user?.id,
+      },
+    });
+  };
 
   return (
     <Layout>
@@ -69,12 +97,16 @@ const Announcement = () => {
             <button
               css={styles.actionBtn(isEdit)}
               onClick={() => setIsEdit(!isEdit)}>
-              <EditIcon />
+              {isEdit ? <EditIcon /> : <EditPencil />}
             </button>
             <button
               css={styles.actionBtn(isDelete)}
-              onClick={() => setIsDelete(!isDelete)}>
-              <DeleteIcon />
+              onClick={() =>
+                selectedDeletedData && selectedDeletedData.length > 0
+                  ? setDeleteModal(true)
+                  : setIsDelete(!isDelete)
+              }>
+              {isDelete ? <DeleteIcon /> : <BinIcon />}
             </button>
           </div>
         )}
@@ -102,6 +134,8 @@ const Announcement = () => {
                 isEdit={isEdit}
                 isDelete={isDelete}
                 setSelectedData={setSelectedData}
+                isChecked={selectedDeletedData?.includes(announcement.id)}
+                handleSelect={() => handleSelect(announcement.id)}
               />
             );
           })}
@@ -113,10 +147,13 @@ const Announcement = () => {
         setModal={setAddModal}
         userId={user?.id}
       />
-      {deleteModal && (
+      {selectedDeletedData && selectedDeletedData.length > 0 && (
         <DeleteModal
           isOpen={deleteModal}
           close={() => setDeleteModal(!deleteModal)}
+          handleDeleteConfirm={handleDelete}
+          selectedData={selectedDeletedData}
+          belongTo={"Announcement"}
         />
       )}
       <EditAnnouncementModal
@@ -205,7 +242,7 @@ const styles = {
   actionBtn: (active) => css`
     border-radius: 10px;
     color: #fff;
-    background: ${active ? "var(--primary)" : "#A0AEC0"};
+    background: ${active ? "var(--primary)" : "#E3F3FF"};
     cursor: pointer;
     padding: 12px;
     border: none;
