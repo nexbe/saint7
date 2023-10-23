@@ -3,25 +3,34 @@ import "leaflet/dist/leaflet.css";
 import styles from "../../styles/Home.module.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
+import attendenceStore from "../../store/attendance";
 
 const Map = () => {
+  const { locationData: locationData, addressData } = attendenceStore(
+    (state) => state
+  );
   const customIcon = new L.Icon({
     iconUrl: "/images/mapIcon.png", // Path to your custom icon image
     iconSize: [50, 50], // Size of the icon
   });
+
   return (
     <MapContainer
       className={styles.map}
-      center={[40.7128, -74.006]}
-      zoom={7}
-      scrollWheelZoom={true}
+      center={[locationData?.lat, locationData?.lng]}
+      zoom={15}
     >
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution="Google Maps"
+        url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" // regular
+        maxZoom={20}
+        subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
-      <Marker position={[40.7128, -74.006]} icon={customIcon}>
-        <Popup>123 Sample Street, NewYork</Popup>
+      <Marker
+        position={[locationData?.lat, locationData?.lng]}
+        icon={customIcon}
+      >
+        <Popup>{addressData}</Popup>
       </Marker>
     </MapContainer>
   );

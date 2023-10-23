@@ -4,7 +4,7 @@ import { create } from "zustand";
 const attendenceStore = create((set, get) => ({
   getLocationData: async (data) => {
     set({ loading: true });
-    console.log(data);
+
     try {
       if (data) {
         set({ locationData: data });
@@ -12,9 +12,19 @@ const attendenceStore = create((set, get) => ({
     } catch (error) {}
   },
 
+  getAddressData: async (data) => {
+    set({ loading: true });
+    try {
+      if (data) {
+        set({ addressData: data });
+      }
+    } catch (error) {}
+  },
+
   fetch: false,
   loading: true,
   locationData: {},
+  addressData: "",
 }));
 
 export default attendenceStore;

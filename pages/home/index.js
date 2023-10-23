@@ -19,6 +19,7 @@ import DocumentIcon from "/public/icons/documentIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import Map from "../../components/Map";
+import attendenceStore from "../../store/attendance";
 
 const Home = () => {
   const router = useRouter();
@@ -28,7 +29,15 @@ const Home = () => {
     ProfileInfo: profileInfo,
     loading,
   } = profileStore((state) => state);
+
   const { user } = userStore((state) => state);
+
+  const {
+    locationData: locationData,
+    getAddressData,
+    getLocationData,
+    addressData,
+  } = attendenceStore((state) => state);
 
   useEffect(() => {
     getAllProfiles({
@@ -78,7 +87,7 @@ const Home = () => {
             <div css={styles.mapLine}>
               <div css={styles.address}>
                 <MapPineLineIcon />
-                <label>123 Sample Street, NewYork</label>
+                <label>{addressData}</label>
               </div>
               <hr
                 style={{

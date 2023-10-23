@@ -8,21 +8,14 @@ import attendenceStore from "../../store/attendance";
 
 const Index = () => {
   const {
-    getLocationData,
     locationData: locationData,
     loading,
+    getAddressData,
+    getLocationData,
+    addressData,
   } = attendenceStore((state) => state);
 
   const [activeComponent, setActiveComponent] = useState("check");
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        getLocationData({ lat: latitude, lng: longitude });
-      });
-    }
-  }, []);
 
   return (
     <Layout className="container ">

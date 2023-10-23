@@ -7,43 +7,21 @@ import LocationIcon from "../../public/icons/locationIcon";
 import ScanIcon from "../../public/icons/scanIcon";
 import { css } from "@emotion/react";
 import Map from "../../components/Map";
-import attendenceStore from "../../store/attendance";
+import moment from "moment";
 
 const CheckInOut = () => {
-  const { locationData: locationData, loading } = attendenceStore(
-    (state) => state
-  );
-  const [currentAddress, setCurrentAddress] = useState("");
-
-  const googleAPI = process.env.GOOGLE_API_KEY;
-
-  // const geocodeLocation = async (lat, lng) => {
-  //   console.log(lat);
-  //   const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleAPI}`;
-
-  //   try {
-  //     const response = await fetch(geocodingUrl);
-  //     const data = await response.json();
-  //     console.log("here", data);
-  //     // const address = data.results[0].formatted_address;
-  //     // setCurrentAddress(address);
-  //   } catch (error) {
-  //     console.error("Error fetching address:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (locationData) {
-  //     geocodeLocation(locationData?.lat, locationData?.lng);
-  //   }
-  // }, [locationData]);
+  const currentDate = moment().format("Do MMMM YYYY");
+  const currentDay = moment().format("dddd");
+  const currentTime = moment().format("HH:mm:ss");
 
   const router = useRouter();
   return (
     <div>
       <div className="d-flex justify-content-between">
-        <p className="m-3 text-black">Monday, 10th May 2023</p>
-        <p className="m-3 text-black">09:00:00</p>
+        <p className="m-3 text-black">
+          {currentDay}, {currentDate}
+        </p>
+        <p className="m-3 text-black">{currentTime}</p>
       </div>
 
       <div style={{ margin: "20px" }}>
