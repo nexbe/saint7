@@ -17,15 +17,17 @@ const CheckInOut = () => {
         <p className="m-3 text-black">09:00:00</p>
       </div>
 
-      <div>
-        <button css={styles.wrapper} onClick={() => router.push("/checkin/qrcode")}>
+      <div style={{ margin: "20px" }}>
+        <button
+          css={styles.wrapper}
+          onClick={() => router.push("/checkin/qrcode")}>
           <ScanIcon />
           Check In
         </button>
       </div>
 
       <Card
-        id={0}
+        id={"0"}
         title={"Current Location"}
         body={
           <div css={styles.mapContainer}>
@@ -35,44 +37,26 @@ const CheckInOut = () => {
         icon={<LocationIcon />}
       />
       <Card
-        id={1}
+        id={"1"}
         title={"Duty Schedule Detail"}
         body={
-          <>
-            <div class="container ">
-              <div class="row">
-                <div class=" d-flex align-items-center">
-                  <p>
-                    <b>Date</b>{" "}
-                  </p>
-                  &ensp; <p>:</p> &ensp;
-                  <p>10-05-2023</p>
-                </div>
-                <div class=" d-flex align-items-center">
-                  <p>
-                    <b>Time</b>{" "}
-                  </p>
-                  &ensp; <p>:</p> &ensp;
-                  <p>9:00AM - 6:00PM</p>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class=" d-flex align-items-center">
-                  <p>
-                    <b>Report To</b>{" "}
-                  </p>
-                  &ensp; <p>:</p> &ensp;
-                  <p>
-                    {" "}
-                    2715 Ash Dr.
-                    <br />
-                    San Jose, South Dakota 83475
-                  </p>
-                </div>
-              </div>
-            </div>
-          </>
+          <div css={styles.info}>
+            <ul>
+              <li>
+                <span> Date</span>: <b>$550</b>
+              </li>
+              <li>
+                <span>Time </span>: <b>9:00AM - 6:00PM</b>
+              </li>
+              <li>
+                <span>Report To </span>:{" "}
+                <b>
+                  {" "}
+                  2715 Ash Dr.San Jose, South Dakota 83475
+                </b>
+              </li>
+            </ul>
+          </div>
         }
         icon={<CalendarIcon />}
       />
@@ -95,5 +79,37 @@ const styles = {
     border-radius: 10px;
     background: var(--primary);
     color: var(--white);
+  `,
+  info: css`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding-left: 0rem;
+      margin-top: 5px;
+    }
+    li {
+      color: #000;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      display: flex;
+    }
+    b {
+      font-weight: 600;
+      text-align: left;
+      padding-left: 20px;
+    }
+    span {
+      min-width: 110px;
+      text-align: left;
+      margin-right: 10px;
+      display: inline-block;
+    }
   `,
 };

@@ -26,7 +26,7 @@ const Card = ({
   eachDocument,
   handleEdit,
 }) => {
-  const [open, setOpen] = useState();
+  const [open, setOpen] = useState('');
 
   const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif"];
   const isImage = attachment?.map((eachAttach) => {
