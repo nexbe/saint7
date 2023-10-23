@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Card from "../../components/documents/Card";
 import CalendarIcon from "../../public/icons/calendarIcon";
@@ -7,8 +7,37 @@ import LocationIcon from "../../public/icons/locationIcon";
 import ScanIcon from "../../public/icons/scanIcon";
 import { css } from "@emotion/react";
 import Map from "../../components/Map";
+import attendenceStore from "../../store/attendance";
 
 const CheckInOut = () => {
+  const { locationData: locationData, loading } = attendenceStore(
+    (state) => state
+  );
+  const [currentAddress, setCurrentAddress] = useState("");
+
+  const googleAPI = process.env.GOOGLE_API_KEY;
+
+  // const geocodeLocation = async (lat, lng) => {
+  //   console.log(lat);
+  //   const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleAPI}`;
+
+  //   try {
+  //     const response = await fetch(geocodingUrl);
+  //     const data = await response.json();
+  //     console.log("here", data);
+  //     // const address = data.results[0].formatted_address;
+  //     // setCurrentAddress(address);
+  //   } catch (error) {
+  //     console.error("Error fetching address:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (locationData) {
+  //     geocodeLocation(locationData?.lat, locationData?.lng);
+  //   }
+  // }, [locationData]);
+
   const router = useRouter();
   return (
     <div>
@@ -18,7 +47,10 @@ const CheckInOut = () => {
       </div>
 
       <div>
-        <button css={styles.wrapper} onClick={() => router.push("/checkin/qrcode")}>
+        <button
+          css={styles.wrapper}
+          onClick={() => router.push("/checkin/qrcode")}
+        >
           <ScanIcon />
           Check In
         </button>

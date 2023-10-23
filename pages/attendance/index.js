@@ -1,26 +1,45 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
 import CheckInOut from "../../components/attendence/CheckInOut";
+import attendenceStore from "../../store/attendance";
 
 const Index = () => {
+  const {
+    getLocationData,
+    locationData: locationData,
+    loading,
+  } = attendenceStore((state) => state);
+
   const [activeComponent, setActiveComponent] = useState("check");
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        getLocationData({ lat: latitude, lng: longitude });
+      });
+    }
+  }, []);
+
   return (
     <Layout className="container ">
       <HeaderNoti title={"Attendance"} href={"/home"} />
       <div css={styles.tabComponent}>
         <div
           css={activeComponent === "check" ? styles.activeTab : styles.tabpane}
-          onClick={() => setActiveComponent("check")}>
+          onClick={() => setActiveComponent("check")}
+        >
           Check In/Out
         </div>
         <div
           css={
             activeComponent === "history" ? styles.activeTab : styles.tabpane
           }
-          onClick={() => setActiveComponent("history")}>
+          onClick={() => setActiveComponent("history")}
+        >
           Attendance History
         </div>
       </div>
@@ -44,7 +63,7 @@ const styles = {
   `,
   tabComponent: css`
     display: flex;
-    justify-content:space-around;
+    justify-content: space-around;
     flex-direction: row;
     border-bottom: 0.4px solid #2f4858;
     background: #e3f3ff;
