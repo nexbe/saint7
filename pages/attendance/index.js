@@ -43,7 +43,9 @@ const Index = () => {
           Attendance History
         </div>
       </div>
-      {activeComponent === "check" ? <CheckInOut /> : "History"}
+      <div css={styles.container}>
+        {activeComponent === "check" ? <CheckInOut /> : "History"}
+      </div>
     </Layout>
   );
 };
@@ -77,5 +79,9 @@ const styles = {
     font-weight: 600;
     cursor: pointer;
     background: var(--primary);
+  `,
+  container: css`
+    max-height: 70vh;
+    overflow-y: scroll;
   `,
 };
