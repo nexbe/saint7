@@ -1,10 +1,13 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useState } from "react";
+import { QrReader } from "react-qr-reader";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
 
-const QrCode = () => {
+const QrCode = (props) => {
+  const [data, setData] = useState("No result");
+
   return (
     <Layout className="container ">
       <HeaderNoti title={"Check In"} href={"/attendance"} />
@@ -17,17 +20,23 @@ const QrCode = () => {
             Please scan the QR Code to check out.
           </label>
         </div>
-        <div className="row text-center">
-          <img src="/images/qrcode.jpg" alt="ScanFace" className="img-fluid" />
-        </div>
+        <>
+          <QrReader
+            onResult={(result, error) => {
+              if (!!result) {
+                setData(result?.text);
+              }
+
+              if (!!error) {
+                console.info(error);
+              }
+            }}
+            style={{ width: "100%" }}
+          />
+        </>
       </div>
     </Layout>
   );
 };
+
 export default QrCode;
-const styles = {
-  wrapper: css`
-    background: var(--primary);
-    color: var(--white);
-  `,
-};
