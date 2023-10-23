@@ -25,6 +25,7 @@ const QrCode = (props) => {
             onResult={(result, error) => {
               if (!!result) {
                 setData(result?.text);
+                console.log("result", result);
               }
 
               if (!!error) {
@@ -32,6 +33,7 @@ const QrCode = (props) => {
               }
             }}
             style={{ width: "100%" }}
+            facingMode="environment"
           />
         </>
       </div>
