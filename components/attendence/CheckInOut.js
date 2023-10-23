@@ -52,9 +52,7 @@ const CheckInOut = () => {
                 <span>Report To </span>:{" "}
                 <b>
                   {" "}
-                  2715 Ash Dr.
-                  <br />
-                  San Jose, South Dakota 83475
+                  2715 Ash Dr.San Jose, South Dakota 83475
                 </b>
               </li>
             </ul>
