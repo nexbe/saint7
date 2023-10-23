@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Card from "../../components/documents/Card";
 import CalendarIcon from "../../public/icons/calendarIcon";
@@ -7,20 +7,28 @@ import LocationIcon from "../../public/icons/locationIcon";
 import ScanIcon from "../../public/icons/scanIcon";
 import { css } from "@emotion/react";
 import Map from "../../components/Map";
+import moment from "moment";
 
 const CheckInOut = () => {
+  const currentDate = moment().format("Do MMMM YYYY");
+  const currentDay = moment().format("dddd");
+  const currentTime = moment().format("HH:mm:ss");
+
   const router = useRouter();
   return (
     <div>
       <div className="d-flex justify-content-between">
-        <p className="m-3 text-black">Monday, 10th May 2023</p>
-        <p className="m-3 text-black">09:00:00</p>
+        <p className="m-3 text-black">
+          {currentDay}, {currentDate}
+        </p>
+        <p className="m-3 text-black">{currentTime}</p>
       </div>
 
       <div style={{ margin: "20px" }}>
         <button
           css={styles.wrapper}
-          onClick={() => router.push("/checkin/qrcode")}>
+          onClick={() => router.push("/checkin/qrcode")}
+        >
           <ScanIcon />
           Check In
         </button>
@@ -50,10 +58,7 @@ const CheckInOut = () => {
               </li>
               <li>
                 <span>Report To </span>:{" "}
-                <b>
-                  {" "}
-                  2715 Ash Dr.San Jose, South Dakota 83475
-                </b>
+                <b> 2715 Ash Dr.San Jose, South Dakota 83475</b>
               </li>
             </ul>
           </div>

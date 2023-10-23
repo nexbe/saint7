@@ -1,26 +1,38 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
 import CheckInOut from "../../components/attendence/CheckInOut";
+import attendenceStore from "../../store/attendance";
 
 const Index = () => {
+  const {
+    locationData: locationData,
+    loading,
+    getAddressData,
+    getLocationData,
+    addressData,
+  } = attendenceStore((state) => state);
+
   const [activeComponent, setActiveComponent] = useState("check");
+
   return (
     <Layout className="container ">
       <HeaderNoti title={"Attendance"} href={"/home"} />
       <div css={styles.tabComponent}>
         <div
           css={activeComponent === "check" ? styles.activeTab : styles.tabpane}
-          onClick={() => setActiveComponent("check")}>
+          onClick={() => setActiveComponent("check")}
+        >
           Check In/Out
         </div>
         <div
           css={
             activeComponent === "history" ? styles.activeTab : styles.tabpane
           }
-          onClick={() => setActiveComponent("history")}>
+          onClick={() => setActiveComponent("history")}
+        >
           Attendance History
         </div>
       </div>
