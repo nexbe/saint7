@@ -32,7 +32,7 @@ const Announcement = () => {
   const { user } = useAuth();
   const { deleteAnnouncement, errorDeleteAnnouncement } = useAnnouncement();
   const router = useRouter();
-  //console.log(selectedDeletedData);
+
   useEffect(() => {
     fetchAnnouncements();
     setSelectedDeletedData([]);
@@ -91,12 +91,14 @@ const Announcement = () => {
           <div css={styles.actions}>
             <button
               css={styles.actionBtn(true)}
-              onClick={() => setAddModal(true)}>
+              onClick={() => setAddModal(true)}
+            >
               ADD ANNOUNCEMENT
             </button>
             <button
               css={styles.actionBtn(isEdit)}
-              onClick={() => setIsEdit(!isEdit)}>
+              onClick={() => setIsEdit(!isEdit)}
+            >
               {isEdit ? <EditIcon /> : <EditPencil />}
             </button>
             <button
@@ -105,7 +107,8 @@ const Announcement = () => {
                 selectedDeletedData && selectedDeletedData.length > 0
                   ? setDeleteModal(true)
                   : setIsDelete(!isDelete)
-              }>
+              }
+            >
               {isDelete ? <DeleteIcon /> : <BinIcon />}
             </button>
           </div>

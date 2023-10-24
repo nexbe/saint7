@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { QrReader } from "react-qr-reader";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
-import { useRouter } from "next/router";
+import { css } from "@emotion/react";
 import NotificationBox from "../../components/notification/NotiBox";
+import { useRouter } from "next/router";
 
-const QrCode = (props) => {
-  const [message, setMessage] = useState("");
+const FaceScanner = (props) => {
   const router = useRouter();
 
   return (
@@ -20,40 +20,35 @@ const QrCode = (props) => {
             belongTo={router.query.belongTo}
             timeout={5000}
             action={router.query.action}
+            label={router.query.action}
           />
         </div> */}
         <div className="text-start">
           <h3 style={{ textAlign: "center", color: "#000", marginTop: "20px" }}>
-            Step 1{" "}
+            Step 2{" "}
           </h3>
           <label for="image-description" className="m-3 ">
-            Please scan the QR Code to check out.
+            Please make sure face is align in the frame.
           </label>
         </div>
-        <>
+        {/* <>
           <QrReader
             onResult={(result, error) => {
               if (!!result) {
-                router.push({
-                  pathname: `/checkin/faceScanner`,
-                  // query: {
-                  //   message: "Success!",
-                  //   belongTo: "Attendance",
-                  //   label: "QR Code Recognition Success.",
-                  //   action: "none",
-                  // },
-                });
+                console.log("result", result);
+              }
+
+              if (!!error) {
+                console.info(error);
               }
             }}
-            style={{
-              width: "100%",
-            }}
+            style={{ width: "100%" }}
             facingMode="environment"
           />
-        </>
+        </> */}
       </div>
     </Layout>
   );
 };
 
-export default QrCode;
+export default FaceScanner;
