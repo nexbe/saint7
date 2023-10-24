@@ -63,11 +63,7 @@ const Home = () => {
               </label>
               <div className="d-flex" style={{ flexDirection: "column" }}>
                 <span css={styles.welcomeText}>Welcome !</span>
-                <span className="header-text">
-                  {!!profileInfo[0]?.firstName || !!profileInfo[0]?.lastName
-                    ? profileInfo[0]?.firstName + " " + profileInfo[0]?.lastName
-                    : user?.username}
-                </span>
+                <span className="header-text">{user?.username}</span>
               </div>
             </div>
             <div css={styles.timeText}>
@@ -105,7 +101,7 @@ const Home = () => {
                 </span>
               </div>
               <div className="d-flex">
-                <sapn className="lineDash"></sapn>
+                <span className="lineDash"></span>
               </div>
               <div css={styles.taskProgress}>
                 <div className="progressLabel">

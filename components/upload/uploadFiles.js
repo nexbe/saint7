@@ -12,7 +12,6 @@ export const UploadedFiles = memo(function UploadedFiles({
   fileList = {},
   setFileList = () => {},
 }) {
-  const [opened, openHandlers] = useDisclosure(false);
   const fileListArr = _.entries(fileList);
 
   const removeFile = (id) => {
@@ -45,17 +44,21 @@ export const UploadedFiles = memo(function UploadedFiles({
           Attach Documents <span style={{ color: "#ec1c24" }}>*</span>
         </label>
         <div css={styles.selectedFiles}>
-          {fileListArr.map(([id, file]) => (
-            <FilePreview
-              fileName={file?.name}
-              src={window !== undefined ? window.URL.createObjectURL(file) : ""}
-              onRemove={() => {
-                removeFile(id);
-              }}
-              file={file}
-              key={id}
-            />
-          ))}
+          <div className="d-flex">
+            {fileListArr.map(([id, file]) => (
+              <FilePreview
+                fileName={file?.name}
+                src={
+                  window !== undefined ? window.URL.createObjectURL(file) : ""
+                }
+                onRemove={() => {
+                  removeFile(id);
+                }}
+                file={file}
+                key={id}
+              />
+            ))}
+          </div>
           {fileListArr.length !== 0 && (
             <label css={styles.uploadBtn}>
               <UploadIcon /> Upload file
@@ -106,6 +109,7 @@ const styles = {
   `,
   selectedFiles: css`
     display: flex;
+    flex-direction: column;
     flex: 1;
     overflow-y: hidden;
     overflow-x: auto;
@@ -137,8 +141,6 @@ const styles = {
     border: none;
     background: none;
     outline: none;
-    position: absolute;
-    margin-top: 6.5rem;
     input {
       display: none;
     }

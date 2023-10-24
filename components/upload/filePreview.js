@@ -39,7 +39,6 @@ const styles = {
     transition: all 150ms ease;
     border-radius: 4px 4px 0px 0px;
     width: 110px;
-    height: 140px;
     &:hover > div {
       opacity: 1;
     }
@@ -78,11 +77,6 @@ const styles = {
     right: 18px;
   `,
   selectedFileName: css`
-    color: #1e3c72;
-    padding: 12px 15px;
     width: 125px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   `,
 };
