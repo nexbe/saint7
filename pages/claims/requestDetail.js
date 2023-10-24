@@ -1,122 +1,40 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useEffect, useState } from "react";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import dayjs from "dayjs";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import PlusIcon from "/public/icons/plusIcon";
 import InvoiceImageModal from "../../components/claims/InvoiceImageModal";
+import userStore from "../../store/auth";
+import claimStore from "../../store/claim";
 
 const RequestDetail = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const { user } = userStore((state) => state);
   const [activeTab, setActiveTab] = useState(1);
-
   const [openImageModal, setOpenImageModal] = useState(false);
 
   const imageModal = () => {
     setOpenImageModal(!openImageModal);
   };
 
-  const expenseData = [
-    {
-      id: "#ER-00001",
-      category: "Advanced Tax",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 200,
-      status: "Pending",
-      date: "2023-09-10",
-    },
-    {
-      id: "#ER-00002",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 800,
-      status: "Approved",
-      date: "2023-09-20",
-    },
-    {
-      id: "#ER-00003",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Rejected",
-      date: "2023-09-28",
-    },
-    {
-      id: "#ER-000010",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 100,
-      status: "Rejected",
-      date: "2023-09-18",
-    },
-    {
-      id: "#ER-00004",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 300,
-      status: "Pending",
-      date: "2023-08-10",
-    },
-    {
-      id: "#ER-00005",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 400,
-      status: "Approved",
-      date: "2023-08-20",
-    },
-    {
-      id: "#ER-00006",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Rejected",
-      date: "2023-08-29",
-    },
-    {
-      id: "#ER-00007",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 400,
-      status: "Pending",
-      date: "2023-07-10",
-    },
-    {
-      id: "#ER-00008",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Approved",
-      date: "2023-07-20",
-    },
-    {
-      id: "#ER-00009",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 700,
-      status: "Rejected",
-      date: "2023-07-29",
-    },
-  ];
+  useEffect(() => {
+    getAllClaims({
+      apolloClient,
+      where: { userId: user.id },
+    });
+  }, [user]);
 
-  const [selectedExpense, setSelectedExpense] = useState(expenseData);
+  const [selectedExpense, setSelectedExpense] = useState(claimInfo);
 
   const handleExpenseChange = (id) => {
-    const filteredResults = expenseData.filter(
+    const filteredResults = claimInfo.filter(
       (item) => item?.id?.toLowerCase() === id?.toLowerCase()
     );
     setSelectedExpense(filteredResults);
@@ -134,16 +52,14 @@ const RequestDetail = () => {
           <div className="d-flex" css={styles.cardWrapper}>
             <label className="primary-text">
               Total
-              <label className="amount">
-                {selectedExpense[0].currency} {selectedExpense[0].amount}
-              </label>
+              <label className="amount">$ {selectedExpense[0]?.amount}</label>
               <label className="date">
-                {dayjs(selectedExpense[0].date).format("DD.MM.YYYY")}
+                {dayjs(selectedExpense[0]?.expenseDate).format("DD.MM.YYYY")}
               </label>
             </label>
             <div onClick={imageModal} style={{ cursor: "pointer" }}>
-              <Image
-                src="/images/invoiceSample.jpg"
+              <img
+                src={`${process.env.NEXT_PUBLIC_APP_URL}${selectedExpense[0]?.attachment[0]?.url}`}
                 alt="Inovice Sample"
                 width={80}
                 height={80}
@@ -152,9 +68,12 @@ const RequestDetail = () => {
                   borderRadius: "8px",
                 }}
               />
-              <span css={styles.imageCount}>4</span>
+              <span css={styles.imageCount}>
+                {selectedExpense[0]?.attachment?.length}
+              </span>
               {openImageModal && (
                 <InvoiceImageModal
+                  attachment={selectedExpense[0]?.attachment}
                   isOpen={openImageModal}
                   close={() => setOpenImageModal(!openImageModal)}
                 />
@@ -190,87 +109,146 @@ const RequestDetail = () => {
                 <>
                   <div>
                     <label className="detailLabel">Report Id</label>
-                    <label>{selectedExpense[0].id}</label>
-                  </div>
-                  <div>
-                    <label className="detailLabel">Category Name</label>
-                    <label>{selectedExpense[0].category}</label>
+                    <label> #ER-0000{selectedExpense[0]?.id}</label>
                   </div>
                   <div>
                     <label className="detailLabel">Expense Date</label>
                     <label>
-                      {dayjs(selectedExpense[0].date).format("DD/MM/YYYY")}
+                      {dayjs(selectedExpense[0]?.expenseDate).format(
+                        "DD/MM/YYYY"
+                      )}
                     </label>
                   </div>
                   <div>
                     <label className="detailLabel">Transaction Time</label>
                     <label>
-                      {dayjs(selectedExpense[0].date).format(
+                      {dayjs(selectedExpense[0]?.expenseDate).format(
                         "DD/MM/YYYY hh:mm:ss"
                       )}
                     </label>
                   </div>
                   <div>
+                    <label className="detailLabel">Category</label>
+                    <label>{selectedExpense[0]?.category?.label}</label>
+                  </div>
+                  <div>
                     <label className="detailLabel">Amount</label>
-                    <label>
-                      {selectedExpense[0].currency} {selectedExpense[0].amount}
-                    </label>
+                    <label>$ {selectedExpense[0]?.amount}</label>
                   </div>
                   <div>
                     <label className="detailLabel">Purpose</label>
-                    <label>This is the purpose.</label>
+                    <label>{selectedExpense[0]?.purpose}</label>
                   </div>
                 </>
               )}
               {activeTab == 2 && (
                 <>
-                  <div
-                    css={styles.historyBox}
-                    style={{
-                      lineHeight: "22px",
-                    }}
-                  >
-                    <label className="labelText" style={{ width: "55%" }}>
-                      Transaction Updated
-                      <label className="detailValue">Telephone expense</label>
-                    </label>
-                    <div css={styles.messageRow}>
-                      <div css={styles.lineStyle}></div>
-                      <div css={styles.circleStyle}></div>
-                    </div>
-                    <label className="labelText" style={{ width: "40%" }}>
-                      07 March, 2023
-                      <label className="detailValue">01:19 PM</label>
-                    </label>
-                  </div>
+                  {selectedExpense[0]?.status != "pending" && (
+                    <>
+                      <div
+                        css={styles.historyBox}
+                        style={{
+                          lineHeight: "22px",
+                          fontSize: "13px",
+                          gap: "5px",
+                        }}
+                      >
+                        <label
+                          className="labelText"
+                          style={{
+                            width: "50%",
+                            alignItems: "flex-end",
+                          }}
+                        >
+                          Transaction Updated
+                          <label className="detailValue">
+                            {selectedExpense[0]?.category?.label}
+                          </label>
+                        </label>
+                        <div css={styles.messageRow}>
+                          <div css={styles.lineStyle}></div>
+                          <div css={styles.circleStyle}></div>
+                        </div>
+                        <label
+                          className="labelText"
+                          style={{
+                            width: "45%",
+                          }}
+                        >
+                          {dayjs(selectedExpense[0]?.updatedAt).format(
+                            "DD MMMM, YYYY"
+                          )}
+                          <label className="detailValue">
+                            {dayjs(selectedExpense[0]?.updatedAt).format(
+                              "HH:MM A"
+                            )}
+                          </label>
+                        </label>
+                      </div>
+                      <div
+                        style={{
+                          lineHeight: "20px",
+                          marginTop: "-25px",
+                          fontSize: "13px",
+                          gap: "5px",
+                        }}
+                      >
+                        <label
+                          className="labelText"
+                          style={{
+                            width: "50%",
+                            alignItems: "flex-end",
+                          }}
+                        >
+                          Report Updated
+                          <label className="detailValue">
+                            <span style={{ textTransform: "capitalize" }}>
+                              {selectedExpense[0]?.status}
+                            </span>{" "}
+                            by {selectedExpense[0]?.actionBy?.username}
+                          </label>
+                        </label>
+                        <div css={styles.messageRow}>
+                          <div css={styles.lineStyle}></div>
+                          <div css={styles.circleStyle}></div>
+                        </div>
+                        <label
+                          className="labelText"
+                          style={{
+                            width: "45%",
+                          }}
+                        >
+                          {dayjs(selectedExpense[0]?.updatedAt).format(
+                            "DD MMMM, YYYY"
+                          )}
+                          <label className="detailValue">
+                            {dayjs(selectedExpense[0]?.updatedAt).format(
+                              "HH:MM A"
+                            )}
+                          </label>
+                        </label>
+                      </div>
+                    </>
+                  )}
                   <div
                     style={{
                       lineHeight: "20px",
                       marginTop: "-25px",
+                      gap: "5px",
+                      fontSize: "13px",
                     }}
                   >
-                    <label className="labelText" style={{ width: "55%" }}>
-                      Report Updated
-                      <label className="detailValue">Approved by Han Zin</label>
-                    </label>
-                    <div css={styles.messageRow}>
-                      <div css={styles.lineStyle}></div>
-                      <div css={styles.circleStyle}></div>
-                    </div>
-                    <label className="labelText" style={{ width: "40%" }}>
-                      05 March, 2023
-                      <label className="detailValue"> 04:18 PM</label>
-                    </label>
-                  </div>
-                  <div
-                    style={{
-                      lineHeight: "20px",
-                      marginTop: "-25px",
-                    }}
-                  >
-                    <label className="labelText" style={{ width: "55%" }}>
+                    <label
+                      className="labelText"
+                      style={{
+                        width: "50%",
+                        alignItems: "flex-end",
+                      }}
+                    >
                       Report Created
-                      <label className="detailValue">Nandar Moe Oo</label>
+                      <label className="detailValue">
+                        {router?.query?.userName}
+                      </label>
                     </label>
                     <div css={styles.messageRow}>
                       <div
@@ -279,9 +257,18 @@ const RequestDetail = () => {
                       ></div>
                       <div css={styles.circleStyle}></div>
                     </div>
-                    <label className="labelText" style={{ width: "40%" }}>
-                      03 March, 2023
-                      <label className="detailValue">03:18 PM</label>
+                    <label
+                      className="labelText"
+                      style={{
+                        width: "45%",
+                      }}
+                    >
+                      {dayjs(selectedExpense[0]?.createdAt).format(
+                        "DD MMMM, YYYY"
+                      )}
+                      <label className="detailValue">
+                        {dayjs(selectedExpense[0]?.createdAt).format("HH:MM A")}
+                      </label>
                     </label>
                   </div>
                 </>
@@ -403,7 +390,6 @@ const styles = {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: center;
     }
     .detailValue {
       color: var(--dark-gray);

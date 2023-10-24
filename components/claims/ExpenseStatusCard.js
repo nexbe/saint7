@@ -5,10 +5,12 @@ import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
+import { useRouter } from "next/router";
 
 import NoDataIcon from "/public/icons/noDataIcon";
 
-const Card = ({ expenseList }) => {
+const Card = ({ expenseList, userName, role }) => {
+  const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState();
   const [openCard, setOpenCard] = useState([]);
 
@@ -51,6 +53,10 @@ const Card = ({ expenseList }) => {
                     borderRadius: openCard[index] ? "10px 10px 0 0" : "",
                   }}
                   className="primary-text"
+                  onClick={() => {
+                    setSelectedIndex(index);
+                    handleOpen(index);
+                  }}
                 >
                   <label>{eachResult[0]}</label>
                   <label
@@ -64,12 +70,7 @@ const Card = ({ expenseList }) => {
                   <label>
                     {"$"} {total[index]}
                   </label>
-                  <label
-                    onClick={() => {
-                      setSelectedIndex(index);
-                      handleOpen(index);
-                    }}
-                  >
+                  <label>
                     {openCard[index] ? (
                       <MdOutlineKeyboardArrowUp
                         color="var(--white)"
@@ -83,7 +84,7 @@ const Card = ({ expenseList }) => {
                     )}
                   </label>
                 </div>
-                {eachResult[1]?.map((eachNote, nestedIndex) => {
+                {eachResult[1]?.map((eachExpense, nestedIndex) => {
                   return (
                     <div
                       style={{
@@ -91,6 +92,15 @@ const Card = ({ expenseList }) => {
                       }}
                       className="detailWrapper"
                       key={nestedIndex}
+                      onClick={() => {
+                        router.push({
+                          pathname: "/claims/requestDetail",
+                          query: {
+                            expenseId: eachExpense.id,
+                            userName: userName,
+                          },
+                        });
+                      }}
                     >
                       <div
                         css={styles.detailContainer}
@@ -98,11 +108,28 @@ const Card = ({ expenseList }) => {
                         key={nestedIndex}
                       >
                         <label>
-                          <label css={styles.expenseId}>{eachNote.id}</label>
-                          {eachNote.category}
+                          <label css={styles.expenseId}>
+                            #ER-0000{eachExpense.id}
+                          </label>
+                          {eachExpense.category.label}
+                          {role != "Guard" && (
+                            <label className="requestedBy">
+                              Requested by {userName}
+                            </label>
+                          )}
                         </label>
                         <label>
-                          {eachNote.currency} {eachNote.amount}
+                          $ {eachExpense.amount}
+                          {role != "Guard" && (
+                            <img
+                              src={
+                                eachExpense?.users_permissions_user?.profile
+                                  ?.photo?.url
+                                  ? `${process.env.NEXT_PUBLIC_APP_URL}${eachExpense?.users_permissions_user?.profile?.photo.url}`
+                                  : "images/defaultImage.jpg"
+                              }
+                            />
+                          )}
                         </label>
                       </div>
                     </div>
@@ -173,6 +200,16 @@ const styles = {
     label {
       display: flex;
       flex-direction: column;
+    }
+    .requestedBy {
+      color: #718096;
+      font-size: 14px;
+      font-weight: 400;
+    }
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
     }
   `,
   eachCard: css`

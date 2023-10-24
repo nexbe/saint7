@@ -9,6 +9,7 @@ import {
 } from "react-icons/md";
 import moment from "moment";
 import _ from "lodash";
+import { useApolloClient, useMutation } from "@apollo/client";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -22,11 +23,17 @@ import RefreshIcon from "/public/icons/refreshIcon";
 import SearchIcon from "/public/icons/searchIcon";
 import NoDataIcon from "/public/icons/noDataIcon";
 import PlusIcon from "/public/icons/plusIcon";
+import userStore from "../../store/auth";
+import claimStore from "../../store/claim";
+import NotificationBox from "../../components/notification/NotiBox";
 
 const ExpenseRequestStatus = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const { user } = userStore((state) => state);
   const [activeTab, setActiveTab] = useState(1);
-  const [count, setCount] = useState(2023);
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [modalOpen, setModalOpen] = useState(false);
   const [dateModalOpen, setDateModalOpen] = useState(false);
 
@@ -37,124 +44,32 @@ const ExpenseRequestStatus = () => {
     setDateModalOpen(!dateModalOpen);
   };
 
-  // Increment function
-  const increment = () => {
-    setCount(count + 1);
-  };
-
-  // Decrement function
-  const decrement = () => {
-    setCount(count - 1);
-  };
-  const expenseData = [
-    {
-      id: "#ER-00001",
-      category: "Advanced Tax",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 200,
-      status: "Pending",
-      date: "2023-09-10",
-    },
-    {
-      id: "#ER-00002",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 800,
-      status: "Approved",
-      date: "2023-09-20",
-    },
-    {
-      id: "#ER-00003",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Rejected",
-      date: "2023-09-28",
-    },
-    {
-      id: "#ER-000010",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 100,
-      status: "Rejected",
-      date: "2023-09-18",
-    },
-    {
-      id: "#ER-00004",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 300,
-      status: "Pending",
-      date: "2023-08-10",
-    },
-    {
-      id: "#ER-00005",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 400,
-      status: "Approved",
-      date: "2023-08-20",
-    },
-    {
-      id: "#ER-00006",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Rejected",
-      date: "2023-08-29",
-    },
-    {
-      id: "#ER-00007",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 400,
-      status: "Pending",
-      date: "2023-07-10",
-    },
-    {
-      id: "#ER-00008",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Approved",
-      date: "2023-07-20",
-    },
-    {
-      id: "#ER-00009",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 700,
-      status: "Rejected",
-      date: "2023-07-29",
-    },
-  ];
-
   const [filterTerm, setFilterTerm] = useState("");
   const [expenseList, setExpenseList] = useState();
-  const [filteredData, setFilteredData] = useState(expenseData);
-  const [approvedData, setApprovedData] = useState(expenseData);
-  const [rejectedData, setRejectedData] = useState(expenseData);
+  const [filteredData, setFilteredData] = useState(claimInfo);
+  const [approvedData, setApprovedData] = useState(claimInfo);
+  const [rejectedData, setRejectedData] = useState(claimInfo);
   const [approvedTotal, setApprovedTotal] = useState();
   const [rejectedTotal, setRejectedTotal] = useState();
 
   const monthName = (item) =>
-    moment(item.date, "YYYY-MM-DD").format("MMMM YYYY");
+    moment(item.expenseDate, "YYYY-MM-DD").format("MMMM YYYY");
 
   useEffect(() => {
-    const result = _.groupBy(expenseData, monthName);
-    const resultArr = _.entries(result);
-    setExpenseList(resultArr);
+    getAllClaims({
+      apolloClient,
+      where: { userId: user.id },
+    });
   }, []);
+
+  useMemo(() => {
+    if (!!claimInfo) {
+      setFilteredData(claimInfo);
+      const result = _.groupBy(claimInfo, monthName);
+      const resultArr = _.entries(result);
+      setExpenseList(resultArr);
+    }
+  }, [claimInfo, router.query]);
 
   const handleListChange = (filteredResults) => {
     const approvedList = filteredResults.filter(
@@ -194,10 +109,9 @@ const ExpenseRequestStatus = () => {
     setFilterTerm(term);
 
     // Filter the data based on the filterTerm
-    const filteredResults = expenseData.filter(
+    const filteredResults = claimInfo.filter(
       (item) =>
-        item?.category?.toLowerCase().includes(term?.toLowerCase()) ||
-        item?.subCategory?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.category.label?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.status?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.id?.toLowerCase().includes(term?.toLowerCase())
     );
@@ -208,11 +122,20 @@ const ExpenseRequestStatus = () => {
     handleListChange(filteredResults);
   };
 
+  const incrementYear = () => {
+    setCurrentYear(currentYear + 1);
+  };
+
+  // Function to decrement the year
+  const decrementYear = () => {
+    setCurrentYear(currentYear - 1);
+  };
+
   const handleDateChange = (startDate, endDate) => {
-    const filteredResults = expenseData.filter(
+    const filteredResults = claimInfo.filter(
       (item) =>
-        new Date(item.date).getTime() >= new Date(startDate).getTime() &&
-        new Date(item.date).getTime() <= new Date(endDate).getTime()
+        new Date(item.expenseDate).getTime() >= new Date(startDate).getTime() &&
+        new Date(item.expenseDate).getTime() <= new Date(endDate).getTime()
     );
     setFilteredData(filteredResults);
     const result = _.groupBy(filteredResults, monthName);
@@ -229,8 +152,8 @@ const ExpenseRequestStatus = () => {
   ) => {
     let filteredResults;
     filteredResults = minAmount
-      ? expenseData.filter((item) => item.amount >= minAmount)
-      : expenseData;
+      ? claimInfo.filter((item) => item.amount >= minAmount)
+      : claimInfo;
     filteredResults = maxAmount
       ? filteredResults.filter((item) => item.amount <= maxAmount)
       : filteredResults;
@@ -243,7 +166,9 @@ const ExpenseRequestStatus = () => {
     });
 
     filteredResults = filteredResults.filter((item) => {
-      if (!!checkCategoryList.find((category) => category === item.category))
+      if (
+        !!checkCategoryList.find((category) => category === item.category.label)
+      )
         return item;
     });
     setFilteredData(filteredResults);
@@ -254,22 +179,48 @@ const ExpenseRequestStatus = () => {
   };
 
   useMemo(() => {
-    handleListChange(expenseData);
+    if (!!claimInfo) {
+      handleListChange(claimInfo);
+    }
   }, []);
 
   const handleRefresh = () => {
     setFilterTerm("");
-    setFilteredData(expenseData);
-    const result = _.groupBy(expenseData, monthName);
+    setFilteredData(claimInfo);
+    const result = _.groupBy(claimInfo, monthName);
     const resultArr = _.entries(result);
     setExpenseList(resultArr);
-    handleListChange(expenseData);
+    handleListChange(claimInfo);
+    setCurrentYear(new Date().getFullYear());
   };
+
+  useEffect(() => {
+    if (!!claimInfo) {
+      const filter = claimInfo.filter((item) => {
+        const itemYear = new Date(item.expenseDate).getFullYear();
+        return itemYear === currentYear;
+      });
+      setFilteredData(filter);
+      const result = _.groupBy(filter, monthName);
+      const resultArr = _.entries(result);
+      setExpenseList(resultArr);
+      handleListChange(filter);
+    }
+  }, [currentYear]);
 
   return (
     <Layout>
       <div css={styles.wrapper}>
         <HeaderNoti title={"Claims"} href={"/home"} />
+        <div style={{ position: "relative", margin: "2px 10px" }}>
+          <NotificationBox
+            message={router.query.message}
+            belongTo={router.query.belongTo}
+            timeout={5000}
+            action={router?.query?.action}
+            label={router?.query?.label}
+          />
+        </div>
         <div css={styles.bodyContainer}>
           <div css={styles.requestContent}>
             <button onClick={() => router.push("/claims")}>
@@ -356,7 +307,7 @@ const ExpenseRequestStatus = () => {
                   <div css={styles.cardContainer}>
                     {filteredData.map(
                       (item, index) =>
-                        item.status == "Pending" && (
+                        item.status === "pending" && (
                           <div
                             css={styles.eachCard}
                             className="primary-text"
@@ -366,17 +317,20 @@ const ExpenseRequestStatus = () => {
                                 pathname: "/claims/requestDetail",
                                 query: {
                                   expenseId: item.id,
+                                  userName: user?.username,
                                 },
                               });
                             }}
                             key={index}
                           >
                             <label>
-                              <label css={styles.expenseId}>{item.id}</label>
-                              {item.category}
+                              <label css={styles.expenseId}>
+                                #ER-0000{item.id}
+                              </label>
+                              {item.category?.label}
                             </label>
-                            <label>
-                              {item.currency} {item.amount}
+                            <label style={{ width: "20%" }}>
+                              $ {item.amount}
                               <label css={styles.expenseStatus}>
                                 {item.status}
                               </label>
@@ -397,28 +351,34 @@ const ExpenseRequestStatus = () => {
             )}
             {activeTab == 2 && (
               <div css={styles.cardWrapper}>
-                <Card expenseList={approvedData} total={approvedTotal} />
+                <Card
+                  expenseList={approvedData}
+                  total={approvedTotal}
+                  userName={user?.username}
+                />
               </div>
             )}
             {activeTab == 3 && (
               <div css={styles.cardWrapper}>
-                <Card expenseList={rejectedData} total={rejectedTotal} />
+                <Card
+                  expenseList={rejectedData}
+                  total={rejectedTotal}
+                  userName={user?.username}
+                />
               </div>
             )}
           </div>
-          {filteredData && filteredData.length > 0 && (
-            <button css={styles.dateButton}>
-              <MdOutlineKeyboardDoubleArrowLeft
-                size={"20"}
-                onClick={decrement}
-              />
-              <label className="primary-text">{count}</label>
-              <MdOutlineKeyboardDoubleArrowRight
-                size={"20"}
-                onClick={increment}
-              />
-            </button>
-          )}
+          <button css={styles.dateButton}>
+            <MdOutlineKeyboardDoubleArrowLeft
+              size={"20"}
+              onClick={decrementYear}
+            />
+            <label className="primary-text">{currentYear}</label>
+            <MdOutlineKeyboardDoubleArrowRight
+              size={"20"}
+              onClick={incrementYear}
+            />
+          </button>
           <div
             css={styles.addReport}
             onClick={() => router.push("/claims/addExpenseRequest")}

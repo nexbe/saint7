@@ -14,8 +14,19 @@ import {
   CarouselIndicators,
 } from "reactstrap";
 
-const InvoiceImageModal = ({ isOpen = false, close = () => {} }) => {
-  const items = [
+const InvoiceImageModal = ({
+  isOpen = false,
+  close = () => {},
+  attachment,
+}) => {
+  const items = attachment?.map((eachAttach, index) => {
+    return {
+      src: eachAttach?.url,
+      key: index + 1,
+    };
+  });
+
+  const item = [
     {
       src: "/images/invoiceSample.jpg",
       key: 1,
@@ -59,10 +70,13 @@ const InvoiceImageModal = ({ isOpen = false, close = () => {} }) => {
       <CarouselItem
         onExiting={() => setAnimating(true)}
         onExited={() => setAnimating(false)}
-        key={item.src}
+        key={item?.key}
       >
         <div className="image">
-          <img src={item.src} alt={item.altText} />
+          <img
+            src={`${process.env.NEXT_PUBLIC_APP_URL}${item?.src}`}
+            alt={item.altText}
+          />
         </div>
       </CarouselItem>
     );
@@ -154,6 +168,13 @@ const styles = {
       display: flex;
       justify-content: center;
       align-items: center;
+      img {
+      width: 100%;
+      height: 350px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      }
     }
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
@@ -185,80 +206,6 @@ const styles = {
     align-items: center;
     label {
       color: #000;
-    }
-  `,
-  actionButton: css`
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    button {
-      border-radius: 10px;
-      padding: 3px 20px;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 700;
-      box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
-        0px 4px 6px 0px rgba(50, 50, 93, 0.11);
-    }
-  `,
-  cancelBtn: css`
-    border: 1px solid rgba(160, 174, 192, 1);
-    color: var(--dark-gray);
-  `,
-  addBtn: css`
-    border: none;
-    color: var(--white);
-    background: var(--primary);
-  `,
-  dateContent: css`
-    display: flex;
-     justify-content: space-between;
-    padding; 10px;
-    gap: 3px;
-    @media (max-width: 345px) {
-        background: red;
-        flex-direction: column;
-      }
-    span {
-        display: flex;
-    justify-content: center;
-      align-items: center;
-      margin-top: 30px;
-    }
-    label {
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      border-radius: 8px;
-      background: var(--white);
-      box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.2);
-      padding: 5px 10px;
-      gap: 7px;
-      width: 100%;
-    }
-    div {
-      color: #37474f;
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 30px;
-      font-family: Open Sans;
-    }
-    input {
-      border: none;
-      background: none;
-      width: 95px;
-      :focus {
-        outline: none;
-        border: none;
-      }
-      ::placeholder {
-        color: var(--darker-gray);
-        font-size: 13px;
-        font-weight: 400;
-        line-height: normal;
-      }
     }
   `,
 };
