@@ -26,25 +26,6 @@ const InvoiceImageModal = ({
     };
   });
 
-  const item = [
-    {
-      src: "/images/invoiceSample.jpg",
-      key: 1,
-    },
-    {
-      src: "/images/invoiceSample.jpg",
-      key: 2,
-    },
-    {
-      src: "/images/invoiceSample.jpg",
-      key: 3,
-    },
-    {
-      src: "/images/invoiceSample.jpg",
-      key: 4,
-    },
-  ];
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
 

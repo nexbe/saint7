@@ -31,7 +31,7 @@ const RequestDetail = () => {
     });
   }, [user]);
 
-  const [selectedExpense, setSelectedExpense] = useState(claimInfo);
+  const [selectedExpense, setSelectedExpense] = useState(claimInfo || []);
 
   const handleExpenseChange = (id) => {
     const filteredResults = claimInfo.filter(
