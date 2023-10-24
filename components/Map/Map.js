@@ -18,12 +18,12 @@ const Map = () => {
     <MapContainer
       className={styles.map}
       center={[locationData?.lat, locationData?.lng]}
-      zoom={15}
+      zoom={17}
     >
       <TileLayer
         attribution="Google Maps"
         url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" // regular
-        maxZoom={20}
+        maxZoom={30}
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
       <Marker
