@@ -4,6 +4,7 @@ import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
 import CheckInOut from "../../components/attendence/CheckInOut";
+import History from "../../components/attendence/History";
 import attendenceStore from "../../store/attendance";
 
 const Index = () => {
@@ -37,7 +38,7 @@ const Index = () => {
         </div>
       </div>
       <div css={styles.container}>
-        {activeComponent === "check" ? <CheckInOut /> : "History"}
+        {activeComponent === "check" ? <CheckInOut /> : <History />}
       </div>
     </Layout>
   );
