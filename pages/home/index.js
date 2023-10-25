@@ -153,7 +153,17 @@ const Home = () => {
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/claims")}>
+                <button
+                  onClick={() =>
+                    router.push(
+                      user?.role?.name === "Admin"
+                        ? "/claims/claimApproval"
+                        : user?.role?.name === "Manager"
+                        ? "claims/Manager"
+                        : "/claims"
+                    )
+                  }
+                >
                   <ClaimsIcon />
                   Claims
                 </button>
