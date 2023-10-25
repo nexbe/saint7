@@ -9,11 +9,11 @@ import dayjs from "dayjs";
 import moment from "moment";
 import _ from "lodash";
 
-import Layout from "../../components/layout/Layout";
-import HeaderNoti from "../../components/layout/HeaderNoti";
-import Card from "../../components/claims/ExpenseListCard";
-import FilterModal from "../../components/claims/FilterModal";
-import DateFilterModal from "../../components/claims/DateFilterModal";
+import Layout from "../../../components/layout/Layout";
+import HeaderNoti from "../../../components/layout/HeaderNoti";
+import Card from "../../../components/claims/ExpenseListCard";
+import FilterModal from "../../../components/claims/FilterModal";
+import DateFilterModal from "../../../components/claims/DateFilterModal";
 import NoDataIcon from "/public/icons/noDataIcon";
 import FilterIcon from "/public/icons/filterIcon";
 import CalendarIcon from "/public/icons/calendarIcon";
@@ -26,13 +26,13 @@ import ListIcon from "/public/icons/listIcon";
 import ForwardIcon from "/public/icons/forwardIcon";
 import BackIcon from "/public/icons/backIcon";
 import PlusIcon from "/public/icons/plusIcon";
-import userStore from "../../store/auth";
-import claimStore from "../../store/claim";
+import userStore from "../../../store/auth";
+import claimStore from "../../../store/claim";
 
 const Claims = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
-  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const { getClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
   const { user } = userStore((state) => state);
 
   const [showChart, setShowChart] = useState(true);
@@ -49,7 +49,7 @@ const Claims = () => {
   };
 
   useEffect(() => {
-    getAllClaims({
+    getClaims({
       apolloClient,
       where: { userId: user.id },
     });
@@ -129,7 +129,7 @@ const Claims = () => {
   };
 
   const handleRefresh = () => {
-    getAllClaims({
+    getClaims({
       apolloClient,
       where: { userId: user.id },
     });
@@ -149,10 +149,10 @@ const Claims = () => {
 
   let approvedTotal = 0;
   let rejectedTotal = 0;
-  let pendingTotal = 0;
+  let requestTotal = 0;
   let approvedCount = 0;
   let rejectedCount = 0;
-  let pendingCount = 0;
+  let requestCount = 0;
   expenseList?.map((each, index) => {
     each[1]?.map((eachExpense) => {
       if (eachExpense.status === "approved") {
@@ -162,8 +162,8 @@ const Claims = () => {
         rejectedTotal += parseFloat(eachExpense.amount);
         rejectedCount += 1;
       } else {
-        pendingTotal += parseFloat(eachExpense.amount);
-        pendingCount += 1;
+        requestTotal += parseFloat(eachExpense.amount);
+        requestCount += 1;
       }
     });
   });
@@ -179,7 +179,7 @@ const Claims = () => {
       if (chartRef.current) {
         // If the chart already exists, update the data
         chartRef.current.data.datasets[0].data = [
-          pendingCount,
+          requestCount,
           approvedCount,
           rejectedCount,
         ];
@@ -187,12 +187,16 @@ const Claims = () => {
         new Chart(ctx, {
           type: "doughnut",
           data: {
-            labels: ["Pending", "Approved", "Rejected"],
+            labels: ["Request", "Approved", "Rejected"],
             datasets: [
               {
-                data: [pendingCount, approvedCount, rejectedCount],
-                labels: ["Pending", "Approved", "Rejected"],
-                backgroundColor: ["orange", "green", "red"],
+                data: [requestCount, approvedCount, rejectedCount],
+                labels: ["Request", "Approved", "Rejected"],
+                backgroundColor: [
+                  "rgba(104, 206, 244, 1)",
+                  "rgba(117, 221, 72, 1)",
+                  "rgba(229, 62, 62, 1)",
+                ],
                 borderWidth: 0,
               },
             ],
@@ -256,7 +260,7 @@ const Claims = () => {
           <div
             css={styles.requestTitle}
             className="header-text"
-            onClick={() => router.push("/claims/expenseRequestStatus")}
+            onClick={() => router.push("/claims/claimApproval/expenseRequest")}
           >
             EXPENSE REQUESTS STATUS
           </div>
@@ -349,22 +353,22 @@ const Claims = () => {
                       <span css={styles.colorStatus}></span>
                       <span
                         css={styles.colorStatus}
-                        style={{ background: "#75DD48" }}
+                        style={{ background: "rgba(117, 221, 72, 1)" }}
                       ></span>
                       <span
                         css={styles.colorStatus}
-                        style={{ background: "#E53E3E" }}
+                        style={{ background: "rgba(229, 62, 62, 1)" }}
                       ></span>
                     </div>
                     <div className="primary-text" style={{ fontWeight: "400" }}>
-                      <label>Pending</label>
+                      <label>Request</label>
                       <label>Approved</label>
                       <label>Rejected</label>
                     </div>
                     <div className="primary-text">
                       <span css={styles.percentageStatus}>
-                        {pendingTotal} $ -{" "}
-                        {((pendingCount / expenseCount) * 100).toFixed(1)}%{" "}
+                        {requestTotal} $ -{" "}
+                        {((requestCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
                       <span css={styles.percentageStatus}>
                         {approvedTotal} $ -{" "}
@@ -390,12 +394,6 @@ const Claims = () => {
               <label>You don’t have any report request</label>
             </div>
           )}
-          <div
-            css={styles.addReport}
-            onClick={() => router.push("/claims/addExpenseRequest")}
-          >
-            <PlusIcon />
-          </div>
         </div>
       </div>
     </Layout>
@@ -554,21 +552,10 @@ const styles = {
     height: 20px;
     padding: 0 10px;
     border-radius: 5px;
-    background: #ffb016;
+    background: rgba(104, 206, 244, 1);
   `,
   percentageStatus: css`
     color: #37474f;
-  `,
-  addReport: css`
-    background: var(--primary);
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    padding: 3px;
-    cursor: pointer;
-    position: absolute;
-    bottom: 60px;
-    right: 12px;
   `,
   noDataContainer: css`
     display: flex;

@@ -219,7 +219,9 @@ const Claims = () => {
                   </label>
                 </div>
                 <label>
-                  <span style={{ color: "#000", paddingRight: "30px" }}>$</span>
+                  <span style={{ color: "#000", paddingRight: "30px" }}>
+                    SGD
+                  </span>
                   <input
                     type={"amount"}
                     className="secondary-text"

@@ -37,6 +37,9 @@ export const GET_CLAIM_BY_ID = gql`
           users_permissions_user {
             data {
               id
+              attributes {
+                username
+              }
             }
           }
         }
@@ -46,8 +49,12 @@ export const GET_CLAIM_BY_ID = gql`
 `;
 
 export const GET_CLAIMS = gql`
-  query {
-    claims(pagination: { limit: 100 }) {
+  query ($userId: ID!) {
+    claims(
+      filters: { users_permissions_user: { id: { ne: $userId } } }
+      sort: ["createdAt:desc"]
+      pagination: { limit: 100 }
+    ) {
       data {
         id
         attributes {
