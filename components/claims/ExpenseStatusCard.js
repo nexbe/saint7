@@ -112,7 +112,7 @@ const Card = ({ expenseList, userName, role }) => {
                             #ER-0000{eachExpense.id}
                           </label>
                           {eachExpense.category.label}
-                          {role != "Guard" && (
+                          {role.toLowerCase() != "guard" && (
                             <label className="requestedBy">
                               Requested by {userName}
                             </label>
@@ -120,7 +120,7 @@ const Card = ({ expenseList, userName, role }) => {
                         </label>
                         <label>
                           $ {eachExpense.amount}
-                          {role != "Guard" && (
+                          {role.toLowerCase() != "guard" && (
                             <img
                               src={
                                 eachExpense?.users_permissions_user?.profile
