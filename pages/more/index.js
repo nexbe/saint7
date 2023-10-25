@@ -13,6 +13,7 @@ import AnnouncementIcon from "../../public/icons/announcementIcon";
 import TeamIcon from "../../public/icons/teamIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
+import EFormIcon from "../../public/icons/eFormIcon";
 
 const MorePage = () => {
   const router = useRouter();
@@ -75,6 +76,10 @@ const MorePage = () => {
             <span>Team</span>
           </Link>
         )}
+         <Link href={"/checklist"} css={styles.navLink}>
+          <EFormIcon />
+          <span>E-Forms</span>
+        </Link>
       </div>
     </Layout>
   );
