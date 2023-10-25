@@ -11,7 +11,7 @@ import Card from "../../components/checklist/Card";
 import { useRouter } from "next/router";
 
 const SiteCheckList = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [isEdit, setIsEdit] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -23,7 +23,7 @@ const SiteCheckList = () => {
         <div css={styles.actions}>
           <button
             css={styles.actionBtn(true)}
-            onClick={() => router.push('/checklist/createCheckList')}>
+            onClick={() => router.push("/checklist/createCheckList")}>
             ADD NEW CHECKLIST
           </button>
           <button
@@ -38,10 +38,30 @@ const SiteCheckList = () => {
           </button>
         </div>
         <div css={styles.cardContainer}>
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          <Card
+            isEdit={isEdit}
+            isDelete={isDelete}
+            isChecked={true}
+            handleSelect={() => {}}
+          />
+          <Card
+            isEdit={isEdit}
+            isDelete={isDelete}
+            isChecked={true}
+            handleSelect={() => {}}
+          />
+          <Card
+            isEdit={isEdit}
+            isDelete={isDelete}
+            isChecked={true}
+            handleSelect={() => {}}
+          />
+          <Card
+            isEdit={isEdit}
+            isDelete={isDelete}
+            isChecked={true}
+            handleSelect={() => {}}
+          />
         </div>
       </div>
     </Layout>
@@ -94,7 +114,7 @@ const styles = {
     }
   `,
   cardContainer: css`
-    margin-top:20px;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
