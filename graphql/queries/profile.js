@@ -22,6 +22,14 @@ export const GET_PROFILE_BY_ID = gql`
           joinDate
           status
           position
+          favoriteUsers {
+            data {
+              id
+              attributes {
+                username
+              }
+            }
+          }
           address {
             id
             AddressLine1

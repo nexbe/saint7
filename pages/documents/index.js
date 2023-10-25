@@ -93,7 +93,7 @@ const Documents = () => {
           />
         </div>
         <div css={styles.bodyContainer}>
-          {user?.role?.name != "Guard" && (
+          {user?.role?.name.toLowerCase() != "guard" && (
             <div css={styles.actions}>
               <button
                 css={styles.actionBtn(true)}

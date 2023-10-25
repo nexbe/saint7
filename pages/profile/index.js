@@ -113,11 +113,16 @@ const Profile = () => {
     setDeleteModalOpen(!deleteModalOpen);
   };
 
+  const favLists = selectedProfile[0]?.favoriteUsers?.map((eachUser) => {
+    return +eachUser?.id;
+  });
+
   useEffect(() => {
     if (!!profileInfo[0]?.photo.url)
       setImage(
         `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
       );
+    setAddFavourite(favLists?.includes(+user?.id));
   }, [profileInfo[0]]);
 
   const onPreviewImage = async (e) => {
@@ -194,6 +199,34 @@ const Profile = () => {
     });
   };
 
+  const onFavouriteChange = async (addFavourite) => {
+    if (!!addFavourite) {
+      await updateProfile({
+        updateProfileAction,
+        id: profileInfo[0]?.id,
+        profileData: {
+          favoriteUsers: [...favLists, user?.id],
+        },
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      await updateProfile({
+        updateProfileAction,
+        id: profileInfo[0]?.id,
+        profileData: {
+          favoriteUsers: favLists?.filter((eachFav) => {
+            return eachFav != user?.id;
+          }),
+        },
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    getAllProfiles({
+      apolloClient,
+      where: { userId: router.query.userId },
+    });
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -267,7 +300,8 @@ const Profile = () => {
               onClick={() => setProfileEdit(true)}
               style={{
                 display:
-                  router.query.team === "Team" || user?.role?.name != "Guard"
+                  router.query.team === "Team" ||
+                  user?.role?.name.toLowerCase() != "guard"
                     ? "block"
                     : "none",
               }}
@@ -277,13 +311,15 @@ const Profile = () => {
             <div
               style={{
                 display:
-                  router.query.team === "Team" && user?.role?.name != "Guard"
+                  router.query.team === "Team" &&
+                  user?.role?.name.toLowerCase() != "guard"
                     ? "block"
                     : "none",
               }}
               css={styles.starIcon}
               onClick={() => {
                 setAddFavourite(!addFavourite);
+                onFavouriteChange(!addFavourite);
               }}
             >
               <FaStar size={20} color={addFavourite ? "#FA7E0B" : "#B3B3B3"} />

@@ -31,6 +31,7 @@ const MorePage = () => {
       where: { userId: user.id },
     });
   }, [user]);
+  console.log("user...", user);
 
   return (
     <Layout>
@@ -70,7 +71,7 @@ const MorePage = () => {
           <AnnouncementIcon />
           <span>Announcement</span>
         </Link>
-        {user?.role?.name != "Guard" && (
+        {user?.role?.name.toLowerCase() != "guard" && (
           <Link href={"/team"} css={styles.navLink}>
             <TeamIcon />
             <span>Team</span>

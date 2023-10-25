@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { useState } from "react";
 import { Spinner } from "reactstrap";
 
-export const Upload = ({ onChange }) => {
+export const Upload = ({ onChange, belongTo }) => {
   const [loading, setLoading] = useState(false);
   return (
     <>
@@ -20,7 +20,11 @@ export const Upload = ({ onChange }) => {
           <>
             <input
               disabled={loading}
-              accept={`application/pdf, image/*`}
+              accept={
+                belongTo === "addExpense"
+                  ? `image/*`
+                  : `application/pdf, image/*`
+              }
               onChange={async (e) => {
                 setLoading(true);
                 await onChange(e);

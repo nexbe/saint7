@@ -1,37 +1,42 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useMutation } from "@apollo/client";
+import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import Select, { components } from "react-select";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { AiOutlineFilePdf } from "react-icons/ai";
-import { IoCloseSharp } from "react-icons/io5";
+import _ from "lodash";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
+import userStore from "../../store/auth";
+import claimStore from "../../store/claim";
+import { Upload } from "../../components/upload/uploadFile";
+import { UploadedFiles } from "../../components/upload/uploadFiles";
+import { uploadFile } from "../../components/upload/upload";
+import { CREATE_CLAIM } from "../../graphql/mutations/claim";
 
 const Claims = () => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
   const router = useRouter();
+  const { user } = userStore((state) => state);
+  const { createClaim } = claimStore((state) => state);
+  const [createClaimAction, errCreateClaim] = useMutation(CREATE_CLAIM);
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedOption, setSelectedOption] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg"];
-  const isImage = FILE_EXTENSIONS.some((extension) =>
-    selectedFile?.name?.endsWith(extension)
-  );
+  const [fileList, setFileList] = useState([]);
+  let fileListArr = _.entries(fileList);
+  const [saveAction, setSaveAction] = useState(false);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-  };
-
-  const handleRemoveFile = () => {
-    setSelectedFile(null);
-  };
-
-  let categoryOptions = [
+  const categoryOptions = [
     {
       id: 1,
       name: "Advanced Tax",
@@ -99,15 +104,6 @@ const Claims = () => {
     setSelectedDate(date);
   };
 
-  const CustomOption = ({ children, ...props }) => (
-    <div
-      style={{ display: "flex", gap: "10px", margin: "0 20px" }}
-      {...props.innerProps}
-    >
-      <input type="checkbox" checked={props.isSelected} />
-      {children}
-    </div>
-  );
   const DropdownIndicator = (props) => {
     return (
       components.DropdownIndicator && (
@@ -118,12 +114,68 @@ const Claims = () => {
     );
   };
 
+  const onChange = async (e) => {
+    const selectedFiles = [...e.target.files];
+    const uploadedFiles = {};
+
+    for (let file of selectedFiles) {
+      uploadedFiles[0] = file;
+    }
+
+    setFileList({ ...fileList, ...uploadedFiles });
+  };
+
+  const onSubmit = async (data) => {
+    if (!!saveAction) {
+      let filesArrToSend = [];
+      for (let file of fileListArr) {
+        let fileData = {};
+        let uploadFiles = {};
+        const formData = new FormData();
+        formData.append("files", file[1]);
+        const response = await uploadFile(formData);
+        const json = await response.json();
+        if (response.status === 200) {
+          const term = json[0].id;
+          fileData.attachment = term;
+          filesArrToSend.push(json[0]);
+          uploadFiles[term] = file;
+        }
+      }
+      await createClaim({
+        createClaimAction,
+        data: {
+          amount: parseFloat(data.amount),
+          purpose: data.purpose,
+          category: selectedOption,
+          expenseDate: new Date(selectedDate).toISOString(),
+          users_permissions_user: user?.id,
+          attachment: filesArrToSend?.map((eachFile) => {
+            return +eachFile?.id;
+          }),
+          status: "pending",
+          publishedAt: new Date().toISOString(),
+        },
+      });
+      // router.push("/claims/expenseRequestStatus");
+      router.push({
+        pathname: "/claims/expenseRequestStatus",
+        query: {
+          userId: user?.id,
+          message: "Success!",
+          belongTo: "Claims",
+          label: "Expense report successfully created.",
+        },
+      });
+    }
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
         <HeaderNoti title={"Claims"} href={"/home"} />
         <div css={styles.bodyContainer}>
-          <div>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div css={styles.formContent}>
               <div className="formFlex">
                 <div className="d-flex">
@@ -135,6 +187,7 @@ const Claims = () => {
                   selected={selectedDate}
                   onChange={handleDateChange}
                   dateFormat="dd/MM/yyyy"
+                  required
                 />
               </div>
 
@@ -149,15 +202,14 @@ const Claims = () => {
                   onChange={handleSelectChange}
                   options={options}
                   placeholder="Add or Select Category"
-                  isMulti
                   styles={selectBoxStyle}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
                     DropdownIndicator,
-                    Option: CustomOption,
                   }}
                   isClearable={false}
+                  required
                 />
               </div>
               <div className="formFlex">
@@ -167,13 +219,15 @@ const Claims = () => {
                   </label>
                 </div>
                 <label>
-                  <span style={{ color: "#000", paddingRight: "30px" }}>
-                    SGD
-                  </span>
+                  <span style={{ color: "#000", paddingRight: "30px" }}>$</span>
                   <input
-                    type={"number"}
+                    type={"amount"}
                     className="secondary-text"
                     placeholder="0.00"
+                    required
+                    {...register("amount", {
+                      required: true,
+                    })}
                   />
                 </label>
               </div>
@@ -181,43 +235,25 @@ const Claims = () => {
                 <div className="d-flex">
                   <label className="primary-text">Purpose</label>
                 </div>
-                <input type={"text"} className="secondary-text" />
+                <input
+                  type={"text"}
+                  className="secondary-text"
+                  {...register("purpose", {
+                    required: false,
+                  })}
+                />
               </div>
               <div className="formFlex">
-                <div>
-                  <label className="primary-text">Attach Documents</label>
-                  <div css={styles.attchBox}>
-                    {selectedFile && (
-                      <div css={styles.imageContainer}>
-                        {isImage ? (
-                          <img
-                            src={URL.createObjectURL(selectedFile)}
-                            alt="Selected"
-                            css={styles.selectedImage}
-                          />
-                        ) : (
-                          <div css={styles.fileIconContainer}>
-                            <AiOutlineFilePdf color={"#1E3C72"} size={80} />
-                          </div>
-                        )}
-
-                        <div onClick={handleRemoveFile} css={styles.closeIcon}>
-                          <IoCloseSharp size={20} color="#F6302B" />
-                        </div>
-                      </div>
-                    )}
-                    {!selectedFile && (
-                      <label css={styles.attachBtn}>
-                        Browse Picture
-                        <input
-                          type="file"
-                          accept={`application/pdf, image/*`}
-                          onChange={handleFileChange}
-                        />
-                      </label>
-                    )}
+                {fileListArr?.length > 0 ? (
+                  <UploadedFiles
+                    fileList={fileList}
+                    setFileList={setFileList}
+                  />
+                ) : (
+                  <div className={styles.addNoteUploadContainer}>
+                    <Upload onChange={onChange} belongTo={"addExpense"} />
                   </div>
-                </div>
+                )}
               </div>
             </div>
             <div css={styles.actionButton}>
@@ -229,12 +265,14 @@ const Claims = () => {
               </button>
               <button
                 css={styles.addBtn}
-                onClick={() => router.push("/claims/expenseRequestStatus")}
+                onClick={() => {
+                  setSaveAction(true);
+                }}
               >
                 Add to report
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </Layout>
@@ -252,30 +290,55 @@ const selectBoxStyle = {
       fontSize: "14px",
     };
   },
-  multiValue: (styles, { data }) => {
+  singleValue: (styles, { data }) => {
     return {
       ...styles,
-      backgroundColor: "rgba(0, 171, 209, 0.10)",
-      borderRadius: "10px",
     };
   },
   menu: (provided, state) => ({
     ...provided,
     width: "100%",
+    height: "150px",
+    overflowY: "scroll",
     outline: "none",
   }),
-
+  valueContainer: (provided, state) => ({
+    ...provided,
+    padding: "0",
+    "&:focus": {
+      backgroundColor: "none",
+      outline: "none",
+      border: "none",
+    },
+  }),
   control: (base) => ({
     ...base,
     border: "none",
     outline: "none",
-    backgroundColor: "none",
+    background: "none",
+    fontSize: "14px",
+    height: "10px",
+    color: "var(--primary-font)",
+    fontWeight: "400",
+    display: "flex",
+    "&:focus": {
+      backgroundColor: "none",
+      outline: "none",
+      border: "none",
+    },
   }),
-  option: (styles, { isDisabled }) => {
+  option: (styles, { isSelected }) => {
     return {
       ...styles,
-      color: "#37474F",
-      cursor: "pointer",
+      backgroundColor: isSelected ? "#E3F3FF" : "#fff",
+      color: "#000",
+      cursor: isSelected ? "not-allowed" : "pointer",
+      fontSize: "14px",
+      margin: "0",
+      padding: "5px 20px",
+      "&:hover": {
+        backgroundColor: "none",
+      },
     };
   },
 };
@@ -362,66 +425,5 @@ const styles = {
     border: none;
     color: var(--white);
     background: var(--primary);
-  `,
-  attchBox: css`
-    border: 2px dashed #ccc;
-    padding: 30px;
-    margin-bottom: 20px;
-    width: 100%;
-    margin-top: 10px;
-    justify-content: start;
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    border: 2px dashed #d6e2ea;
-    background: var(--white);
-    box-shadow: 0px 4px 4px 0px rgba(117, 139, 154, 0.08);
-  `,
-  attachBtn: css`
-    display: inline-block;
-    padding: 8px 16px;
-    font-weight: bold;
-    color: #5e72e4;
-    font-weight: 600;
-    font-size: 16px;
-    text-align: center;
-    text-decoration: underline;
-    cursor: pointer;
-    border: none;
-    background: none;
-    outline: none;
-
-    input {
-      display: none;
-    }
-  `,
-  selectedImage: css`
-    width: 125px;
-    height: 130px;
-    border-radius: 16px;
-    background: #e3f3ff;
-  `,
-  imageContainer: css`
-    position: relative;
-    justify-content: start;
-  `,
-  closeIcon: css`
-    position: absolute;
-    top: 0;
-    right: 50px;
-    cursor: pointer;
-    padding: 0;
-
-    @media (min-width: 440px) {
-      left: 10%;
-    }
-  `,
-  fileIconContainer: css`
-    width: 125px;
-    height: 130px;
-    display: grid;
-    place-items: center;
-    border-radius: 16px;
-    background: #e3f3ff;
   `,
 };

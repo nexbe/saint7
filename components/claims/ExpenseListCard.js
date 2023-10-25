@@ -6,11 +6,8 @@ import {
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 
-import NoDataIcon from "/public/icons/noDataIcon";
-
 const Card = ({ expenseList }) => {
   const [open, setOpen] = useState(false);
-
   useEffect(() => {}, [expenseList]);
 
   return (
@@ -37,16 +34,16 @@ const Card = ({ expenseList }) => {
                         className="primary-text"
                         style={{ background: index % 2 ? "" : "#f7f7f7" }}
                       >
-                        <label>{eachNote.category}</label>
-                        <label>
-                          {eachNote.currency} {eachNote.amount}{" "}
+                        <label>{eachNote.category?.label}</label>
+                        <label style={{ width: "20%" }}>
+                          $ {eachNote.amount}{" "}
                           <span
                             className="expenseStatus"
                             style={{
                               color:
-                                eachNote.status == "Pending"
+                                eachNote.status === "pending"
                                   ? "#FFB016"
-                                  : eachNote.status == "Rejected"
+                                  : eachNote.status === "rejected"
                                   ? "#E53E3E"
                                   : "",
                             }}
@@ -81,13 +78,6 @@ const Card = ({ expenseList }) => {
             );
           })}
         </>
-      )}
-      {expenseList && expenseList.length == 0 && (
-        <div css={styles.noDataContainer} className="primary-text">
-          <NoDataIcon />
-          <label>Nothing Here to show</label>
-          <label>You don’t have any report request</label>
-        </div>
       )}
     </>
   );
@@ -160,11 +150,5 @@ const styles = {
       height: 18px;
       color: var(--white);
     }
-  `,
-  noDataContainer: css`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
   `,
 };
