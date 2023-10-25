@@ -3,6 +3,7 @@
 import { css } from "@emotion/react";
 import Chart from "chart.js/auto";
 import { useRef, useEffect, useState, useMemo } from "react";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import moment from "moment";
@@ -13,7 +14,7 @@ import HeaderNoti from "../../components/layout/HeaderNoti";
 import Card from "../../components/claims/ExpenseListCard";
 import FilterModal from "../../components/claims/FilterModal";
 import DateFilterModal from "../../components/claims/DateFilterModal";
-
+import NoDataIcon from "/public/icons/noDataIcon";
 import FilterIcon from "/public/icons/filterIcon";
 import CalendarIcon from "/public/icons/calendarIcon";
 import RefreshIcon from "/public/icons/refreshIcon";
@@ -25,20 +26,20 @@ import ListIcon from "/public/icons/listIcon";
 import ForwardIcon from "/public/icons/forwardIcon";
 import BackIcon from "/public/icons/backIcon";
 import PlusIcon from "/public/icons/plusIcon";
+import userStore from "../../store/auth";
+import claimStore from "../../store/claim";
 
 const Claims = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const { user } = userStore((state) => state);
+
   const [showChart, setShowChart] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [dateModalOpen, setDateModalOpen] = useState(false);
-  const [currentDate, setCurrentDate] = useState(dayjs());
-  const handlePrevMonth = () => {
-    setCurrentDate(currentDate.subtract(1, "month"));
-  };
-  const handleNextMonth = () => {
-    setCurrentDate(currentDate.add(1, "month"));
-  };
-  const formattedDate = currentDate.format("MMMM YYYY");
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
 
   const filterModal = () => {
     setModalOpen(!modalOpen);
@@ -47,156 +48,34 @@ const Claims = () => {
     setDateModalOpen(!dateModalOpen);
   };
 
-  const canvas = useRef();
   useEffect(() => {
-    const ctx = canvas.current;
-    let chartStatus = Chart.getChart(ctx);
-    if (chartStatus !== undefined) {
-      chartStatus.destroy();
-    }
-    new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: ["Pending", "Approved", "Rejected"],
-        datasets: [
-          {
-            data: [30, 30, 40],
-            labels: ["Pending", "Approved", "Rejected"],
-            backgroundColor: [
-              "rgba(117, 221, 72, 1)",
-              "rgba(229, 62, 62, 1)",
-              "rgba(255, 176, 22, 1)",
-            ],
-            borderWidth: 0,
-          },
-        ],
-      },
-      options: {
-        responsive: false,
-        aspectRatio: 1.4,
-        plugins: {
-          legend: false,
-          tooltip: {
-            enabled: false,
-          },
-        },
-      },
+    getAllClaims({
+      apolloClient,
+      where: { userId: user.id },
     });
-  }, []);
+  }, [user]);
 
-  const expenseData = [
-    {
-      id: "#ER-00001",
-      category: "Advanced Tax",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 200,
-      status: "Pending",
-      date: "2023-09-10",
-    },
-    {
-      id: "#ER-00002",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 800,
-      status: "Approved",
-      date: "2023-09-20",
-    },
-    {
-      id: "#ER-00003",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Rejected",
-      date: "2023-09-28",
-    },
-    {
-      id: "#ER-000010",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 100,
-      status: "Rejected",
-      date: "2023-09-18",
-    },
-    {
-      id: "#ER-00004",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 300,
-      status: "Pending",
-      date: "2023-08-10",
-    },
-    {
-      id: "#ER-00005",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 400,
-      status: "Approved",
-      date: "2023-08-20",
-    },
-    {
-      id: "#ER-00006",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Rejected",
-      date: "2023-08-29",
-    },
-    {
-      id: "#ER-00007",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 400,
-      status: "Pending",
-      date: "2023-07-10",
-    },
-    {
-      id: "#ER-00008",
-      category: "Telephone Expense",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 500,
-      status: "Approved",
-      date: "2023-07-20",
-    },
-    {
-      id: "#ER-00009",
-      category: "Parking",
-      subCategory: "COMMUNICATION",
-      currency: "$",
-      amount: 700,
-      status: "Rejected",
-      date: "2023-07-29",
-    },
-  ];
-
-  const monthName = (item) => moment(item.date, "YYYY-MM-DD").format("MMMM");
-
+  const monthName = (item) =>
+    moment(item.expenseDate, "YYYY-MM-DD").format("MMMM");
   const [filterTerm, setFilterTerm] = useState("");
   const [expenseList, setExpenseList] = useState();
 
-  useEffect(() => {
-    const result = _.groupBy(expenseData, monthName);
-    const resultArr = _.entries(result);
-    setExpenseList(resultArr);
-  }, []);
+  useMemo(() => {
+    if (!!claimInfo) {
+      const result = _.groupBy(claimInfo, monthName);
+      const resultArr = _.entries(result);
+      setExpenseList(resultArr);
+    }
+  }, [claimInfo]);
 
   const handleFilterChange = (event) => {
     const term = event.target.value;
     setFilterTerm(term);
 
     // Filter the data based on the filterTerm
-    const filteredResults = expenseData.filter(
+    const filteredResults = claimInfo.filter(
       (item) =>
-        item?.category?.toLowerCase().includes(term?.toLowerCase()) ||
-        item?.subCategory?.toLowerCase().includes(term?.toLowerCase()) ||
+        item?.category.label?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.status?.toLowerCase().includes(term?.toLowerCase()) ||
         item?.id?.toLowerCase().includes(term?.toLowerCase())
     );
@@ -206,10 +85,10 @@ const Claims = () => {
   };
 
   const handleDateChange = (startDate, endDate) => {
-    const filteredResults = expenseData.filter(
+    const filteredResults = claimInfo.filter(
       (item) =>
-        new Date(item.date).getTime() >= new Date(startDate).getTime() &&
-        new Date(item.date).getTime() <= new Date(endDate).getTime()
+        new Date(item.expenseDate).getTime() >= new Date(startDate).getTime() &&
+        new Date(item.expenseDate).getTime() <= new Date(endDate).getTime()
     );
     const result = _.groupBy(filteredResults, monthName);
     const resultArr = _.entries(result);
@@ -224,8 +103,8 @@ const Claims = () => {
   ) => {
     let filteredResults;
     filteredResults = minAmount
-      ? expenseData.filter((item) => item.amount >= minAmount)
-      : expenseData;
+      ? claimInfo.filter((item) => item.amount >= minAmount)
+      : claimInfo;
     filteredResults = maxAmount
       ? filteredResults.filter((item) => item.amount <= maxAmount)
       : filteredResults;
@@ -238,7 +117,9 @@ const Claims = () => {
     });
 
     filteredResults = filteredResults.filter((item) => {
-      if (!!checkCategoryList.find((category) => category === item.category))
+      if (
+        !!checkCategoryList.find((category) => category === item.category.label)
+      )
         return item;
     });
 
@@ -248,10 +129,15 @@ const Claims = () => {
   };
 
   const handleRefresh = () => {
+    getAllClaims({
+      apolloClient,
+      where: { userId: user.id },
+    });
     setFilterTerm("");
-    const result = _.groupBy(expenseData, monthName);
+    const result = _.groupBy(claimInfo, monthName);
     const resultArr = _.entries(result);
     setExpenseList(resultArr);
+    setCurrentMonth(new Date().getMonth() + 1);
   };
 
   const expenseCount = _.values(expenseList).reduce(
@@ -267,11 +153,11 @@ const Claims = () => {
   let approvedCount = 0;
   let rejectedCount = 0;
   let pendingCount = 0;
-  expenseData?.map((eachExpense, index) => {
-    if (eachExpense.status == "Approved") {
+  claimInfo?.map((eachExpense, index) => {
+    if (eachExpense.status === "approved") {
       approvedTotal += parseFloat(eachExpense.amount);
       approvedCount += 1;
-    } else if (eachExpense.status == "Rejected") {
+    } else if (eachExpense.status === "rejected") {
       rejectedTotal += parseFloat(eachExpense.amount);
       rejectedCount += 1;
     } else {
@@ -279,11 +165,89 @@ const Claims = () => {
       pendingCount += 1;
     }
   });
+  const canvas = useRef();
+  const chartRef = useRef(null);
+  useEffect(() => {
+    const ctx = canvas.current;
+    let chartStatus = Chart.getChart(ctx);
+    if (chartStatus !== undefined) {
+      chartStatus.destroy();
+    }
+    if (chartRef.current) {
+      // If the chart already exists, update the data
+      chartRef.current.data.datasets[0].data = [
+        pendingCount,
+        approvedCount,
+        rejectedCount,
+      ];
+    } else {
+      new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Pending", "Approved", "Rejected"],
+          datasets: [
+            {
+              data: [pendingCount, approvedCount, rejectedCount],
+              labels: ["Pending", "Approved", "Rejected"],
+              backgroundColor: ["orange", "green", "red"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: false,
+          aspectRatio: 1.4,
+          plugins: {
+            legend: false,
+            tooltip: {
+              enabled: false,
+            },
+          },
+        },
+      });
+    }
+  }, [claimInfo]);
+
+  useEffect(() => {
+    if (!!claimInfo) {
+      const filteredData = claimInfo.filter((item) => {
+        const itemDate = new Date(item.expenseDate);
+        const itemYear = itemDate.getFullYear();
+        const itemMonth = itemDate.getMonth() + 1;
+        return itemYear === currentYear && itemMonth === currentMonth;
+      });
+
+      const result = _.groupBy(filteredData, monthName);
+      const resultArr = _.entries(result);
+      setExpenseList(resultArr);
+    }
+  }, [currentYear, currentMonth]);
+
+  const changeYearMonth = (increment) => {
+    if (increment) {
+      if (currentMonth === 12) {
+        setCurrentMonth(1);
+        setCurrentYear(currentYear + 1);
+      } else {
+        setCurrentMonth(currentMonth + 1);
+      }
+    } else {
+      if (currentMonth === 1) {
+        setCurrentMonth(12);
+        setCurrentYear(currentYear - 1);
+      } else {
+        setCurrentMonth(currentMonth - 1);
+      }
+    }
+  };
 
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Claims"} href={"/home"} />
+        <HeaderNoti
+          title={"Claims"}
+          href={user?.role?.name === "Manager" ? "/claims/Manager" : "/home"}
+        />
         <div css={styles.bodyContainer}>
           <div
             css={styles.requestTitle}
@@ -350,59 +314,78 @@ const Claims = () => {
             </button>
           </div>
           <div style={{ display: showChart ? "block" : "none" }}>
-            <div css={styles.dateContainer}>
-              <button onClick={handlePrevMonth}>
-                <BackIcon />
-              </button>
-              <label className="primary-text">{formattedDate}</label>
-              <button onClick={handleNextMonth}>
-                <ForwardIcon />
-              </button>
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <div css={styles.pieChart}>
-                <canvas id="myChart" ref={canvas}></canvas>
-                {/* <label className="pendingPercent">48%</label>
+            {expenseList && expenseList.length > 0 && (
+              <>
+                <div css={styles.dateContainer}>
+                  <button onClick={() => changeYearMonth(false)}>
+                    <BackIcon />
+                  </button>
+                  <label className="primary-text">
+                    {dayjs()
+                      .month(currentMonth - 1)
+                      .format("MMMM")}{" "}
+                    {currentYear}
+                  </label>
+                  <button onClick={() => changeYearMonth(true)}>
+                    <ForwardIcon />
+                  </button>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div css={styles.pieChart}>
+                    <canvas id="myChart" ref={canvas}></canvas>
+                    {/* <label className="pendingPercent">48%</label>
                 <label className="approvedPercent">32%</label>
                 <label className="rejectedPercent">20%</label> */}
-                <label className="expenseCount">
-                  {expenseCount} <span>Expenses</span>
-                </label>
-              </div>
-              <div css={styles.chartDataStatus}>
-                <div style={{ gap: "10px" }}>
-                  <span css={styles.colorStatus}></span>
-                  <span
-                    css={styles.colorStatus}
-                    style={{ background: "#75DD48" }}
-                  ></span>
-                  <span
-                    css={styles.colorStatus}
-                    style={{ background: "#E53E3E" }}
-                  ></span>
+                    <label className="expenseCount">
+                      {expenseCount} <span>Expenses</span>
+                    </label>
+                  </div>
+                  <div css={styles.chartDataStatus}>
+                    <div style={{ gap: "10px" }}>
+                      <span css={styles.colorStatus}></span>
+                      <span
+                        css={styles.colorStatus}
+                        style={{ background: "#75DD48" }}
+                      ></span>
+                      <span
+                        css={styles.colorStatus}
+                        style={{ background: "#E53E3E" }}
+                      ></span>
+                    </div>
+                    <div className="primary-text" style={{ fontWeight: "400" }}>
+                      <label>Pending</label>
+                      <label>Approved</label>
+                      <label>Rejected</label>
+                    </div>
+                    <div className="primary-text">
+                      <span css={styles.percentageStatus}>
+                        {pendingTotal} $ -{" "}
+                        {Math.round((pendingCount / expenseCount) * 100)}%{" "}
+                      </span>
+                      <span css={styles.percentageStatus}>
+                        {approvedTotal} $ -{" "}
+                        {Math.round((approvedCount / expenseCount) * 100)}%{" "}
+                      </span>
+                      <span css={styles.percentageStatus}>
+                        {rejectedTotal} $ -{" "}
+                        {Math.round((rejectedCount / expenseCount) * 100)}%{" "}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="primary-text" style={{ fontWeight: "400" }}>
-                  <label>Pending</label>
-                  <label>Approved</label>
-                  <label>Rejected</label>
-                </div>
-                <div className="primary-text">
-                  <span css={styles.percentageStatus}>
-                    {pendingTotal} $ - {(pendingCount / expenseCount) * 100}%{" "}
-                  </span>
-                  <span css={styles.percentageStatus}>
-                    {approvedTotal} $ - {(approvedCount / expenseCount) * 100}%{" "}
-                  </span>
-                  <span css={styles.percentageStatus}>
-                    {rejectedTotal} $ - {(rejectedCount / expenseCount) * 100}%{" "}
-                  </span>
-                </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
           <div style={{ display: showChart ? "none" : "block" }}>
             <Card expenseList={expenseList} />
           </div>
+          {expenseList && expenseList.length == 0 && (
+            <div css={styles.noDataContainer} className="primary-text">
+              <NoDataIcon />
+              <label>Nothing Here to show</label>
+              <label>You don’t have any report request</label>
+            </div>
+          )}
           <div
             css={styles.addReport}
             onClick={() => router.push("/claims/addExpenseRequest")}
@@ -582,5 +565,11 @@ const styles = {
     position: absolute;
     bottom: 60px;
     right: 12px;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };
