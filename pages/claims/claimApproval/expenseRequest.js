@@ -6,36 +6,46 @@ import {
   MdOutlineKeyboardDoubleArrowLeft,
   MdOutlineKeyboardDoubleArrowRight,
   MdOutlineArrowBackIosNew,
+  MdOutlineKeyboardArrowDown,
 } from "react-icons/md";
 import moment from "moment";
 import _ from "lodash";
 import { useApolloClient, useMutation } from "@apollo/client";
+import Select, { components } from "react-select";
 
-import Layout from "../../components/layout/Layout";
-import HeaderNoti from "../../components/layout/HeaderNoti";
-import Card from "../../components/claims/ExpenseStatusCard";
-import FilterModal from "../../components/claims/FilterModal";
-import DateFilterModal from "../../components/claims/DateFilterModal";
+import Layout from "../../../components/layout/Layout";
+import HeaderNoti from "../../../components/layout/HeaderNoti";
+import Card from "../../../components/claims/ExpenseStatusCard";
+import FilterModal from "../../../components/claims/FilterModal";
+import DateFilterModal from "../../../components/claims/DateFilterModal";
 
 import FilterIcon from "/public/icons/filterIcon";
 import CalendarIcon from "/public/icons/calendarIcon";
 import RefreshIcon from "/public/icons/refreshIcon";
 import SearchIcon from "/public/icons/searchIcon";
 import NoDataIcon from "/public/icons/noDataIcon";
-import PlusIcon from "/public/icons/plusIcon";
-import userStore from "../../store/auth";
-import claimStore from "../../store/claim";
-import NotificationBox from "../../components/notification/NotiBox";
+import userStore from "../../../store/auth";
+import claimStore from "../../../store/claim";
+import { UPDATE_CLAIM } from "../../../graphql/mutations/claim";
+import NotificationBox from "../../../components/notification/NotiBox";
+import ConfirmExpenseModal from "../../../components/claims/claimApproval/ConfirmModal";
 
 const ExpenseRequestStatus = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
-  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const { getClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const { updateClaim } = claimStore((state) => state);
+  const [updateClaimAction, errUpdateClaim] = useMutation(UPDATE_CLAIM);
   const { user } = userStore((state) => state);
   const [activeTab, setActiveTab] = useState(1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [modalOpen, setModalOpen] = useState(false);
   const [dateModalOpen, setDateModalOpen] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [actionStatus, setActionStatus] = useState(null);
+  const [checkAll, setCheckAll] = useState(false);
+  const [checkData, setCheckData] = useState([]);
+  const [checkArr, setCheckArr] = useState([]);
 
   const filterModal = () => {
     setModalOpen(!modalOpen);
@@ -44,6 +54,27 @@ const ExpenseRequestStatus = () => {
     setDateModalOpen(!dateModalOpen);
   };
 
+  const incrementYear = () => {
+    setCurrentYear(currentYear + 1);
+  };
+
+  const decrementYear = () => {
+    setCurrentYear(currentYear - 1);
+  };
+
+  useEffect(() => {
+    getClaims({
+      apolloClient,
+      where: { userId: user.id },
+    });
+  }, [user]);
+
+  const statusOptions = [
+    { value: "pending", label: "New" },
+    { value: "approved", label: "Approved" },
+    { value: "rejected", label: "Rejected" },
+  ];
+
   const [filterTerm, setFilterTerm] = useState("");
   const [expenseList, setExpenseList] = useState();
   const [filteredData, setFilteredData] = useState(claimInfo);
@@ -51,25 +82,16 @@ const ExpenseRequestStatus = () => {
   const [rejectedData, setRejectedData] = useState(claimInfo);
   const [approvedTotal, setApprovedTotal] = useState();
   const [rejectedTotal, setRejectedTotal] = useState();
+  const [status, setStatus] = useState(statusOptions[0]);
 
   const monthName = (item) =>
     moment(item.expenseDate, "YYYY-MM-DD").format("MMMM YYYY");
-
-  useEffect(() => {
-    getAllClaims({
-      apolloClient,
-      where: { userId: user.id },
-    });
-  }, []);
-
-  useMemo(() => {
-    if (!!claimInfo) {
-      setFilteredData(claimInfo);
-      const result = _.groupBy(claimInfo, monthName);
-      const resultArr = _.entries(result);
-      setExpenseList(resultArr);
+  let requestCount = 0;
+  claimInfo?.map((eachExpense) => {
+    if (eachExpense.status === "pending") {
+      requestCount += 1;
     }
-  }, [claimInfo, router.query]);
+  });
 
   const handleListChange = (filteredResults) => {
     const approvedList = filteredResults.filter(
@@ -122,15 +144,6 @@ const ExpenseRequestStatus = () => {
     handleListChange(filteredResults);
   };
 
-  const incrementYear = () => {
-    setCurrentYear(currentYear + 1);
-  };
-
-  // Function to decrement the year
-  const decrementYear = () => {
-    setCurrentYear(currentYear - 1);
-  };
-
   const handleDateChange = (startDate, endDate) => {
     const filteredResults = claimInfo.filter(
       (item) =>
@@ -178,6 +191,23 @@ const ExpenseRequestStatus = () => {
     handleListChange(filteredResults);
   };
 
+  const handleConfirmModal = () => {
+    setOpenConfirmModal(!openConfirmModal);
+  };
+
+  useMemo(() => {
+    if (!!claimInfo) {
+      setFilteredData(claimInfo);
+      const result = _.groupBy(claimInfo, monthName);
+      const resultArr = _.entries(result);
+      setExpenseList(resultArr);
+      handleListChange(claimInfo);
+    }
+    setCheckAll(false);
+    setCheckData([]);
+    setCheckArr([]);
+  }, [claimInfo, router.query]);
+
   useMemo(() => {
     if (!!claimInfo) {
       handleListChange(claimInfo);
@@ -191,7 +221,22 @@ const ExpenseRequestStatus = () => {
     const resultArr = _.entries(result);
     setExpenseList(resultArr);
     handleListChange(claimInfo);
-    setCurrentYear(new Date().getFullYear());
+    setCheckAll(false);
+    setCheckData([]);
+    setCheckArr([]);
+  };
+
+  const DropdownIndicator = (props) => {
+    return (
+      components.DropdownIndicator && (
+        <components.DropdownIndicator {...props}>
+          <MdOutlineKeyboardArrowDown
+            color={"rgba(41, 57, 145, 1)"}
+            size={25}
+          />
+        </components.DropdownIndicator>
+      )
+    );
   };
 
   useEffect(() => {
@@ -208,22 +253,95 @@ const ExpenseRequestStatus = () => {
     }
   }, [currentYear]);
 
+  const handleStatusChange = async (id, status) => {
+    if (!!id) {
+      await updateClaim({
+        updateClaimAction,
+        id: id,
+        claimData: {
+          status: status,
+          actionBy: user?.id,
+        },
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    getClaims({
+      apolloClient,
+      where: { userId: user.id },
+    });
+    router.push({
+      pathname: "/claims/claimApproval/expenseRequest",
+      query: {
+        message: "Success!",
+        belongTo: "ClaimApproval",
+        label: "Expense report successfully " + status + ".",
+      },
+    });
+  };
+
+  const handleCheck = (selectedId) => {
+    setCheckData((prevData) => {
+      if (prevData?.includes(selectedId)) {
+        return prevData?.filter((id) => id !== selectedId);
+      } else {
+        return [...prevData, selectedId];
+      }
+    });
+    const checkList = claimInfo?.filter((eachClaim) => {
+      if (eachClaim?.id === selectedId) {
+        return eachClaim;
+      }
+    });
+    setCheckArr([...checkArr, checkList]);
+  };
+
+  const handleStatusConfirm = async (status) => {
+    if (checkData) {
+      checkData?.map(async (eachCheckData) => {
+        await updateClaim({
+          updateClaimAction,
+          id: eachCheckData,
+          claimData: {
+            status: status,
+            actionBy: user?.id,
+          },
+          updatedAt: new Date().toISOString(),
+        });
+      });
+    }
+    getClaims({
+      apolloClient,
+      where: { userId: user.id },
+    });
+    router.push({
+      pathname: "/claims/claimApproval/expenseRequest",
+      query: {
+        message: "Success!",
+        belongTo: "ClaimApproval",
+        label:
+          checkData?.length + " Expense report successfully " + status + ".",
+      },
+    });
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Claims"} href={"/home"} />
+        <HeaderNoti
+          title={"Claims"}
+          href={user?.role?.name === "Manager" ? "/claims/Manager" : "/home"}
+        />
         <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox
             message={router.query.message}
             belongTo={router.query.belongTo}
             timeout={5000}
-            action={router?.query?.action}
             label={router?.query?.label}
           />
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.requestContent}>
-            <button onClick={() => router.push("/claims")}>
+            <button onClick={() => router.push("/claims/claimApproval")}>
               <MdOutlineArrowBackIosNew
                 color="rgba(41, 57, 145, 1)"
                 size={20}
@@ -286,7 +404,7 @@ const ExpenseRequestStatus = () => {
                 css={activeTab == 1 ? styles.activeColor : ""}
                 onClick={() => setActiveTab(1)}
               >
-                Pending
+                Pending [{requestCount}]
               </label>
               <label
                 css={activeTab == 2 ? styles.activeColor : ""}
@@ -301,45 +419,128 @@ const ExpenseRequestStatus = () => {
                 Rejected
               </label>
             </div>
+
             {activeTab == 1 && (
               <>
                 {filteredData && filteredData.length > 0 && (
-                  <div css={styles.cardContainer}>
-                    {filteredData.map(
-                      (item, index) =>
-                        item.status === "pending" && (
-                          <div
-                            css={styles.eachCard}
-                            className="primary-text"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              router.push({
-                                pathname: "/claims/requestDetail",
-                                query: {
-                                  expenseId: item.id,
-                                  userName:
-                                    item?.users_permissions_user?.username,
-                                },
-                              });
-                            }}
-                            key={index}
-                          >
-                            <label>
-                              <label css={styles.expenseId}>
-                                #ER-0000{item.id}
+                  <>
+                    <div css={styles.statusAction}>
+                      <label className="secondary-text">
+                        <input
+                          type={"checkbox"}
+                          className="checkbox"
+                          checked={checkAll ? true : false}
+                          onChange={() => {
+                            setCheckAll(!checkAll);
+                          }}
+                        />
+                        All
+                      </label>
+                      <button
+                        className="primary-text"
+                        onClick={() => {
+                          setActionStatus("approved");
+                          handleConfirmModal();
+                        }}
+                      >
+                        APPROVE
+                      </button>
+                      <button
+                        className="primary-text"
+                        style={{ background: "#EC1C24" }}
+                        onClick={() => {
+                          setActionStatus("rejected");
+                          handleConfirmModal();
+                        }}
+                      >
+                        REJECT
+                      </button>
+                    </div>
+                    <div css={styles.cardContainer}>
+                      {filteredData.map(
+                        (item, index) =>
+                          item.status === "pending" && (
+                            <div
+                              css={styles.eachCard}
+                              className="primary-text"
+                              style={{ cursor: "pointer", lineHeight: "20px" }}
+                              key={index}
+                            >
+                              {!!checkAll && (
+                                <input
+                                  type={"checkbox"}
+                                  className="checkbox"
+                                  style={{ marginRight: "10px" }}
+                                  onClick={() => handleCheck(item?.id)}
+                                />
+                              )}
+                              <label
+                                style={{ width: "60%" }}
+                                onClick={() => {
+                                  router.push({
+                                    pathname: "/claims/requestDetail",
+                                    query: {
+                                      expenseId: item.id,
+                                      userName:
+                                        item?.users_permissions_user?.username,
+                                    },
+                                  });
+                                }}
+                              >
+                                <div className="d-flex">
+                                  <img
+                                    src={
+                                      item?.users_permissions_user?.profile
+                                        ?.photo?.url
+                                        ? `${process.env.NEXT_PUBLIC_APP_URL}${item?.users_permissions_user?.profile?.photo.url}`
+                                        : "../../images/defaultImage.jpg"
+                                    }
+                                  />
+                                  <label
+                                    style={{
+                                      marginLeft: "10px",
+                                    }}
+                                  >
+                                    {item?.users_permissions_user?.username}
+                                    <label
+                                      style={{
+                                        textTransform: "capitalize",
+                                        color: "#8898AA",
+                                        fontSize: "13px",
+                                      }}
+                                    >
+                                      {item?.users_permissions_user?.role?.name}
+                                    </label>
+                                  </label>
+                                </div>
+                                <label css={styles.expenseId}>
+                                  #ER-0000{item.id}
+                                </label>
+                                {item.category?.label}{" "}
+                                <label>$ {item.amount}</label>
                               </label>
-                              {item.category?.label}
-                            </label>
-                            <label style={{ width: "20%" }}>
-                              $ {item.amount}
-                              <label css={styles.expenseStatus}>
-                                {item.status}
+                              <label>
+                                <Select
+                                  value={status}
+                                  // onChange={handleStatusChange(item?.id)}
+                                  onChange={(e) => {
+                                    handleStatusChange(item.id, e.value);
+                                  }}
+                                  options={statusOptions}
+                                  styles={selectBoxStyle}
+                                  components={{
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                    DropdownIndicator,
+                                  }}
+                                  isClearable={false}
+                                />
                               </label>
-                            </label>
-                          </div>
-                        )
-                    )}
-                  </div>
+                            </div>
+                          )
+                      )}
+                    </div>
+                  </>
                 )}
                 {filteredData && filteredData.length == 0 && (
                   <div css={styles.noDataContainer} className="primary-text">
@@ -369,6 +570,7 @@ const ExpenseRequestStatus = () => {
               </div>
             )}
           </div>
+
           <button css={styles.dateButton}>
             <MdOutlineKeyboardDoubleArrowLeft
               size={"20"}
@@ -380,19 +582,73 @@ const ExpenseRequestStatus = () => {
               onClick={incrementYear}
             />
           </button>
-          <div
-            css={styles.addReport}
-            onClick={() => router.push("/claims/addExpenseRequest")}
-          >
-            <PlusIcon />
-          </div>
         </div>
       </div>
+      {openConfirmModal && (
+        <ConfirmExpenseModal
+          isOpen={openConfirmModal}
+          close={() => setOpenConfirmModal(!openConfirmModal)}
+          actionStatus={actionStatus}
+          checkData={checkData}
+          handleStatusConfirm={handleStatusConfirm}
+          checkArr={checkArr}
+        />
+      )}
     </Layout>
   );
 };
 
 export default ExpenseRequestStatus;
+
+const selectBoxStyle = {
+  singleValue: (styles, { data }) => {
+    return {
+      ...styles,
+      color: "rgba(41, 57, 145, 1)",
+      fontSize: "14px",
+      fontWeight: "700",
+      alignItems: "center",
+      justifyContent: "center",
+    };
+  },
+  valueContainer: (provided, state) => ({
+    ...provided,
+    padding: "0",
+    margin: "0",
+    marginLeft: "10px",
+  }),
+  control: (base) => ({
+    ...base,
+    borderRadius: "10px",
+    background: "rgba(41, 57, 145, 0.20)",
+    fontSize: "14px",
+    height: "10px",
+    color: "rgba(41, 57, 145, 1)",
+    fontWeight: "400",
+    display: "flex",
+    flexWrap: "no-wrap",
+
+    "&:focus": {
+      backgroundColor: "none",
+      outline: "1px solid red",
+      border: "1px solid red",
+    },
+  }),
+  option: (styles, { isSelected }) => {
+    return {
+      ...styles,
+      backgroundColor: isSelected ? "#E3F3FF" : "#fff",
+      color: "#000",
+      cursor: isSelected ? "not-allowed" : "pointer",
+      fontSize: "14px",
+      margin: "0",
+      padding: "5px 20px",
+      "&:hover": {
+        backgroundColor: "none",
+      },
+    };
+  },
+};
 
 const styles = {
   wrapper: css`
@@ -487,6 +743,18 @@ const styles = {
     flex-direction: column;
     justify-content: space-between;
     gap: 20px;
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid #718096;
+      ::checked {
+        background: red;
+      }
+    }
+    input[type="checkbox"]: checked {
+      background: red;
+    }
   `,
   statusHeader: css`
     display: flex;
@@ -545,6 +813,12 @@ const styles = {
       display: flex;
       flex-direction: column;
     }
+    img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50px;
+      border: 1px solid var(--light-gray);
+    }
   `,
   expenseId: css`
     display: flex;
@@ -574,15 +848,23 @@ const styles = {
     background: rgba(250, 126, 11, 0.2);
     color: #fa7e0b;
   `,
-  addReport: css`
-    background: var(--primary);
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    padding: 3px;
-    cursor: pointer;
-    position: absolute;
-    bottom: 60px;
-    right: 12px;
+  statusAction: css`
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+    }
+    button {
+      border-radius: 10px;
+      background: #5fa452;
+      color: #fff;
+      box-shadow: 0px 10px 60px 0px rgba(0, 0, 0, 0.08);
+      padding: 5px 15px;
+      border: none;
+    }
   `,
 };

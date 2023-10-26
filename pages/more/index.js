@@ -13,6 +13,7 @@ import AnnouncementIcon from "../../public/icons/announcementIcon";
 import TeamIcon from "../../public/icons/teamIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
+import EFormIcon from "../../public/icons/eFormIcon";
 
 const MorePage = () => {
   const router = useRouter();
@@ -30,6 +31,7 @@ const MorePage = () => {
       where: { userId: user.id },
     });
   }, [user]);
+  console.log("user...", user);
 
   return (
     <Layout>
@@ -58,8 +60,7 @@ const MorePage = () => {
         </div>
         <div
           css={styles.notiIcon}
-          onClick={() => router.push("/notifications")}
-        >
+          onClick={() => router.push("/notifications")}>
           {" "}
           <NotiIcon />
         </div>
@@ -69,10 +70,16 @@ const MorePage = () => {
           <AnnouncementIcon />
           <span>Announcement</span>
         </Link>
-        {user?.role?.name != "Guard" && (
+        {user?.role?.name.toLowerCase() != "guard" && (
           <Link href={"/team"} css={styles.navLink}>
             <TeamIcon />
             <span>Team</span>
+          </Link>
+        )}
+        {user?.role?.name.toLowerCase() != "guard" && (
+          <Link href={"/checklist"} css={styles.navLink}>
+            <EFormIcon />
+            <span>E-Forms</span>
           </Link>
         )}
       </div>

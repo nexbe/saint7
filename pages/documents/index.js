@@ -93,7 +93,7 @@ const Documents = () => {
           />
         </div>
         <div css={styles.bodyContainer}>
-          {user?.role?.name != "Guard" && (
+          {user?.role?.name.toLowerCase() != "guard" && (
             <div css={styles.actions}>
               <button
                 css={styles.actionBtn(true)}
@@ -101,15 +101,18 @@ const Documents = () => {
               >
                 ADD NEW DOCUMENT
               </button>
+
               <button
                 css={styles.actionBtn(isEdit)}
                 onClick={() => setIsEdit(!isEdit)}
+                disabled={documentInfo?.length > 0 ? false : true}
               >
                 {isEdit ? <EditIcon /> : <EditPencil />}
               </button>
               <button
                 css={styles.actionBtn(isDelete)}
                 onClick={() => setIsDelete(!isDelete)}
+                disabled={documentInfo?.length > 0 ? false : true}
               >
                 {isDelete ? <DeleteIcon /> : <BinIcon />}
               </button>

@@ -18,7 +18,7 @@ import { uploadFile } from "../../components/upload/upload";
 import _ from "lodash";
 import { FaPlus } from "react-icons/fa";
 
-const CreateCheckList = () => {
+const EditCheckList = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [fileList, setFileList] = useState([]);
@@ -356,14 +356,14 @@ const CreateCheckList = () => {
         </div>
         <div css={styles.btnContainer}>
           <button css={styles.cancelBtn}>Cancel</button>
-          <button css={styles.createBtn}>Create</button>
+          <button css={styles.createBtn}>Save</button>
         </div>
       </form>
     </Layout>
   );
 };
 
-export default CreateCheckList;
+export default EditCheckList;
 
 const selectBoxStyle = {
   singleValue: (styles, { data }) => {
