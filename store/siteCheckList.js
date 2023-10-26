@@ -3,7 +3,7 @@ import client from "../graphql/apolloClient";
 import { CREATE_SITE_CHECKLIST } from "../graphql/mutations/siteCheckList";
 import { GET_SITE_CHECKLIST } from "../graphql/queries/siteCheckList";
 
-const siteCheckListStore = create((get, set) => ({
+const siteCheckListStore = create((set) => ({
   siteCheckLists: [],
   errorCreateCheckList: null,
   createCheckList: async (data) => {
@@ -27,10 +27,9 @@ const siteCheckListStore = create((get, set) => ({
           }
         }
       });
-      if (!response.errors) {
-        set((state) => ({
-          ...state,
-          siteCheckLists: response.data,
+      if (response) {
+        set(() => ({
+          siteCheckLists: response.data.siteChecklists.data,
         }));
       }
     } catch (err) {

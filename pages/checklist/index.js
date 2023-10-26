@@ -17,13 +17,12 @@ const SiteCheckList = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-  const { fetchCheckList , siteCheckLists } = siteCheckListStore();
+  const { fetchCheckList, siteCheckLists } = siteCheckListStore();
   const { user } = useAuth();
-  //console.log(siteCheckLists)
 
   useEffect(() => {
     fetchCheckList(user?.jwt);
-  },[])
+  }, []);
 
   return (
     <Layout>
@@ -47,30 +46,23 @@ const SiteCheckList = () => {
           </button>
         </div>
         <div css={styles.cardContainer}>
-          <Card
-            isEdit={isEdit}
-            isDelete={isDelete}
-            isChecked={true}
-            handleSelect={() => {}}
-          />
-          <Card
-            isEdit={isEdit}
-            isDelete={isDelete}
-            isChecked={true}
-            handleSelect={() => {}}
-          />
-          <Card
-            isEdit={isEdit}
-            isDelete={isDelete}
-            isChecked={true}
-            handleSelect={() => {}}
-          />
-          <Card
-            isEdit={isEdit}
-            isDelete={isDelete}
-            isChecked={true}
-            handleSelect={() => {}}
-          />
+          {siteCheckLists && siteCheckLists.length > 0 &&
+            siteCheckLists.map((checklist) => {
+              return (
+                <div key={checklist.id}>
+                  <Card
+                    isEdit={isEdit}
+                    isDelete={isDelete}
+                    isChecked={true}
+                    data={checklist}
+                    handleSelect={() => {}}
+                  />
+                </div>
+              );
+            })}
+          {siteCheckLists && siteCheckLists.length === 0 && (
+            <b css={styles.notFound}>No Results</b>
+          )}
         </div>
       </div>
     </Layout>
@@ -129,5 +121,14 @@ const styles = {
     gap: 20px;
     max-height: 63vh;
     overflow-y: scroll;
+  `,
+  notFound: css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #b3b3b3;
+    font-size: 20px;
+    font-weight: 600;
   `,
 };

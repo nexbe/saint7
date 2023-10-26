@@ -5,7 +5,7 @@ import EditPencil from "../../public/icons/editPencil";
 import { Input } from "reactstrap";
 import { useRouter } from "next/router";
 
-const Card = ({ isEdit, isDelete, isChecked, handleSelect }) => {
+const Card = ({ isEdit, isDelete, isChecked, handleSelect, data }) => {
   const router = useRouter();
   return (
     <div css={styles.wrapper}>
@@ -17,15 +17,15 @@ const Card = ({ isEdit, isDelete, isChecked, handleSelect }) => {
             name="status"
             checked={isChecked}
             onChange={handleSelect}
-            style={{ border: "2px solid #000" }}
+            style={{ border: "2px solid #000", margin:'9px' }}
           />
         </div>
       )}
-      Initiate evacuation procedure.
+      <span style={{textAlign:"start"}}>{data?.attributes.title}</span>
       {isEdit && (
         <div
           onClick={() => router.push(`/checklist/editCheckList`)}
-          style={{ marginTop: "-12px", marginLeft: "9px" }}>
+          style={{ margin:'auto' }}>
           <EditPencil />
         </div>
       )}
@@ -44,6 +44,6 @@ const styles = {
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    align-items:center;
   `,
 };
