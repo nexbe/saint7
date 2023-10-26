@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -9,12 +9,20 @@ import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
 import Card from "../../components/checklist/Card";
 import { useRouter } from "next/router";
+import siteCheckListStore from "../../store/siteCheckList";
+import useAuth from "../../store/auth";
 
 const SiteCheckList = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [isEdit, setIsEdit] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
+  const { fetchCheckList, siteCheckLists } = siteCheckListStore();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    fetchCheckList(user?.jwt);
+  }, []);
 
   return (
     <Layout>
@@ -23,7 +31,7 @@ const SiteCheckList = () => {
         <div css={styles.actions}>
           <button
             css={styles.actionBtn(true)}
-            onClick={() => router.push('/checklist/createCheckList')}>
+            onClick={() => router.push("/checklist/createCheckList")}>
             ADD NEW CHECKLIST
           </button>
           <button
@@ -38,10 +46,23 @@ const SiteCheckList = () => {
           </button>
         </div>
         <div css={styles.cardContainer}>
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          {siteCheckLists && siteCheckLists.length > 0 &&
+            siteCheckLists.map((checklist) => {
+              return (
+                <div key={checklist.id}>
+                  <Card
+                    isEdit={isEdit}
+                    isDelete={isDelete}
+                    isChecked={true}
+                    data={checklist}
+                    handleSelect={() => {}}
+                  />
+                </div>
+              );
+            })}
+          {siteCheckLists && siteCheckLists.length === 0 && (
+            <b css={styles.notFound}>No Results</b>
+          )}
         </div>
       </div>
     </Layout>
@@ -94,11 +115,20 @@ const styles = {
     }
   `,
   cardContainer: css`
-    margin-top:20px;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     max-height: 63vh;
     overflow-y: scroll;
+  `,
+  notFound: css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #b3b3b3;
+    font-size: 20px;
+    font-weight: 600;
   `,
 };
