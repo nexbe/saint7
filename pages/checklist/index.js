@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -9,12 +9,21 @@ import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
 import Card from "../../components/checklist/Card";
 import { useRouter } from "next/router";
+import siteCheckListStore from "../../store/siteCheckList";
+import useAuth from "../../store/auth";
 
 const SiteCheckList = () => {
   const router = useRouter();
   const [isEdit, setIsEdit] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
+  const { fetchCheckList , siteCheckLists } = siteCheckListStore();
+  const { user } = useAuth();
+  //console.log(siteCheckLists)
+
+  useEffect(() => {
+    fetchCheckList(user?.jwt);
+  },[])
 
   return (
     <Layout>

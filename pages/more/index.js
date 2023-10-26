@@ -60,8 +60,7 @@ const MorePage = () => {
         </div>
         <div
           css={styles.notiIcon}
-          onClick={() => router.push("/notifications")}
-        >
+          onClick={() => router.push("/notifications")}>
           {" "}
           <NotiIcon />
         </div>
@@ -77,10 +76,12 @@ const MorePage = () => {
             <span>Team</span>
           </Link>
         )}
-         <Link href={"/checklist"} css={styles.navLink}>
-          <EFormIcon />
-          <span>E-Forms</span>
-        </Link>
+        {user?.role?.name.toLowerCase() != "guard" && (
+          <Link href={"/checklist"} css={styles.navLink}>
+            <EFormIcon />
+            <span>E-Forms</span>
+          </Link>
+        )}
       </div>
     </Layout>
   );
