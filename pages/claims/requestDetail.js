@@ -47,7 +47,14 @@ const RequestDetail = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Claims"} href={"/home"} />
+        <HeaderNoti
+          title={"Claims"}
+          href={
+            user?.role?.name.toLowerCase() != "guard"
+              ? "/claims/claimApproval/expenseRequest"
+              : "/claims/expenseRequestStatus"
+          }
+        />
         <div css={styles.bodyContainer}>
           <div className="d-flex" css={styles.cardWrapper}>
             <label className="primary-text">
@@ -152,39 +159,7 @@ const RequestDetail = () => {
                           fontSize: "13px",
                           gap: "5px",
                         }}
-                      >
-                        <label
-                          className="labelText"
-                          style={{
-                            width: "50%",
-                            alignItems: "flex-end",
-                          }}
-                        >
-                          Transaction Updated
-                          <label className="detailValue">
-                            {selectedExpense[0]?.category?.label}
-                          </label>
-                        </label>
-                        <div css={styles.messageRow}>
-                          <div css={styles.lineStyle}></div>
-                          <div css={styles.circleStyle}></div>
-                        </div>
-                        <label
-                          className="labelText"
-                          style={{
-                            width: "45%",
-                          }}
-                        >
-                          {dayjs(selectedExpense[0]?.updatedAt).format(
-                            "DD MMMM, YYYY"
-                          )}
-                          <label className="detailValue">
-                            {dayjs(selectedExpense[0]?.updatedAt).format(
-                              "HH:MM A"
-                            )}
-                          </label>
-                        </label>
-                      </div>
+                      ></div>
                       <div
                         style={{
                           lineHeight: "20px",

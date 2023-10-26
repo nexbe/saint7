@@ -22,6 +22,8 @@ const NotificationBox = ({ message, belongTo, timeout, action, label }) => {
           ? router.push("/documents")
           : belongTo == "Announcement"
           ? router.push("/announcement")
+          : belongTo == "ClaimApproval"
+          ? router.push("/claims/claimApproval/expenseRequest")
           : "";
       }, timeout);
     }

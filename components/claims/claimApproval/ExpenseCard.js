@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 import NoDataIcon from "/public/icons/noDataIcon";
 
-const Card = ({ expenseList, role }) => {
+const Card = ({ expenseList, userName }) => {
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState();
   const [openCard, setOpenCard] = useState([]);
@@ -84,7 +84,7 @@ const Card = ({ expenseList, role }) => {
                     )}
                   </label>
                 </div>
-                {eachResult[1]?.map((eachExpense, nestedIndex) => {
+                {eachResult[1]?.map((eachNote, nestedIndex) => {
                   return (
                     <div
                       style={{
@@ -96,9 +96,8 @@ const Card = ({ expenseList, role }) => {
                         router.push({
                           pathname: "/claims/requestDetail",
                           query: {
-                            expenseId: eachExpense.id,
-                            userName:
-                              eachExpense?.users_permissions_user?.username,
+                            expenseId: eachNote.id,
+                            userName: userName,
                           },
                         });
                       }}
@@ -110,29 +109,11 @@ const Card = ({ expenseList, role }) => {
                       >
                         <label>
                           <label css={styles.expenseId}>
-                            #ER-0000{eachExpense.id}
+                            #ER-0000{eachNote.id}
                           </label>
-                          {eachExpense.category.label}
-                          {role?.toLowerCase() != "guard" && (
-                            <label className="requestedBy">
-                              Requested by{" "}
-                              {eachExpense?.users_permissions_user?.username}
-                            </label>
-                          )}
+                          {eachNote.category.label}
                         </label>
-                        <label>
-                          $ {eachExpense.amount}
-                          {role?.toLowerCase() != "guard" && (
-                            <img
-                              src={
-                                eachExpense?.users_permissions_user?.profile
-                                  ?.photo?.url
-                                  ? `${process.env.NEXT_PUBLIC_APP_URL}${eachExpense?.users_permissions_user?.profile?.photo.url}`
-                                  : "../../images/defaultImage.jpg"
-                              }
-                            />
-                          )}
-                        </label>
+                        <label>$ {eachNote.amount}</label>
                       </div>
                     </div>
                   );
@@ -202,17 +183,6 @@ const styles = {
     label {
       display: flex;
       flex-direction: column;
-    }
-    .requestedBy {
-      color: #718096;
-      font-size: 14px;
-      font-weight: 400;
-    }
-    img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50px;
-      border: 1px solid var(--light-gray);
     }
   `,
   eachCard: css`

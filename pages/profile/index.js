@@ -231,7 +231,12 @@ const Profile = () => {
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
-          <div css={styles.backIcon} onClick={() => router.push("/home")}>
+          <div
+            css={styles.backIcon}
+            onClick={() =>
+              router.push(router?.query?.team === "Team" ? "/team" : "/home")
+            }
+          >
             <BackIcon />
           </div>
           <label className="header-text">My Profile</label>
@@ -515,14 +520,7 @@ const Profile = () => {
                     </div>
                   );
                 })}
-                {editModalOpen && (
-                  <EditCertificateModal
-                    isOpen={editModalOpen}
-                    setEditModalOpen={setEditModalOpen}
-                    selectedCertificate={selectedCertificate}
-                    userId={user?.id}
-                  />
-                )}
+
                 {deleteModalOpen && (
                   <DeleteModal
                     isOpen={deleteModalOpen}
@@ -579,6 +577,14 @@ const Profile = () => {
           </form>
         </div>
       </div>
+      {editModalOpen && (
+        <EditCertificateModal
+          isOpen={editModalOpen}
+          setEditModalOpen={setEditModalOpen}
+          selectedCertificate={selectedCertificate}
+          userId={user?.id}
+        />
+      )}
     </Layout>
   );
 };
