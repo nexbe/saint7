@@ -6,8 +6,8 @@ import {
   MdOutlineKeyboardDoubleArrowLeft,
   MdOutlineKeyboardDoubleArrowRight,
   MdOutlineArrowBackIosNew,
-  MdOutlineKeyboardArrowDown,
 } from "react-icons/md";
+import { RiArrowDownSFill } from "react-icons/ri";
 import moment from "moment";
 import _ from "lodash";
 import { useApolloClient, useMutation } from "@apollo/client";
@@ -230,10 +230,7 @@ const ExpenseRequestStatus = () => {
     return (
       components.DropdownIndicator && (
         <components.DropdownIndicator {...props}>
-          <MdOutlineKeyboardArrowDown
-            color={"rgba(41, 57, 145, 1)"}
-            size={25}
-          />
+          <RiArrowDownSFill color={"rgba(41, 57, 145, 1)"} size={30} />
         </components.DropdownIndicator>
       )
     );
@@ -280,6 +277,7 @@ const ExpenseRequestStatus = () => {
   };
 
   const handleCheck = (selectedId) => {
+    setCheckData([]);
     setCheckData((prevData) => {
       if (prevData?.includes(selectedId)) {
         return prevData?.filter((id) => id !== selectedId);
@@ -438,6 +436,13 @@ const ExpenseRequestStatus = () => {
                       </label>
                       <button
                         className="primary-text"
+                        disabled={checkData?.length > 0 ? false : true}
+                        style={{
+                          background:
+                            checkData?.length > 0
+                              ? ""
+                              : "rgba(95, 164, 82, 0.5)",
+                        }}
                         onClick={() => {
                           setActionStatus("approved");
                           handleConfirmModal();
@@ -447,7 +452,13 @@ const ExpenseRequestStatus = () => {
                       </button>
                       <button
                         className="primary-text"
-                        style={{ background: "#EC1C24" }}
+                        style={{
+                          background:
+                            checkData?.length > 0
+                              ? "#EC1C24"
+                              : "rgba(236, 28, 36, 0.5)",
+                        }}
+                        disabled={checkData?.length > 0 ? false : true}
                         onClick={() => {
                           setActionStatus("rejected");
                           handleConfirmModal();
@@ -622,7 +633,7 @@ const selectBoxStyle = {
     borderRadius: "10px",
     background: "rgba(41, 57, 145, 0.20)",
     fontSize: "14px",
-    height: "10px",
+    height: "15px",
     color: "rgba(41, 57, 145, 1)",
     fontWeight: "400",
     display: "flex",
