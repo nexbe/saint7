@@ -6,17 +6,42 @@ import { css } from "@emotion/react";
 import CheckInOut from "../../components/attendence/CheckInOut";
 import History from "../../components/attendence/History";
 import attendenceStore from "../../store/attendance";
+import { setCookie, parseCookies } from "nookies";
+import Profile from "../../components/attendence/Profile";
+import userStore from "../../store/user";
+import { useApolloClient } from "@apollo/client";
+import moment from "moment";
 
 const Index = () => {
   const {
     locationData: locationData,
-    loading,
-    getAddressData,
-    getLocationData,
-    addressData,
+
+    getAttendanceData,
   } = attendenceStore((state) => state);
+  const { getAssignUsers, AssignUsers } = userStore((state) => state);
+  const apolloClient = useApolloClient();
+
+  const cookies = parseCookies();
+  const attendanceId = cookies.attendance
+    ? JSON.parse(cookies.attendance)
+    : null;
+  const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
   const [activeComponent, setActiveComponent] = useState("check");
+
+  useEffect(() => {
+    getAttendanceData(userData?.id, moment().format("YYYY-MM-DD"));
+  }, []);
+
+  useEffect(() => {
+    getAssignUsers({
+      apolloClient,
+      where: {
+        userId: userData.id,
+        date: moment(new Date()).format("YYYY-MM-DD"),
+      },
+    });
+  }, []);
 
   return (
     <Layout className="container ">
@@ -38,7 +63,15 @@ const Index = () => {
         </div>
       </div>
       <div css={styles.container}>
-        {activeComponent === "check" ? <CheckInOut /> : <History />}
+        {activeComponent === "check" ? (
+          attendanceId ? (
+            <Profile />
+          ) : (
+            <CheckInOut />
+          )
+        ) : (
+          <History />
+        )}
       </div>
     </Layout>
   );
