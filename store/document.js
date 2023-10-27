@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { GET_DOCUMENT_BY_ID } from "../graphql/queries/document";
+import { GET_DOCUMENTS } from "../graphql/queries/document";
 import { sanitizeResults } from "../utils/sanitizer";
 
 const documentstore = create((set, get) => ({
   getAllDocuments: async ({ apolloClient, where }) => {
     set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
-      query: GET_DOCUMENT_BY_ID,
+      query: GET_DOCUMENTS,
       variables: where,
       fetchPolicy: "network-only",
     });
