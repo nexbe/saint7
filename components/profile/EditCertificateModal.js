@@ -140,13 +140,13 @@ const EditCertificateModal = ({
         },
         updatedAt: new Date().toISOString(),
       });
-      close();
+      setEditModalOpen(false);
       router.push({
         pathname: `/profile`,
         query: {
           message: errEditCertificate ? "Success!" : "Apologies!",
           belongTo: errEditCertificate ? "Certificate" : "error",
-          action: "edit",
+          label: data?.name + " has successfully updated.",
           userId: userId,
         },
       });
@@ -190,6 +190,7 @@ const EditCertificateModal = ({
                 selected={selectedDate ?? selectedCertificate.expiredDate}
                 onChange={handleDateChange}
                 dateFormat="dd/MM/yyyy"
+                showYearDropdown
               />
             </div>
 
@@ -253,12 +254,39 @@ const styles = {
       flex-direction: column;
       padding-top: 10px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      span {
-        color: #ec1c24;
+      label {
+        span {
+          color: #ec1c24;
+        }
       }
       input {
         border: none;
         outline: none;
+      }
+      .react-datepicker {
+        span {
+          color: #000;
+          font-weiht: 700;
+          font-size: 16px;
+        }
+      }
+      .react-datepicker__triangle {
+        display: none;
+      }
+      .react-datepicker__navigation-icon--next {
+        top: 11px;
+        left: -10px;
+        font-size: 16px;
+      }
+      .react-datepicker__navigation-icon--previous {
+        top: 11px;
+        left: 5px;
+        font-size: 16px;
+      }
+      .react-datepicker__year-read-view--down-arrow {
+        top: 7px;
+        font-size: 16px;
+        border-color: none;
       }
     }
   `,

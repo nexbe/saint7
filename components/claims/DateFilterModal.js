@@ -33,12 +33,14 @@ const DateFilterModal = ({
               selected={startDate}
               onChange={handleStartDateChange}
               dateFormat="MMM / dd / yy"
+              shouldCloseOnSelect={true}
+              showYearDropdown
             />
           </label>
         </div>
-        <span>
+        <div className="arrow">
           <BsArrowRight />
-        </span>
+        </div>
         <div>
           End Date
           <label className="d-flex">
@@ -47,6 +49,8 @@ const DateFilterModal = ({
               selected={endDate}
               onChange={handleEndDateChange}
               dateFormat="MMM / dd / yy"
+              shouldCloseOnSelect={true}
+              showYearDropdown
             />
           </label>
         </div>
@@ -115,12 +119,45 @@ const styles = {
         background: red;
         flex-direction: column;
       }
-    span {
-        display: flex;
-    justify-content: center;
+    .arrow {
+      display: flex;
+      justify-content: center;
       align-items: center;
       margin-top: 30px;
     }
+    .react-datepicker__current-month {
+       color: #000;
+       font-weiht: 700;
+      font-size: 16px;
+    }
+    .react-datepicker {
+        span {
+          color: #000;
+          font-weiht: 700;
+          font-size: 16px;
+        }
+      }
+      .react-datepicker__triangle {
+        display: none;
+      }
+      .react-datepicker__navigation-icon--next {
+        top: 11px;
+        left: -10px;
+        font-size: 16px;
+        color: #000;
+      }
+      .react-datepicker__navigation-icon--previous {
+        top: 11px;
+        left: 5px;
+        font-size: 16px;
+        border-color: #000;
+      }
+      .react-datepicker__year-read-view--down-arrow {
+        top: 7px;
+        font-size: 16px;
+        border-color: #000;
+        
+      }
     label {
       justify-content: center;
       align-items: center;
@@ -131,6 +168,7 @@ const styles = {
       padding: 5px 10px;
       gap: 7px;
       width: 100%;
+      
     }
     div {
       color: #37474f;
