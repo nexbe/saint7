@@ -72,7 +72,7 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
         query: {
           message: errCreateCertificate ? "Success!" : "Apologies!",
           belongTo: errCreateCertificate ? "Certificate" : "error",
-          action: "create",
+          label: <b>data?.name</b> + " has successfully created.",
           userId: userId,
         },
       });
@@ -130,15 +130,18 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
               onChange={handleDateChange}
               dateFormat="dd/MM/yyyy"
               required={true}
+              showYearDropdown
             />
           </div>
-          {fileListArr?.length > 0 ? (
-            <UploadedFiles fileList={fileList} setFileList={setFileList} />
-          ) : (
-            <div className={styles.addNoteUploadContainer}>
-              <Upload onChange={onChange} />
-            </div>
-          )}
+          <div>
+            {fileListArr?.length > 0 ? (
+              <UploadedFiles fileList={fileList} setFileList={setFileList} />
+            ) : (
+              <div className={styles.addNoteUploadContainer}>
+                <Upload onChange={onChange} />
+              </div>
+            )}
+          </div>
         </div>
         <div css={styles.actionButton}>
           <button
@@ -184,12 +187,39 @@ const styles = {
       flex-direction: column;
       padding-top: 10px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      span {
-        color: #ec1c24;
+      label {
+        span {
+          color: #ec1c24;
+        }
       }
       input {
         border: none;
         outline: none;
+      }
+      .react-datepicker {
+        span {
+          color: #000;
+          font-weiht: 700;
+          font-size: 16px;
+        }
+      }
+      .react-datepicker__triangle {
+        display: none;
+      }
+      .react-datepicker__navigation-icon--next {
+        top: 11px;
+        left: -10px;
+        font-size: 16px;
+      }
+      .react-datepicker__navigation-icon--previous {
+        top: 11px;
+        left: 5px;
+        font-size: 16px;
+      }
+      .react-datepicker__year-read-view--down-arrow {
+        top: 7px;
+        font-size: 16px;
+        border-color: none;
       }
     }
   `,

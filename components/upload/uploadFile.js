@@ -59,6 +59,7 @@ const styles = {
     padding: 10px;
     margin-bottom: 20px;
     margin-top: 10px;
+    z-index: 0;
   `,
   fileInput: css`
     width: 100%;

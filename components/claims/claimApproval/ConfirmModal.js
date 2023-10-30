@@ -11,9 +11,9 @@ const ConfirmExpenseModal = ({
   actionStatus,
   checkData,
   handleStatusConfirm,
+  handleCancel,
   checkArr,
 }) => {
-  const [total, setTotal] = useState(null);
   const checkLists = checkArr?.map((each) => {
     return each[0];
   });
@@ -26,7 +26,12 @@ const ConfirmExpenseModal = ({
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
       <div css={styles.header}>
         <h4>Confirmation</h4>
-        <div onClick={close}>
+        <div
+          onClick={() => {
+            handleCancel();
+            close();
+          }}
+        >
           <CloseIcon />
         </div>
       </div>
@@ -56,20 +61,19 @@ const ConfirmExpenseModal = ({
               </div>
             );
           })}
-
-          {/* <label className="secondary-text">
-            2. #ER-00002 (Telephone Expense) <span>$ 300</span>
-          </label>
-          <label className="secondary-text">
-            3. #ER-00003 (Telephone Expense) <span>$ 200</span>
-          </label> */}
         </div>
         <div className="primary-text">
           Total Amount : $ {sum[sum.length - 1]}
         </div>
       </div>
       <div css={styles.actions}>
-        <button css={styles.cancelBtn} onClick={close}>
+        <button
+          css={styles.cancelBtn}
+          onClick={() => {
+            handleCancel();
+            close();
+          }}
+        >
           Cancel
         </button>
         <button

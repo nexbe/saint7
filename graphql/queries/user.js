@@ -21,36 +21,17 @@ export const GET_USERS = gql`
               attributes {
                 firstName
                 lastName
-                gender
                 photo {
                   data {
                     id
                     attributes {
-                      name
                       url
                     }
                   }
                 }
-                contactNumber
-                joinDate
-                status
-                position
-                address {
-                  id
-                  AddressLine1
-                  AddressLine2
-                  City
-                  State
-                  PostalCode
-                  Country
-                }
-                user {
+                favoriteUsers {
                   data {
                     id
-                    attributes {
-                      username
-                      email
-                    }
                   }
                 }
               }

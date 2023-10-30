@@ -314,10 +314,10 @@ const Claims = () => {
             </div>
           </div>
           <div css={styles.viewContainer}>
-            <button onClick={() => setShowChart(!showChart)}>
+            <button onClick={() => setShowChart(true)}>
               {showChart ? <ChartIcon /> : <ShowChartIcon />}
             </button>
-            <button onClick={() => setShowChart(!showChart)}>
+            <button onClick={() => setShowChart(false)}>
               {showChart ? <ShowListIcon /> : <ListIcon />}
             </button>
           </div>

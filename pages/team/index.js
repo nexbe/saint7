@@ -20,6 +20,19 @@ const Team = () => {
   const { user } = authStore((state) => state);
   const [addFavourite, setAddFavourite] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
+  const favList = [];
+  let index = 0;
+  if (!!addFavourite) {
+    userInfo?.map((eachUser) => {
+      eachUser?.profile?.favoriteUsers?.map((eachFav) => {
+        if (eachFav?.id == user?.id) {
+          index++;
+          return (favList[index - 1] = eachUser);
+        }
+      });
+    });
+  }
+
   const teamLists = !!filterTerm
     ? userInfo.filter(
         (item) =>
@@ -30,6 +43,8 @@ const Team = () => {
             ?.toLowerCase()
             .includes(filterTerm?.toLowerCase())
       )
+    : !!addFavourite
+    ? favList
     : userInfo;
 
   useEffect(() => {

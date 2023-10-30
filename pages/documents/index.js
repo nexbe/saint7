@@ -42,7 +42,7 @@ const Documents = () => {
   useEffect(() => {
     getAllDocuments({
       apolloClient,
-      where: { userId: user.id },
+      where: {},
     });
   }, [user, router.query]);
 
