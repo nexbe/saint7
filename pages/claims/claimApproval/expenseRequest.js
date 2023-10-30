@@ -293,6 +293,11 @@ const ExpenseRequestStatus = () => {
     setCheckArr([...checkArr, checkList]);
   };
 
+  const handleCancel = () => {
+    setCheckData([]);
+    setCheckArr([]);
+  };
+
   const handleStatusConfirm = async (status) => {
     if (checkData) {
       checkData?.map(async (eachCheckData) => {
@@ -603,6 +608,7 @@ const ExpenseRequestStatus = () => {
           checkData={checkData}
           handleStatusConfirm={handleStatusConfirm}
           checkArr={checkArr}
+          handleCancel={handleCancel}
         />
       )}
     </Layout>
