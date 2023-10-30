@@ -153,6 +153,8 @@ const EditCertificateModal = ({
     }
   };
 
+  console.log("file lsit...", fileListArr);
+
   return (
     <>
       <Modal size="md" isOpen={isOpen} toggle={toggle} css={styles.modal}>
@@ -160,7 +162,12 @@ const EditCertificateModal = ({
           <div css={styles.formContent}>
             <div className="primary-text" css={styles.formHeader}>
               Edit Certifications{" "}
-              <div onClick={handleEditModalClose}>
+              <div
+                onClick={() => {
+                  setEditModalOpen(!isOpen);
+                  setConfirmOpen(true);
+                }}
+              >
                 <IoCloseSharp size={20} color="rgba(117, 117, 117, 1)" />
               </div>
             </div>

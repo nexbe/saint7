@@ -72,7 +72,7 @@ const AddCertificateModal = ({ isOpen = false, close = () => {}, userId }) => {
         query: {
           message: errCreateCertificate ? "Success!" : "Apologies!",
           belongTo: errCreateCertificate ? "Certificate" : "error",
-          label: <b>data?.name</b> + " has successfully created.",
+          label: data?.name + " has successfully created.",
           userId: userId,
         },
       });

@@ -21,6 +21,7 @@ import CertificationIcon from "/public/icons/certificationIcon";
 import CameraIcon from "/public/icons/cameraIcon";
 import AddCertificateModal from "../../components/profile/AddCertificateModal";
 import EditCertificateModal from "../../components/profile/EditCertificateModal";
+import ViewCertificateModal from "../../components/profile/ViewCertificateModal";
 import DeleteModal from "../../components/Modal/DeleteModal";
 import NotificationBox from "../../components/notification/NotiBox";
 import profileStore from "../../store/profile";
@@ -60,6 +61,7 @@ const Profile = () => {
   const [showAchievementDetail, setShowAchievementDetail] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [startDate, setStartDate] = useState(
     profileInfo[0]?.joinDate ? new Date(profileInfo[0]?.joinDate) : null
@@ -107,6 +109,10 @@ const Profile = () => {
 
   const editCertificateModal = () => {
     setEditModalOpen(!editModalOpen);
+  };
+
+  const viewCertificateModal = () => {
+    setViewModalOpen(!viewModalOpen);
   };
 
   const deleteCertificateModal = () => {
@@ -486,7 +492,13 @@ const Profile = () => {
                       style={{ margin: "5px 0" }}
                       key={index}
                     >
-                      <div css={styles.certificateDetail}>
+                      <div
+                        css={styles.certificateDetail}
+                        onClick={() => {
+                          setSelectedCertificate(eachCertificate);
+                          viewCertificateModal();
+                        }}
+                      >
                         <label className="secondary-text">
                           <AchievementIcon /> {eachCertificate.name}
                         </label>
@@ -587,6 +599,13 @@ const Profile = () => {
           setEditModalOpen={setEditModalOpen}
           selectedCertificate={selectedCertificate}
           userId={router?.query?.userId ? router?.query?.userId : user?.id}
+        />
+      )}
+      {viewModalOpen && (
+        <ViewCertificateModal
+          isOpen={viewModalOpen}
+          close={() => setViewModalOpen(!viewModalOpen)}
+          selectedCertificate={selectedCertificate}
         />
       )}
     </Layout>
