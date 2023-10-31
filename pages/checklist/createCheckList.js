@@ -27,31 +27,35 @@ const CreateCheckList = () => {
   const [equipFileList, setEquipFileList] = useState([]);
   const { fetchSopTypes, sopTypes } = sopStore();
   const [selectedSopType, setSelectedSopTypes] = useState();
-  const [sopData, setSopData] = useState([{
-    id: 1,
-    Name: "",
-    Attachments:"", 
-    sop_type:""
-  }]);
-  const [equipmentData, setEquipmentData] = useState([{
-    id: 1,
-    Name: "",
-    Remarks:"", 
-    Attachments:""
-  }]);
+  const [sopData, setSopData] = useState([
+    {
+      id: 1,
+      Name: "",
+      Attachments: "",
+      sop_type: "",
+    },
+  ]);
+  const [equipmentData, setEquipmentData] = useState([
+    {
+      id: 1,
+      Name: "",
+      Remarks: "",
+      Attachments: "",
+    },
+  ]);
   const { user } = useAuth();
   const router = useRouter();
-  let equipListArr = _.entries(equipFileList);
-  let fileListArr = _.entries(fileList);
-  const {createCheckList} = siteCheckListStore();
+  let equipListArr = _.values(equipFileList);
+  let fileListArr = _.values(fileList);
+  const { createCheckList,errorCreateCheckList } = siteCheckListStore();
   const [formData, setFormData] = useState({
     title: "",
     location: "",
-    dateVisited: new Date(),
-    timeVisited: new Date(),
+    dateVisited: '',
+    timeVisited: "",
     visitedBy: "",
-    sop:"",
-    equipment:"",
+    sop: "",
+    equipment: "",
     suggestions: "",
     guardOnDuty: "",
     remarks: "",
@@ -60,14 +64,24 @@ const CreateCheckList = () => {
     actionTakenForWelfare: "",
     createdUser: user?.id,
   });
-  console.log("attach",fileListArr)
+
   useEffect(() => {
     fetchSopTypes(user?.jwt);
   }, []);
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
   
-  const handleSelectSOPChange = (selectedOption) => {
-    setSelectedSopTypes(selectedOption);
-  };
+  const formatTime = (date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }
 
   const DropdownIndicator = (props) => {
     return (
@@ -79,25 +93,24 @@ const CreateCheckList = () => {
     );
   };
 
-  const onSOPChange = async (e) => {
+  const onSOPChange = async (e, index) => {
     const selectedFiles = [...e.target.files];
     const uploadedFiles = {};
 
     for (let file of selectedFiles) {
-      uploadedFiles[0] = file;
+      uploadedFiles[index] = file;
     }
     setFileList({ ...fileList, ...uploadedFiles });
   };
 
-  const onEquipChange = async (e) => {
-    const selectedFiles = [...e.target.files];
+  const onEquipChange = async (e, index) => {
+    const selectedFiles = [...e.target?.files];
     const uploadedFiles = {};
 
     for (let file of selectedFiles) {
-      uploadedFiles[0] = file;
+      uploadedFiles[index] = file;
     }
-
-    setEquipFileList({ ...fileList, ...uploadedFiles });
+    setEquipFileList({ ...equipFileList, ...uploadedFiles });
   };
 
   // sop handler
@@ -106,20 +119,15 @@ const CreateCheckList = () => {
     let newRow = {
       id: lastId + 1,
       Name: "",
-      Attachments:"", 
-      sop_type:""
-    }
-    setSopData((prevBoxes) => [
-      ...prevBoxes,
-      newRow
-    ]);
+      Attachments: "",
+      sop_type: "",
+    };
+    setSopData((prevBoxes) => [...prevBoxes, newRow]);
   };
   const handleSOPDeleteClick = (index) => {
-    const deleteSOP = sopData[index]
-    let data = [...sopData]
-    data.splice(index, 1)
-    setSopData(data)
-    //setSopData((prevData) => prevData.filter((sop) => sop.id !== id));
+    let data = [...sopData];
+    data.splice(index, 1);
+    setSopData(data);
   };
 
   // equipment handler
@@ -128,21 +136,16 @@ const CreateCheckList = () => {
     let newRow = {
       id: lastId + 1,
       Name: "",
-      Remarks:"", 
-      Attachments:""
-    }
-    setEquipmentData((prevBoxes) => [
-      ...prevBoxes,
-      newRow,
-    ]);
+      Remarks: "",
+      Attachments: [],
+    };
+    setEquipmentData((prevBoxes) => [...prevBoxes, newRow]);
   };
   const handleEquipDeleteClick = (index) => {
-    const deleteEquip = equipmentData[index]
-    let data = [...equipmentData]
-    data.splice(index, 1)
-    setEquipmentData(data)
+    let data = [...equipmentData];
+    data.splice(index, 1);
+    setEquipmentData(data);
   };
-  // console.log(equipmentData)
   const handleTimeChange = (time) => {
     setFormData({
       ...formData,
@@ -162,34 +165,57 @@ const CreateCheckList = () => {
       [name]: value,
     });
   };
+
   const handleSopChange = (index, event) => {
     let data = [...sopData];
-    data[index][event.target.name] = event.target.value
+    console.log(event)
+    data[index][event?.target?.name ] =
+      event?.target?.value || event.value;
+      
+    const attachments = fileList[index] || [];
+    data[index].Attachments = attachments;
+    data[index].sop_type = ''
+    
     setFormData({
       ...formData,
-      sop: {
-        data
-      },
+      sop: [
+        ...data,
+      ],
     });
   };
+
   const handleEquipChange = (index, event) => {
     let data = [...equipmentData];
-    data[index][event.target.name] = event.target.value
+    data[index][event?.target?.name || event.label] =
+    event?.target?.value || event.value
+
+    const attachments = equipFileList[index] || [];
+    data[index].Attachments = attachments;
+    
     setFormData({
       ...formData,
-      equipment: {
-        data
-      },
+      equipment: [
+        ...data,
+      ],
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData)
-    if(formData){
-      createCheckList(formData)
+    console.log(formData);
+    if (formData) {
+      createCheckList(formData, user?.jwt);
+      router.push({
+        pathname: `/checklist`,
+        query: {
+          message: !errorCreateCheckList ? "Success!" : "Apologies!",
+          belongTo: !errorCreateCheckList ? "Checklists" : "error",
+          action: "create",
+          userId: user?.id,
+        },
+      })
     }
-  }
+  };
   return (
     <Layout>
       <HeaderNoti title={"Site Checklist"} href={"/checklist"} />
@@ -231,8 +257,11 @@ const CreateCheckList = () => {
                   <DatePicker
                     name="dateVisited"
                     id="dateVisited"
-                    selected={formData.dateVisited}
-                    onChange={(date) => handleDateChange(date)}
+                    selected={ formData?.dateVisited ? new Date(formData?.dateVisited) : new Date()  }
+                    onChange={(date) => {
+                      const formattedDate = formatDate(date);
+                      handleDateChange(formattedDate);
+                    }}
                     dateFormat="yyyy-MM-dd"
                   />
                 </label>
@@ -242,8 +271,11 @@ const CreateCheckList = () => {
                 <label className="d-flex">
                   <ClockIcon size={20} />
                   <DatePicker
-                    selected={formData.timeVisited}
-                    onChange={(date) => handleTimeChange(date)}
+                    selected={formData.timeVisited ? new Date(`2000-01-01T${formData.timeVisited}`) : null}
+                    onChange={(time) => {
+                      const formattedDate = formatTime(time);
+                      handleTimeChange(formattedDate);
+                    }}
                     showTimeSelect
                     showTimeSelectOnly
                     dateFormat="HH:mm:ss"
@@ -298,9 +330,7 @@ const CreateCheckList = () => {
                           id="Name"
                           name="Name"
                           value={formData.sop.Name}
-                          onChange={(e) =>
-                            handleSopChange(index, e)
-                          }
+                          onChange={(e) => handleSopChange(index, e)}
                           className="secondary-text"
                           css={styles.inputBox}
                           required
@@ -317,7 +347,7 @@ const CreateCheckList = () => {
                         id="sop_type"
                         name="sop_type"
                         value={selectedSopType}
-                        onChange={(e)=> handleSopChange(index, e)}
+                        onChange={(e) => handleSopChange(index, e)}
                         options={sopTypes?.map((data) => {
                           return {
                             value: data.id,
@@ -341,7 +371,7 @@ const CreateCheckList = () => {
                       />
                     ) : (
                       <div>
-                        <Upload onChange={onSOPChange} />
+                        <Upload onChange={(e) => onSOPChange(e, index)} />
                       </div>
                     )}
                     {sopData && sopData.length > 1 && <hr />}
@@ -358,10 +388,7 @@ const CreateCheckList = () => {
         </div>
         {/* EQUIPMENT */}
         <div style={{ margin: "0px 20px 0px 20px" }}>
-          <label className="secondary-text">
-            Equipment
-          </label>
-          {/* EQUIPMENT */}
+          <label className="secondary-text">Equipment</label>
           <div css={styles.box}>
             {equipmentData &&
               equipmentData.map((data, index) => {
@@ -389,9 +416,7 @@ const CreateCheckList = () => {
                           id="Name"
                           name="Name"
                           value={formData.equipment.Name}
-                          onChange={(e) =>
-                            handleEquipChange(index, e)
-                          }
+                          onChange={(e) => handleEquipChange(index, e)}
                           className="secondary-text"
                           placeholder="Enter Equipment name"
                           css={styles.inputBox}
@@ -410,9 +435,7 @@ const CreateCheckList = () => {
                           id="Remarks"
                           name="Remarks"
                           value={formData.equipment.Remarks}
-                          onChange={(e) =>
-                            handleEquipChange(index, e)
-                          }
+                          onChange={(e) => handleEquipChange(index, e)}
                           className="secondary-text"
                           css={styles.inputBox}
                         />
@@ -426,7 +449,7 @@ const CreateCheckList = () => {
                       />
                     ) : (
                       <div>
-                        <Upload onChange={onEquipChange} />
+                        <Upload onChange={(e) => onEquipChange(e, index)} />
                       </div>
                     )}
                     {equipmentData && equipmentData.length > 1 && <hr />}
