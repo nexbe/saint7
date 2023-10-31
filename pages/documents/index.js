@@ -124,6 +124,7 @@ const Documents = () => {
               documentInfo?.map((eachDocument, index) => {
                 return (
                   <Card
+                    key={index}
                     isEdit={isEdit}
                     setEditModal={setEditModal}
                     isDelete={isDelete}
