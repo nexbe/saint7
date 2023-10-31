@@ -11,6 +11,8 @@ import Card from "../../components/checklist/Card";
 import { useRouter } from "next/router";
 import siteCheckListStore from "../../store/siteCheckList";
 import useAuth from "../../store/auth";
+import DeleteModal from "../../components/Modal/DeleteModal";
+import NotificationBox from "../../components/notification/NotiBox";
 
 const SiteCheckList = () => {
   const router = useRouter();
@@ -19,15 +21,49 @@ const SiteCheckList = () => {
   const [isDelete, setIsDelete] = useState(false);
   const { fetchCheckList, siteCheckLists } = siteCheckListStore();
   const { user } = useAuth();
-
+  const { deleteCheckLists, errorDeleteCheckLists } = siteCheckListStore();
+  const [selectedDeletedData, setSelectedDeletedData] = useState([]);
   useEffect(() => {
     fetchCheckList(user?.jwt);
-  }, []);
+  }, [ router, setDeleteModal]);
+  console.log(user.id)
+  //delete announcements
+  const handleSelect = (selectedId) => {
+    setSelectedDeletedData((prevData) => {
+      if (prevData?.includes(selectedId)) {
+        return prevData?.filter((id) => id !== selectedId);
+      } else {
+        return [...prevData, selectedId];
+      }
+    });
+  };
+
+  //handle delete
+  const handleDelete = (id) => {
+    deleteCheckLists(id, user?.jwt);
+    router.push({
+      pathname: `/checklist`,
+      query: {
+        message: !errorDeleteCheckLists ? "Success!" : "Apologies!",
+        belongTo: !errorDeleteCheckLists ? "Site Checklists" : "error",
+        action: "delete",
+        userId: user?.id,
+      },
+    });
+  };
 
   return (
     <Layout>
       <HeaderNoti title={"Site Checklist"} href={"/home"} />
       <div css={styles.wrapper}>
+      <div style={{ position: "relative", margin: "2px 10px" }}>
+          <NotificationBox
+            message={router.query.message}
+            belongTo={router.query.belongTo}
+            timeout={5000}
+            action={router.query.action}
+          />
+        </div>
         <div css={styles.actions}>
           <button
             css={styles.actionBtn(true)}
@@ -41,21 +77,27 @@ const SiteCheckList = () => {
           </button>
           <button
             css={styles.actionBtn(isDelete)}
-            onClick={() => setIsDelete(!isDelete)}>
+            onClick={() =>
+              selectedDeletedData && selectedDeletedData.length > 0
+                ? setDeleteModal(true)
+                : setIsDelete(!isDelete)
+            }
+          >
             {isDelete ? <DeleteIcon /> : <BinIcon />}
           </button>
         </div>
         <div css={styles.cardContainer}>
-          {siteCheckLists && siteCheckLists.length > 0 &&
+          {siteCheckLists &&
+            siteCheckLists.length > 0 &&
             siteCheckLists.map((checklist) => {
               return (
                 <div key={checklist.id}>
                   <Card
                     isEdit={isEdit}
                     isDelete={isDelete}
-                    isChecked={true}
                     data={checklist}
-                    handleSelect={() => {}}
+                    isChecked={selectedDeletedData?.includes(checklist.id)}
+                    handleSelect={() => handleSelect(checklist.id)}
                   />
                 </div>
               );
@@ -64,6 +106,13 @@ const SiteCheckList = () => {
             <b css={styles.notFound}>No Results</b>
           )}
         </div>
+        <DeleteModal
+          isOpen={deleteModal}
+          close={() => setDeleteModal(!deleteModal)}
+          handleDeleteConfirm={handleDelete}
+          selectedData={selectedDeletedData}
+          belongTo={"CheckLists"}
+        />
       </div>
     </Layout>
   );

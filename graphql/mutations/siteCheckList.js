@@ -9,3 +9,13 @@ export const CREATE_SITE_CHECKLIST = gql`
     }
   }
 `;
+
+export const DELETE_SITE_CHECKLIST = gql`
+  mutation ($id: ID!) {
+    deleteSiteChecklist(id: $id) {
+      data {
+        id
+      }
+    }
+  }
+`;
