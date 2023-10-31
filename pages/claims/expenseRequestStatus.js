@@ -317,7 +317,8 @@ const ExpenseRequestStatus = () => {
                                 pathname: "/claims/requestDetail",
                                 query: {
                                   expenseId: item.id,
-                                  userName: user?.username,
+                                  userName:
+                                    item?.users_permissions_user?.username,
                                 },
                               });
                             }}
@@ -354,7 +355,7 @@ const ExpenseRequestStatus = () => {
                 <Card
                   expenseList={approvedData}
                   total={approvedTotal}
-                  userName={user?.username}
+                  role={user?.role?.name}
                 />
               </div>
             )}
@@ -363,7 +364,7 @@ const ExpenseRequestStatus = () => {
                 <Card
                   expenseList={rejectedData}
                   total={rejectedTotal}
-                  userName={user?.username}
+                  role={user?.role?.name}
                 />
               </div>
             )}

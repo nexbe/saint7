@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 import NoDataIcon from "/public/icons/noDataIcon";
 
-const Card = ({ expenseList, userName, role }) => {
+const Card = ({ expenseList, role }) => {
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState();
   const [openCard, setOpenCard] = useState([]);
@@ -97,7 +97,8 @@ const Card = ({ expenseList, userName, role }) => {
                           pathname: "/claims/requestDetail",
                           query: {
                             expenseId: eachExpense.id,
-                            userName: userName,
+                            userName:
+                              eachExpense?.users_permissions_user?.username,
                           },
                         });
                       }}
@@ -112,21 +113,22 @@ const Card = ({ expenseList, userName, role }) => {
                             #ER-0000{eachExpense.id}
                           </label>
                           {eachExpense.category.label}
-                          {role.toLowerCase() != "guard" && (
+                          {role?.toLowerCase() != "guard" && (
                             <label className="requestedBy">
-                              Requested by {userName}
+                              Requested by{" "}
+                              {eachExpense?.users_permissions_user?.username}
                             </label>
                           )}
                         </label>
                         <label>
                           $ {eachExpense.amount}
-                          {role.toLowerCase() != "guard" && (
+                          {role?.toLowerCase() != "guard" && (
                             <img
                               src={
                                 eachExpense?.users_permissions_user?.profile
                                   ?.photo?.url
                                   ? `${process.env.NEXT_PUBLIC_APP_URL}${eachExpense?.users_permissions_user?.profile?.photo.url}`
-                                  : "images/defaultImage.jpg"
+                                  : "../../images/defaultImage.jpg"
                               }
                             />
                           )}
@@ -210,6 +212,7 @@ const styles = {
       width: 50px;
       height: 50px;
       border-radius: 50px;
+      border: 1px solid var(--light-gray);
     }
   `,
   eachCard: css`

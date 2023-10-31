@@ -5,7 +5,14 @@ import { AiOutlineClose, AiFillInfoCircle } from "react-icons/ai";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { useRouter } from "next/router";
 
-const NotificationBox = ({ message, belongTo, timeout, action, label }) => {
+const NotificationBox = ({
+  message,
+  belongTo,
+  timeout,
+  action,
+  label,
+  userId,
+}) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -17,11 +24,18 @@ const NotificationBox = ({ message, belongTo, timeout, action, label }) => {
         belongTo == "uploadProfileSuccess" ||
         belongTo === "Certificate" ||
         belongTo === "Personal"
-          ? router.push("/profile")
+          ? router.push({
+              pathname: `/profile`,
+              query: {
+                userId: userId,
+              },
+            })
           : belongTo === "Document"
           ? router.push("/documents")
           : belongTo == "Announcement"
           ? router.push("/announcement")
+          : belongTo == "ClaimApproval"
+          ? router.push("/claims/claimApproval/expenseRequest")
           : "";
       }, timeout);
     }
@@ -89,8 +103,9 @@ export default NotificationBox;
 
 const styles = {
   notiBoxWrapper: css`
+    z-index: 1;
     position: absolute;
-    top: -85px;
+    top: -80px;
     border-radius: 4px;
     background: var(--white);
     width: 100%;

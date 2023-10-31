@@ -1,10 +1,7 @@
 import { gql } from "@apollo/client";
-export const GET_DOCUMENT_BY_ID = gql`
-  query ($userId: ID!) {
-    documents(
-      filters: { users_permissions_users: { id: { eq: $userId } } }
-      sort: ["createdAt:desc"]
-    ) {
+export const GET_DOCUMENTS = gql`
+  query {
+    documents(sort: ["createdAt:desc"]) {
       data {
         id
         attributes {

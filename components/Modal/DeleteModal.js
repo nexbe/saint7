@@ -79,9 +79,9 @@ const styles = {
   actions: css`
     display: flex;
     flex-direction: row;
-    gap: 9px;
+    gap: 50px;
+    margin-top: 15px;
     margin-left: auto;
-    margin-top: 10px;
     div {
       cursor: pointer;
       font-size: 18px;

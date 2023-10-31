@@ -14,7 +14,7 @@ const ConfirmModal = ({ modal, setModal, setEditModal }) => {
   return (
     <Modal isOpen={modal} toggle={toggle} css={styles.wrapper}>
       <div className="primary-text" css={styles.confirmText}>
-        <span>Are you sure you want to leave this page?</span>
+        <span>Are You sure You Want To Leave This Page?</span>
         <label>Changes made to this page haven’t been saved yet.</label>
       </div>
       <div css={styles.actions}>
@@ -59,9 +59,9 @@ const styles = {
   actions: css`
     display: flex;
     flex-direction: row;
-    gap: 9px;
+    gap: 50px;
+    margin-top: 15px;
     margin-left: auto;
-
     div {
       cursor: pointer;
       font-size: 18px;

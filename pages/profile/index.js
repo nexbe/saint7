@@ -154,7 +154,7 @@ const Profile = () => {
       query: {
         message: !errUploadProfile ? "Success!" : "Apologies!",
         belongTo: !errUploadProfile ? "uploadProfileSuccess" : "error",
-        userId: user?.id,
+        userId: router?.query ? router?.query?.userId : user?.id,
       },
     });
   };
@@ -176,8 +176,8 @@ const Profile = () => {
         pathname: `/profile`,
         query: {
           message: !errUploadProfile ? "Success!" : "Apologies!",
-          belongTo: !errUploadProfile ? "Personal" : "error",
-          userId: user?.id,
+          belongTo: !errUploadProfile ? "Personal Info" : "error",
+          userId: router?.query ? router?.query?.userId : user?.id,
           action: "edit",
         },
       });
@@ -194,7 +194,7 @@ const Profile = () => {
         message: !errDeleteCertificate ? "Success!" : "Apologies!",
         belongTo: !errDeleteCertificate ? "Certificate" : "error",
         action: "delete",
-        userId: user?.id,
+        userId: router?.query ? router?.query?.userId : user?.id,
       },
     });
   };
@@ -231,7 +231,12 @@ const Profile = () => {
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
-          <div css={styles.backIcon} onClick={() => router.push("/home")}>
+          <div
+            css={styles.backIcon}
+            onClick={() =>
+              router.push(router?.query?.team === "Team" ? "/team" : "/home")
+            }
+          >
             <BackIcon />
           </div>
           <label className="header-text">My Profile</label>
@@ -247,7 +252,9 @@ const Profile = () => {
               message={router.query.message}
               belongTo={router.query.belongTo}
               timeout={5000}
-              action={router.query.action}
+              action={router?.query?.action}
+              label={router?.query?.label}
+              userId={router?.query ? router?.query?.userId : user?.id}
             />
             <div css={styles.attachBox}>
               <label css={styles.attachBtn}>
@@ -515,14 +522,7 @@ const Profile = () => {
                     </div>
                   );
                 })}
-                {editModalOpen && (
-                  <EditCertificateModal
-                    isOpen={editModalOpen}
-                    setEditModalOpen={setEditModalOpen}
-                    selectedCertificate={selectedCertificate}
-                    userId={user?.id}
-                  />
-                )}
+
                 {deleteModalOpen && (
                   <DeleteModal
                     isOpen={deleteModalOpen}
@@ -547,7 +547,9 @@ const Profile = () => {
                   <AddCertificateModal
                     isOpen={modalOpen}
                     close={() => setModalOpen(!modalOpen)}
-                    userId={user?.id}
+                    userId={
+                      router?.query?.userId ? router?.query?.userId : user?.id
+                    }
                   />
                 )}
               </div>
@@ -579,6 +581,14 @@ const Profile = () => {
           </form>
         </div>
       </div>
+      {editModalOpen && (
+        <EditCertificateModal
+          isOpen={editModalOpen}
+          setEditModalOpen={setEditModalOpen}
+          selectedCertificate={selectedCertificate}
+          userId={router?.query?.userId ? router?.query?.userId : user?.id}
+        />
+      )}
     </Layout>
   );
 };
@@ -637,7 +647,7 @@ const styles = {
     background: var(--mobile-color-usage-white, #fff);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     position: absolute;
-    margin-top: -25px;
+    margin-top: -30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -745,8 +755,9 @@ const styles = {
     margin-left: -25px;
   `,
   attachBox: css`
+    z-index: 0;
     position: absolute;
-    margin-top: -70px;
+    margin-top: -80px;
     cursor: pointer;
     img {
       width: 60px;

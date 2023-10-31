@@ -1,17 +1,45 @@
 /** @jsxImportSource @emotion/react */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 import DutyModal from "./DutyModal";
+import moment from "moment";
+import attendenceStore from "../../store/attendance";
+import { setCookie, parseCookies } from "nookies";
 
 const Historty = () => {
+  const cookies = parseCookies();
+
+  const { attendanceData, getAttendanceData } = attendenceStore(
+    (state) => state
+  );
+  const userData = cookies.user ? JSON.parse(cookies.user) : null;
+
   const [startDate, setStartDate] = useState(null);
   const [dutyModalOpen, setDutyModalOpen] = useState(false);
 
+  useEffect(() => {
+    setStartDate(new Date());
+  }, []);
+
+  useEffect(() => {
+    getAttendanceData(userData?.id, moment(startDate).format("YYYY-MM-DD"));
+  }, [startDate]);
+
   const dutyModal = () => {
     setDutyModalOpen(!dutyModalOpen);
+  };
+
+  // console.log(typeof attendanceData?.attendanceData[0].check_in_time);
+  const formatTime = (timeString) => {
+    const timeParts = timeString?.split(":"); // Split the string by colon
+
+    // Extract hours and minutes
+    const hours = timeParts[0];
+    const minutes = timeParts[1];
+    const formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
   };
 
   return (
@@ -29,74 +57,34 @@ const Historty = () => {
           </div>
         </div>
         <div css={styles.requestCard}>
-          <div onClick={dutyModal}>
-            <label className="primary-text">16th june ,2023</label>
-            <div css={styles.eachCard}>
-              <label>
-                9:00 - 16:00
+          {attendanceData?.attendanceData?.map((data, index) => (
+            <div onClick={dutyModal} key={index}>
+              <label className="primary-text">
+                {moment(data?.date).format("Do MMMM YYYY")}
+              </label>
+              <div css={styles.eachCard}>
                 <label>
-                  <span className="address">
-                    3891 Ranchview Dr. Richardson,
-                  </span>
-                  California 62639
+                  {data?.check_in_time
+                    ? formatTime(data?.check_in_time)
+                    : "00:00"}{" "}
+                  -{" "}
+                  {data?.check_out_t_ime
+                    ? formatTime(data?.check_out_t_ime)
+                    : "00:00"}
+                  <label>
+                    <span className="address">{data?.address}</span>
+                  </label>
                 </label>
-              </label>
-              <span css={styles.expenseStatus}>Complete</span>
+                <span css={styles.expenseStatus}>{data?.status}</span>
+              </div>
+              <hr
+                style={{
+                  borderTop: " 1px solid var(--darker-gray)",
+                  margin: "15px -10px 0 -10px",
+                }}
+              />
             </div>
-            <hr
-              style={{
-                borderTop: " 1px solid var(--darker-gray)",
-                margin: "15px -10px 0 -10px",
-              }}
-            />
-          </div>
-          <div onClick={dutyModal}>
-            <label className="primary-text">15th June ,2023</label>
-            <div
-              css={styles.eachCard}
-              style={{ background: "rgba(255, 219, 219, 1)" }}
-            >
-              <label>
-                9:00 - 16:00
-                <label>
-                  <span className="address">
-                    3891 Ranchview Dr. Richardson,
-                  </span>
-                  California 62639
-                </label>
-              </label>
-              <span css={styles.expenseStatus} style={{ background: "red" }}>
-                Incomplete
-              </span>
-            </div>
-            <hr
-              style={{
-                borderTop: " 1px solid var(--darker-gray)",
-                margin: "15px -10px 0 -10px",
-              }}
-            />
-          </div>
-          <div>
-            <label className="primary-text">14th June ,2023</label>
-            <div
-              css={styles.eachCard}
-              style={{
-                background: "rgba(214, 214, 214, 0.4)",
-                justifyContent: "center",
-              }}
-            >
-              <label>
-                No Attendance Recorded.
-                <span css={styles.offDay}>Off Day</span>
-              </label>
-            </div>
-            <hr
-              style={{
-                borderTop: " 1px solid var(--darker-gray)",
-                margin: "15px -10px 0 -10px",
-              }}
-            />
-          </div>
+          ))}
         </div>
       </div>
       {dutyModalOpen && (
@@ -226,16 +214,6 @@ const styles = {
       top: 11px;
       left: 5px;
       font-size: 16px;
-    }
-    .react-datepicker__day {
-      :focus {
-        background: var(--primary);
-        width: 30px;
-        height: 30px;
-        border-radius: 50px;
-        color: var(--white);
-        border: none;
-      }
     }
   `,
   requestCard: css`

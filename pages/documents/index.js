@@ -42,7 +42,7 @@ const Documents = () => {
   useEffect(() => {
     getAllDocuments({
       apolloClient,
-      where: { userId: user.id },
+      where: {},
     });
   }, [user, router.query]);
 
@@ -101,15 +101,18 @@ const Documents = () => {
               >
                 ADD NEW DOCUMENT
               </button>
+
               <button
                 css={styles.actionBtn(isEdit)}
                 onClick={() => setIsEdit(!isEdit)}
+                disabled={documentInfo?.length > 0 ? false : true}
               >
                 {isEdit ? <EditIcon /> : <EditPencil />}
               </button>
               <button
                 css={styles.actionBtn(isDelete)}
                 onClick={() => setIsDelete(!isDelete)}
+                disabled={documentInfo?.length > 0 ? false : true}
               >
                 {isDelete ? <DeleteIcon /> : <BinIcon />}
               </button>

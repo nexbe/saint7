@@ -153,60 +153,64 @@ const Claims = () => {
   let approvedCount = 0;
   let rejectedCount = 0;
   let pendingCount = 0;
-  claimInfo?.map((eachExpense, index) => {
-    if (eachExpense.status === "approved") {
-      approvedTotal += parseFloat(eachExpense.amount);
-      approvedCount += 1;
-    } else if (eachExpense.status === "rejected") {
-      rejectedTotal += parseFloat(eachExpense.amount);
-      rejectedCount += 1;
-    } else {
-      pendingTotal += parseFloat(eachExpense.amount);
-      pendingCount += 1;
-    }
+  expenseList?.map((each, index) => {
+    each[1]?.map((eachExpense) => {
+      if (eachExpense.status === "approved") {
+        approvedTotal += parseFloat(eachExpense.amount);
+        approvedCount += 1;
+      } else if (eachExpense.status === "rejected") {
+        rejectedTotal += parseFloat(eachExpense.amount);
+        rejectedCount += 1;
+      } else {
+        pendingTotal += parseFloat(eachExpense.amount);
+        pendingCount += 1;
+      }
+    });
   });
   const canvas = useRef();
   const chartRef = useRef(null);
   useEffect(() => {
-    const ctx = canvas.current;
-    let chartStatus = Chart.getChart(ctx);
-    if (chartStatus !== undefined) {
-      chartStatus.destroy();
-    }
-    if (chartRef.current) {
-      // If the chart already exists, update the data
-      chartRef.current.data.datasets[0].data = [
-        pendingCount,
-        approvedCount,
-        rejectedCount,
-      ];
-    } else {
-      new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: ["Pending", "Approved", "Rejected"],
-          datasets: [
-            {
-              data: [pendingCount, approvedCount, rejectedCount],
-              labels: ["Pending", "Approved", "Rejected"],
-              backgroundColor: ["orange", "green", "red"],
-              borderWidth: 0,
-            },
-          ],
-        },
-        options: {
-          responsive: false,
-          aspectRatio: 1.4,
-          plugins: {
-            legend: false,
-            tooltip: {
-              enabled: false,
+    if (!!expenseList) {
+      const ctx = canvas.current;
+      let chartStatus = Chart.getChart(ctx);
+      if (chartStatus !== undefined) {
+        chartStatus.destroy();
+      }
+      if (chartRef.current) {
+        // If the chart already exists, update the data
+        chartRef.current.data.datasets[0].data = [
+          pendingCount,
+          approvedCount,
+          rejectedCount,
+        ];
+      } else {
+        new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: ["Pending", "Approved", "Rejected"],
+            datasets: [
+              {
+                data: [pendingCount, approvedCount, rejectedCount],
+                labels: ["Pending", "Approved", "Rejected"],
+                backgroundColor: ["orange", "green", "red"],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: false,
+            aspectRatio: 1.4,
+            plugins: {
+              legend: false,
+              tooltip: {
+                enabled: false,
+              },
             },
           },
-        },
-      });
+        });
+      }
     }
-  }, [claimInfo]);
+  }, [expenseList]);
 
   useEffect(() => {
     if (!!claimInfo) {
@@ -306,10 +310,10 @@ const Claims = () => {
             </div>
           </div>
           <div css={styles.viewContainer}>
-            <button onClick={() => setShowChart(!showChart)}>
+            <button onClick={() => setShowChart(true)}>
               {showChart ? <ChartIcon /> : <ShowChartIcon />}
             </button>
-            <button onClick={() => setShowChart(!showChart)}>
+            <button onClick={() => setShowChart(false)}>
               {showChart ? <ShowListIcon /> : <ListIcon />}
             </button>
           </div>
@@ -360,15 +364,15 @@ const Claims = () => {
                     <div className="primary-text">
                       <span css={styles.percentageStatus}>
                         {pendingTotal} $ -{" "}
-                        {Math.round((pendingCount / expenseCount) * 100)}%{" "}
+                        {((pendingCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
                       <span css={styles.percentageStatus}>
                         {approvedTotal} $ -{" "}
-                        {Math.round((approvedCount / expenseCount) * 100)}%{" "}
+                        {((approvedCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
                       <span css={styles.percentageStatus}>
                         {rejectedTotal} $ -{" "}
-                        {Math.round((rejectedCount / expenseCount) * 100)}%{" "}
+                        {((rejectedCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
                     </div>
                   </div>

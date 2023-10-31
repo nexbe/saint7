@@ -20,6 +20,7 @@ import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import Map from "../../components/Map";
 import attendenceStore from "../../store/attendance";
+import { useState } from "react";
 
 const Home = () => {
   const router = useRouter();
@@ -32,12 +33,18 @@ const Home = () => {
 
   const { user } = userStore((state) => state);
 
+  const [userData, setUserData] = useState();
+
   const {
     locationData: locationData,
     getAddressData,
     getLocationData,
     addressData,
   } = attendenceStore((state) => state);
+
+  useEffect(() => {
+    setUserData(user);
+  }, []);
 
   useEffect(() => {
     getAllProfiles({
@@ -63,7 +70,7 @@ const Home = () => {
               </label>
               <div className="d-flex" style={{ flexDirection: "column" }}>
                 <span css={styles.welcomeText}>Welcome !</span>
-                <span className="header-text">{user?.username}</span>
+                <span className="header-text">{userData?.username}</span>
               </div>
             </div>
             <div css={styles.timeText}>
@@ -153,7 +160,17 @@ const Home = () => {
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/claims")}>
+                <button
+                  onClick={() =>
+                    router.push(
+                      user?.role?.name === "Admin"
+                        ? "/claims/claimApproval"
+                        : user?.role?.name === "Manager"
+                        ? "claims/Manager"
+                        : "/claims"
+                    )
+                  }
+                >
                   <ClaimsIcon />
                   Claims
                 </button>

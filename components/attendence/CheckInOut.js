@@ -8,20 +8,43 @@ import ScanIcon from "../../public/icons/scanIcon";
 import { css } from "@emotion/react";
 import Map from "../../components/Map";
 import moment from "moment";
+import userStore from "../../store/user";
+import dayjs from "dayjs";
 
 const CheckInOut = () => {
   const currentDate = moment().format("Do MMMM YYYY");
   const currentDay = moment().format("dddd");
   const currentTime = moment().format("HH:mm:ss");
 
+  const [dateTime, setDateTime] = useState({});
+
+  useEffect(() => {
+    setDateTime({
+      currentDate: currentDate,
+      currentDay: currentDay,
+      currentTime: currentTime,
+    });
+  }, []);
+
+  const { getAssignUsers, AssignUsers } = userStore((state) => state);
+
+  const formattedTime = (time) => {
+    const timeObject = new Date(`${moment().format("YYYY-MM-DD")}T${time}`);
+    const resultTime = timeObject.toLocaleString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return resultTime;
+  };
   const router = useRouter();
   return (
     <div>
       <div className="d-flex justify-content-between">
         <p className="m-3 text-black">
-          {currentDay}, {currentDate}
+          {dateTime?.currentDay}, {dateTime?.currentDate}
         </p>
-        <p className="m-3 text-black">{currentTime}</p>
+        <p className="m-3 text-black">{dateTime?.currentTime}</p>
       </div>
 
       <div style={{ margin: "20px" }}>
@@ -51,14 +74,28 @@ const CheckInOut = () => {
           <div css={styles.info}>
             <ul>
               <li>
-                <span> Date</span>: <b>$550</b>
+                <span> Date</span>: <b>{moment().format("YYYY-MM-DD")}</b>
               </li>
               <li>
-                <span>Time </span>: <b>9:00AM - 6:00PM</b>
+                <span>Time </span>:{" "}
+                <b>
+                  {formattedTime(
+                    AssignUsers[0]?.attributes?.shift?.data?.attributes
+                      ?.timeRange?.StartTime
+                  )}{" "}
+                  -{" "}
+                  {formattedTime(
+                    AssignUsers[0]?.attributes?.shift?.data?.attributes
+                      ?.timeRange?.EndTime
+                  )}
+                </b>
               </li>
               <li>
                 <span>Report To </span>:{" "}
-                <b> 2715 Ash Dr.San Jose, South Dakota 83475</b>
+                <b>
+                  {" "}
+                  {AssignUsers[0]?.attributes?.site?.data?.attributes?.address}
+                </b>
               </li>
             </ul>
           </div>
