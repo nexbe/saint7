@@ -12,12 +12,12 @@ const siteCheckListStore = create((set) => ({
     try {
       await client.mutate({
         mutation: CREATE_SITE_CHECKLIST,
+        variables: { data : data },
         context:{
           headers: {
             Authorization : `Bearer ${jwt}`
           }
         },
-        variables: { data : data},
       });
     } catch (err) {
       console.log(err);

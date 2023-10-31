@@ -449,7 +449,7 @@ const CreateCheckList = () => {
                       />
                     ) : (
                       <div>
-                        <Upload onChange={(e) => onEquipChange(e, index)} />
+                        <Upload onChange={(e) => onEquipChange(e, index)} belongTo={"checklist"} />
                       </div>
                     )}
                     {equipmentData && equipmentData.length > 1 && <hr />}
