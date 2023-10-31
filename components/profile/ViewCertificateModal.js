@@ -4,22 +4,14 @@ import { useState } from "react";
 import { css } from "@emotion/react";
 import dayjs from "dayjs";
 import { IoCloseSharp } from "react-icons/io5";
-import { FilePreview } from "../upload/filePreview";
 
 const ViewCertificateModal = ({
   selectedCertificate,
   isOpen = false,
   close = () => {},
 }) => {
-  console.log("cer...", selectedCertificate);
   const [fileList, setFileList] = useState([selectedCertificate?.attachement]);
-  let fileListArr = _.entries(fileList);
-  console.log(
-    "file list....",
-    fileList[0]?.map((each) => {
-      return each.name;
-    })
-  );
+
   return (
     <>
       <Modal size="md" isOpen={isOpen} toggle={close} css={styles.modal}>

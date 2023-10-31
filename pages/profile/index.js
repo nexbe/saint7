@@ -247,12 +247,7 @@ const Profile = () => {
           </div>
           <label className="header-text">My Profile</label>
         </div>
-        <div
-          css={styles.bodyContainer}
-          style={{
-            marginBottom: personalEdit ? "55px" : "",
-          }}
-        >
+        <div css={styles.bodyContainer}>
           <div css={styles.profileContent}>
             <NotificationBox
               message={router.query.message}
@@ -642,7 +637,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 20px;
+    margin: 10px;
     font-family: Inter;
     font-style: normal;
     ::-webkit-scrollbar {
@@ -857,12 +852,11 @@ const styles = {
     }
   `,
   actionButton: css`
-    position: absolute;
-    bottom: 70px;
     div {
       display: flex;
-      gap: 60%;
+      justify-content: space-between;
     }
+    display: flex;
     button {
       border-radius: 10px;
       padding: 3px 20px;
