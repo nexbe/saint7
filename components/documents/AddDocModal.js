@@ -18,30 +18,30 @@ const AddDocModal = ({ modal, setModal, userId }) => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      title: "",
-    },
-  });
+  } = useForm({});
   const router = useRouter();
-  const { createDocument, getAllCertificates } = documentStore(
-    (state) => state
-  );
+  const { createDocument } = documentStore((state) => state);
   const [createDocumentAction, errCreateDocument] =
     useMutation(CREATE_DOCUMENT);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [saveAction, setSaveAction] = useState(false);
   const [fileList, setFileList] = useState([]);
   let fileListArr = _.entries(fileList);
 
   const toggle = () => {
     setModal(!modal);
+    reset({
+      title: null,
+      description: null,
+      attachment: null,
+    });
+    setFileList([]);
+    filesArrToSend = [];
   };
-
+  let filesArrToSend = [];
   const onSubmit = async (data) => {
     if (!!saveAction) {
-      let filesArrToSend = [];
       for (let file of fileListArr) {
         let fileData = {};
         let uploadFiles = {};
@@ -69,6 +69,13 @@ const AddDocModal = ({ modal, setModal, userId }) => {
         },
       });
       setModal(false);
+      reset({
+        title: null,
+        description: null,
+        attachment: null,
+      });
+      setFileList([]);
+      filesArrToSend = [];
       router.push({
         pathname: `/documents`,
         query: {
@@ -95,7 +102,7 @@ const AddDocModal = ({ modal, setModal, userId }) => {
     <Modal isOpen={modal} toggle={toggle} css={styles.wrapper}>
       <div css={styles.actions}>
         <h4>Add New Document</h4>
-        <div onClick={() => setModal(false)}>
+        <div onClick={toggle}>
           <CloseIcon />
         </div>
       </div>
