@@ -22,6 +22,7 @@ import userStore from "../../store/auth";
 import Map from "../../components/Map";
 import attendenceStore from "../../store/attendance";
 import { useState } from "react";
+import HRMuserIcon from "../../public/icons/hrmUserIcon";
 
 const Home = () => {
   const router = useRouter();
@@ -147,7 +148,7 @@ const Home = () => {
 
               <div css={styles.formFlexChildDiv}>
                 <button onClick={() => router.push("/team")}>
-                  <UserIcon />
+                  <HRMuserIcon />
                   Team
                 </button>
               </div>

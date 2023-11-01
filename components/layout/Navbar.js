@@ -1,21 +1,33 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+
 import Link from "next/link";
 import HomeIcon from "../../public/icons/HomeIcon";
-import EmergencyIcon from "../../public/icons/EmergencyIcon";
-import IssueIcon from "../../public/icons/IssueIcon";
 import PatrolIcon from "../../public/icons/PatrolIcon";
 import MoreIcon from "../../public/icons/MoreIcon";
 import { css } from "@emotion/react";
-import HrmIcon from "../../public/icons/hrmIcon";
-import OperationIcon from "../../public/icons/operationIcon";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import HrmNavBar from "../../public/icons/hrmNavBarIcon";
+import HrmNavBarActive from "../../public/icons/hrmNavBarActive";
+import OPSactiveIcon from "../../public/icons/opsActiveIcon";
+import OPSIcon from "../../public/icons/opsIcon";
+import UserIcon from "/public/icons/userIcon";
+import NavUserIcon from "../../public/icons/navUserIcon";
+import SettingIcon from "../../public/icons/settingIcon";
 
-const RenderNavLinkItems = ({ href, label, icon, setHandleLink }) => {
+const RenderNavLinkItems = ({ href, label, icon }) => {
+  const router = useRouter();
+
   return (
-    <Link href={href} css={styles.navLink} onClick={() => setHandleLink(label)}>
+    <Link
+      href={href}
+      css={[
+        styles.navLink,
+        {
+          color: router.pathname == href ? "#293991" : "#2f4858",
+        },
+      ]}
+    >
       {icon}
       <span>{label}</span>
     </Link>
@@ -23,9 +35,8 @@ const RenderNavLinkItems = ({ href, label, icon, setHandleLink }) => {
 };
 
 const Navbar = () => {
-  const [handleLink, setHandleLink] = useState(null);
   const router = useRouter();
-  console.log("here", router);
+
   const icons = [
     {
       id: 0,
@@ -37,25 +48,26 @@ const Navbar = () => {
       id: 1,
       href: "/HRM",
       label: "HRM",
-      icon: <HrmNavBar disable={router.pathname == "/HRM"} />,
+      icon: router.pathname == "/HRM" ? <HrmNavBarActive /> : <HrmNavBar />,
     },
+
     {
       id: 2,
       href: "/operation",
       label: "OPS",
-      icon: <OperationIcon disable={router.pathname == "/operation"} />,
+      icon: router.pathname == "/operation" ? <OPSactiveIcon /> : <OPSIcon />,
     },
     {
       id: 3,
-      href: "/patrol",
-      label: "Patrol",
-      icon: <PatrolIcon disable={router.pathname == "/patrol"} />,
+      href: "/profile",
+      label: "Profile",
+      icon: <NavUserIcon />,
     },
     {
       id: 4,
       href: "/more",
-      label: "More",
-      icon: <MoreIcon disable={router.pathname == "/more"} />,
+      label: "Settings",
+      icon: <SettingIcon />,
     },
   ];
   return (
@@ -68,7 +80,6 @@ const Navbar = () => {
               label={icon.label}
               icon={icon.icon}
               key={icon.id}
-              setHandleLink={setHandleLink}
             />
           );
         })}
@@ -100,15 +111,15 @@ const styles = {
     display: flex;
     flex-direction: column;
     text-align: center;
-    margin-top: 8px;
+    margin-top: 7px;
+
     justify-content: center;
     align-items: center;
     font-size: 12px;
     text-decoration: none;
-    color: #2f4858;
 
     @media (min-width: 440px) {
-      font-size: 16px;
+      font-size: 12px;
     }
   `,
 };

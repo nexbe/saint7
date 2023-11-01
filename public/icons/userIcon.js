@@ -4,24 +4,26 @@ function Icon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width="29"
+      height="35"
       fill="none"
-      viewBox="0 0 24 24"
+      viewBox="0 0 29 35"
     >
       <path
-        stroke="#293991"
+        stroke="#596D79"
         strokeMiterlimit="10"
         strokeWidth="1.5"
-        d="M8.25 15a4.875 4.875 0 100-9.75 4.875 4.875 0 000 9.75z"
+        d="M14.79 22.458c4.164 0 7.54-3.395 7.54-7.583 0-4.188-3.376-7.583-7.54-7.583s-7.54 3.395-7.54 7.583c0 4.188 3.376 7.583 7.54 7.583z"
       ></path>
       <path
-        stroke="#293991"
+        stroke="#596D79"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M14.57 5.432A4.876 4.876 0 1115.893 15M1.5 18.506a8.252 8.252 0 0113.5 0M15.895 15a8.24 8.24 0 016.75 3.505"
+        d="M3.48 31.5c1.21-2.607 2.037-4.365 4.132-5.87 2.094-1.505 4.47-2.297 6.888-2.297s4.794.793 6.888 2.298c2.485 1.786 2.922 3.262 4.132 5.869"
       ></path>
+      <ellipse cx="10.5" cy="13" fill="#596D79" rx="0.5" ry="1"></ellipse>
+      <ellipse cx="13.5" cy="13" fill="#596D79" rx="0.5" ry="1"></ellipse>
     </svg>
   );
 }
