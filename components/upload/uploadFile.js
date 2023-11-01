@@ -8,7 +8,8 @@ export const Upload = ({ onChange, belongTo }) => {
   return (
     <>
       <label className="secondary-text" style={{ marginTop: "10px" }}>
-        Attach Documents <span style={{ color: "#ec1c24" }}>*</span>
+        Attach Documents 
+        { belongTo && belongTo !== 'checklist' && <span style={{ color: "#ec1c24" }}>*</span> }
       </label>
       <div css={styles.uploadContainer}>
         {loading ? (
@@ -33,7 +34,7 @@ export const Upload = ({ onChange, belongTo }) => {
               type="file"
               css={styles.fileInput}
               multiple
-              required
+              required={belongTo && belongTo !== 'checklist'}
             />
 
             <div css={[styles.dragAndDrop, styles.f16_600]}>Browse File</div>
@@ -59,6 +60,7 @@ const styles = {
     padding: 10px;
     margin-bottom: 20px;
     margin-top: 10px;
+    z-index: 0;
   `,
   fileInput: css`
     width: 100%;

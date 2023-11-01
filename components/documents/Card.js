@@ -13,23 +13,19 @@ import EditPencil from "../../public/icons/editPencil";
 import PdfIcon from "../../public/icons/pdfIcon";
 
 const Card = ({
-  id,
-  title,
-  body,
-  attachment,
   icon,
   isEdit,
   setEditModal,
   isDelete,
   handleCheck,
   isChecked,
+  setSelectedDocument,
   eachDocument,
-  handleEdit,
 }) => {
-  const [open, setOpen] = useState('');
+  const [open, setOpen] = useState("");
 
   const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif"];
-  const isImage = attachment?.map((eachAttach) => {
+  const isImage = eachDocument?.attachment?.map((eachAttach) => {
     return FILE_EXTENSIONS.some((extension) =>
       eachAttach.name?.endsWith(extension)
     );
@@ -46,56 +42,58 @@ const Card = ({
   useEffect(() => {}, [isChecked]);
 
   return (
-    <Accordion open={open} toggle={toggle} css={styles.wrapper}>
-      <AccordionItem>
-        <AccordionHeader targetId={id} css={styles.item}>
-          <div style={{ width: "80%", gap: "5px" }} className="d-flex">
-            {" "}
-            {!isDelete ? (
-              icon
-            ) : (
-              <div css={styles.checkBoxStyle}>
-                <Input
-                  type="checkbox"
-                  id="status"
-                  name="status"
-                  onClick={() => handleCheck(id)}
-                  checked={isChecked}
-                  style={{ border: "2px solid #000" }}
-                />
+    <>
+      <Accordion open={open} toggle={toggle} css={styles.wrapper}>
+        <AccordionItem>
+          <AccordionHeader targetId={eachDocument?.id} css={styles.item}>
+            <div style={{ width: "80%", gap: "5px" }} className="d-flex">
+              {" "}
+              {!isDelete ? (
+                icon
+              ) : (
+                <div css={styles.checkBoxStyle}>
+                  <Input
+                    type="checkbox"
+                    id="status"
+                    name="status"
+                    onClick={() => handleCheck(eachDocument?.id)}
+                    checked={isChecked}
+                    style={{ border: "2px solid #000" }}
+                  />
+                </div>
+              )}
+              {eachDocument?.title}
+            </div>
+            {isEdit && (
+              <div
+                style={{ marginLeft: "auto", cursor: "pointer" }}
+                onClick={() => {
+                  setSelectedDocument(eachDocument);
+                  setEditModal(true);
+                }}
+              >
+                <EditPencil />
               </div>
             )}
-            {title}
-          </div>
-          {isEdit && (
-            <div
-              style={{ marginLeft: "auto", cursor: "pointer" }}
-              onClick={() => {
-                handleEdit(id);
-                setEditModal(true);
-              }}
-            >
-              <EditPencil />
+          </AccordionHeader>
+          <AccordionBody accordionId={eachDocument?.id}>
+            {eachDocument?.description}
+            <div className="fileIconContainer">
+              {eachDocument?.attachment &&
+                eachDocument?.attachment.map((eachAttach, index) => {
+                  return isImage[index] ? (
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_APP_URL}${eachAttach?.url}`}
+                    />
+                  ) : (
+                    <PdfIcon />
+                  );
+                })}
             </div>
-          )}
-        </AccordionHeader>
-        <AccordionBody accordionId={id}>
-          {body}
-          <div className="fileIconContainer">
-            {attachment &&
-              attachment.map((eachAttach, index) => {
-                return isImage[index] ? (
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_APP_URL}${eachAttach?.url}`}
-                  />
-                ) : (
-                  <PdfIcon />
-                );
-              })}
-          </div>
-        </AccordionBody>
-      </AccordionItem>
-    </Accordion>
+          </AccordionBody>
+        </AccordionItem>
+      </Accordion>
+    </>
   );
 };
 

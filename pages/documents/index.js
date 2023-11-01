@@ -8,6 +8,7 @@ import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import Card from "../../components/documents/Card";
 import BatteryWarningIcon from "../../public/icons/batteryWarningIcon";
+import LightningIcon from "../../public/icons/lightningIcon";
 import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
 import AddDocModal from "../../components/documents/AddDocModal";
@@ -42,7 +43,7 @@ const Documents = () => {
   useEffect(() => {
     getAllDocuments({
       apolloClient,
-      where: { userId: user.id },
+      where: {},
     });
   }, [user, router.query]);
 
@@ -71,14 +72,14 @@ const Documents = () => {
     });
   };
 
-  const handleEdit = (id) => {
-    if (isEdit) {
-      const filteredData = documentInfo.filter((data) => {
-        return data.id === id;
-      });
-      setSelectedDocument(filteredData[0]);
-    }
-  };
+  // const handleEdit = (id) => {
+  //   if (isEdit) {
+  //     const filteredData = documentInfo.filter((data) => {
+  //       return data.id === id;
+  //     });
+  //     setSelectedDocument(filteredData[0]);
+  //   }
+  // };
 
   return (
     <Layout>
@@ -124,16 +125,18 @@ const Documents = () => {
                 return (
                   <Card
                     key={index}
-                    id={eachDocument.id}
-                    title={eachDocument.title}
-                    body={eachDocument.description}
-                    attachment={eachDocument?.attachment}
                     isEdit={isEdit}
                     setEditModal={setEditModal}
                     isDelete={isDelete}
-                    icon={<BatteryWarningIcon />}
+                    icon={
+                      index % 2 === 0 ? (
+                        <BatteryWarningIcon />
+                      ) : (
+                        <LightningIcon />
+                      )
+                    }
                     handleCheck={handleCheck}
-                    handleEdit={handleEdit}
+                    setSelectedDocument={setSelectedDocument}
                     isChecked={selectedDeletedData?.includes(eachDocument.id)}
                     eachDocument={eachDocument}
                   />

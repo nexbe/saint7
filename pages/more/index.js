@@ -31,7 +31,6 @@ const MorePage = () => {
       where: { userId: user.id },
     });
   }, [user]);
-  console.log("user...", user);
 
   return (
     <Layout>
@@ -60,7 +59,8 @@ const MorePage = () => {
         </div>
         <div
           css={styles.notiIcon}
-          onClick={() => router.push("/notifications")}>
+          onClick={() => router.push("/notifications")}
+        >
           {" "}
           <NotiIcon />
         </div>

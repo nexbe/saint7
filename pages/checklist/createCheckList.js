@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
@@ -17,26 +17,77 @@ import { Upload } from "../../components/upload/uploadFile";
 import { uploadFile } from "../../components/upload/upload";
 import _ from "lodash";
 import { FaPlus } from "react-icons/fa";
+import sopStore from "../../store/sop";
+import useAuth from "../../store/auth";
+import { useRouter } from "next/router";
+import siteCheckListStore from "../../store/siteCheckList";
 
 const CreateCheckList = () => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
   const [fileList, setFileList] = useState([]);
-  let fileListArr = _.entries(fileList);
   const [equipFileList, setEquipFileList] = useState([]);
-  let equipListArr = _.entries(equipFileList);
+  const { fetchSopTypes, sopTypes } = sopStore();
+  const [selectedSopType, setSelectedSopTypes] = useState([]);
+  const [sopData, setSopData] = useState([
+    {
+      id: 1,
+      Name: "",
+      Attachments: "",
+      sop_type: "",
+    },
+  ]);
+  const [equipmentData, setEquipmentData] = useState([
+    {
+      id: 1,
+      Name: "",
+      Remarks: "",
+      Attachments: "",
+    },
+  ]);
+  const { user } = useAuth();
+  const router = useRouter();
+  let equipListArr = _.values(equipFileList);
+  let fileListArr = _.values(fileList);
+  const { createCheckList,errorCreateCheckList } = siteCheckListStore();
+  const [formData, setFormData] = useState({
+    title: "",
+    location: "",
+    dateVisited: '',
+    timeVisited: "",
+    visitedBy: "",
+    sop: "",
+    equipment: "",
+    suggestions: "",
+    guardOnDuty: "",
+    remarks: "",
+    reasonForProperUniform: "",
+    actionTakenForProperUniform: "",
+    actionTakenForWelfare: "",
+    createdUser: user?.id,
+  });
 
-  const SOPOptions = [
-    { value: "value 2", label: "value 2" },
-    { value: "value 3", label: "value 3" },
-  ];
-  const [selectedSOP, setSelectedSOP] = useState(SOPOptions[0]);
-  const [sopData, setSopData] = useState([{ id: 1, name: "sop" }]);
-  const [equipmentData, setEquipmentData] = useState([{ id: 1, name: "euip" }]);
+  useEffect(() => {
+    fetchSopTypes(user?.jwt);
+  }, []);
 
-  const handleSelectSOPChange = (selectedOption) => {
-    setSelectedSOP(selectedOption);
-  };
+  const handleSOPTypeChange = (selected, index) => {
+    const updatedSopTypes = [...selectedSopType];
+    updatedSopTypes[index] = selected;
+    setSelectedSopTypes(updatedSopTypes);
+  }
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+  const formatTime = (date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }
 
   const DropdownIndicator = (props) => {
     return (
@@ -48,69 +99,184 @@ const CreateCheckList = () => {
     );
   };
 
-  const onSOPChange = async (e) => {
+  const onSOPChange = async (e, index) => {
     const selectedFiles = [...e.target.files];
     const uploadedFiles = {};
 
     for (let file of selectedFiles) {
-      uploadedFiles[0] = file;
+      uploadedFiles[index] = file;
     }
-
     setFileList({ ...fileList, ...uploadedFiles });
   };
 
-  const onEquipChange = async (e) => {
-    const selectedFiles = [...e.target.files];
+  const onEquipChange = async (e, index) => {
+    const selectedFiles = [...e.target?.files];
     const uploadedFiles = {};
 
     for (let file of selectedFiles) {
-      uploadedFiles[0] = file;
+      uploadedFiles[index] = file;
     }
-
-    setEquipFileList({ ...fileList, ...uploadedFiles });
+    setEquipFileList({ ...equipFileList, ...uploadedFiles });
   };
 
   // sop handler
   const handleSOPAddMoreClick = () => {
     const lastId = sopData[sopData.length - 1]?.id || 0;
-    setSopData((prevBoxes) => [
-      ...prevBoxes,
-      { id: lastId + 1, name: `sop ${prevBoxes.length + 1}` },
-    ]);
+    let newRow = {
+      id: lastId + 1,
+      Name: "",
+      Attachments: "",
+      sop_type: null,
+    };
+    setSopData((prevBoxes) => [...prevBoxes, newRow]);
   };
-  const handleSOPDeleteClick = (id) => {
-    setSopData((prevData) => prevData.filter((sop) => sop.id !== id));
+  const handleSOPDeleteClick = (index) => {
+    let data = [...sopData];
+    data.splice(index, 1);
+    setSopData(data);
   };
 
   // equipment handler
   const handleEquipAddMoreClick = () => {
     const lastId = equipmentData[equipmentData.length - 1]?.id || 0;
-    setEquipmentData((prevBoxes) => [
-      ...prevBoxes,
-      { id: lastId + 1, name: `equip ${prevBoxes.length + 1}` },
-    ]);
+    let newRow = {
+      id: lastId + 1,
+      Name: "",
+      Remarks: "",
+      Attachments: [],
+    };
+    setEquipmentData((prevBoxes) => [...prevBoxes, newRow]);
   };
-  const handleEquipDeleteClick = (id) => {
-    setEquipmentData((prevData) => prevData.filter((equip) => equip.id !== id));
+  const handleEquipDeleteClick = (index) => {
+    let data = [...equipmentData];
+    data.splice(index, 1);
+    setEquipmentData(data);
   };
-  // console.log(equipmentData)
+  const handleTimeChange = (time) => {
+    setFormData({
+      ...formData,
+      timeVisited: time,
+    });
+  };
+  const handleDateChange = (date) => {
+    setFormData({
+      ...formData,
+      dateVisited: date,
+    });
+  };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
+  const handleSopChange = (index, event) => {
+    let data = [...sopData];
+    data[index][event?.target?.name ] =
+      event?.target?.value || event.value;
+      
+    const attachments = fileList[index] || [];
+    data[index].Attachments = attachments;
+
+    const sopType = selectedSopType[index]?.value || null;
+
+    const updatedSop = data.map((sop, i) => {
+    if (i === index) {
+      return {
+        Attachments: attachments,
+        Name: sop.Name,
+        id: sop.id,
+        sop_type: sopType,
+      };
+    }
+    return sop;
+  });
+
+    setFormData({
+      ...formData,
+      sop: updatedSop,
+    });
+  };
+
+  const handleEquipChange = (index, event) => {
+    let data = [...equipmentData];
+    data[index][event?.target?.name || event.label] =
+    event?.target?.value || event.value
+
+    const attachments = equipFileList[index] || [];
+    data[index].Attachments = attachments;
+    
+    setFormData({
+      ...formData,
+      equipment: [
+        ...data,
+      ],
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData) {
+      createCheckList({
+        "data" : { 
+      "actionTakenForProperUniform": formData?.actionTakenForProperUniform,
+      "actionTakenForWelfare": formData?.actionTakenForWelfare,
+      "createdUser": user?.id,
+      "dateVisited": formData?.dateVisited,
+      "equipment": [],
+      "guardOnDuty": formData?.guardOnDuty,
+      "location": formData?.location,
+      "reasonForProperUniform": formData?.reasonForProperUniform,
+      "remarks": formData?.remarks,
+      "sop": [ ...formData?.sop],
+      "suggestions": formData?.suggestions,
+      "timeVisited": formData?.timeVisited,
+      "title": formData?.title,
+      "visitedBy": formData?.visitedBy
+      }
+      }, user?.jwt);
+      router.push({
+        pathname: `/checklist`,
+        query: {
+          message: !errorCreateCheckList ? "Success!" : "Apologies!",
+          belongTo: !errorCreateCheckList ? "Checklists" : "error",
+          action: "create",
+          userId: user?.id,
+        },
+      })
+    }
+  };
   return (
     <Layout>
       <HeaderNoti title={"Site Checklist"} href={"/checklist"} />
-      <form css={styles.bodyContainer}>
+      <form css={styles.bodyContainer} onSubmit={handleSubmit}>
         <div css={styles.inputStyle}>
           <div>
-            <label className="secondary-text">
+            <label className="secondary-text" htmlFor="title">
               Tilte <span>*</span>
             </label>
-            <input type="text" name="title" id="title" required />
+            <input
+              type="text"
+              name="title"
+              id="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              required
+            />
           </div>
           <div>
-            <label className="secondary-text">
+            <label className="secondary-text" htmlFor="location">
               Location <span>*</span>
             </label>
-            <textarea name="location" id="location" required />
+            <textarea
+              name="location"
+              id="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              required
+            />
           </div>
         </div>
         <div css={styles.formContent}>
@@ -118,12 +284,17 @@ const CreateCheckList = () => {
             <div css={styles.dateContent}>
               <div className="secondary-text">
                 Date Visited <span>*</span>
-                <label className="d-flex">
+                <label className="d-flex" htmlFor="dateVisited">
                   <BiCalendarAlt size={20} />
                   <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    dateFormat="MMM / dd / yy"
+                    name="dateVisited"
+                    id="dateVisited"
+                    selected={ formData?.dateVisited ? new Date(formData?.dateVisited) : new Date()  }
+                    onChange={(date) => {
+                      const formattedDate = formatDate(date);
+                      handleDateChange(formattedDate);
+                    }}
+                    dateFormat="yyyy-MM-dd"
                   />
                 </label>
               </div>
@@ -132,11 +303,14 @@ const CreateCheckList = () => {
                 <label className="d-flex">
                   <ClockIcon size={20} />
                   <DatePicker
-                    selected={time}
-                    onChange={(date) => setTime(date)}
+                    selected={formData.timeVisited ? new Date(`2000-01-01T${formData.timeVisited}`) : null}
+                    onChange={(time) => {
+                      const formattedDate = formatTime(time);
+                      handleTimeChange(formattedDate);
+                    }}
                     showTimeSelect
                     showTimeSelectOnly
-                    dateFormat="h:mm:ss"
+                    dateFormat="HH:mm:ss"
                   />
                 </label>
               </div>
@@ -145,10 +319,17 @@ const CreateCheckList = () => {
         </div>
         <div css={styles.inputStyle}>
           <div>
-            <label className="secondary-text">
+            <label className="secondary-text" htmlFor="visitedBy">
               Visited By <span>*</span>
             </label>
-            <input type="text" name="visited" id="visited" required />
+            <input
+              type="text"
+              name="visitedBy"
+              id="visitedBy"
+              value={formData.visitedBy}
+              onChange={handleInputChange}
+              required
+            />
           </div>
         </div>
         <div style={{ margin: "0px 20px 0px 20px" }}>
@@ -158,39 +339,53 @@ const CreateCheckList = () => {
           {/* sop */}
           <div css={styles.box}>
             {sopData &&
-              sopData.map((data) => {
+              sopData.map((data, index) => {
                 return (
                   <div key={data.id}>
                     {sopData && sopData.length > 1 && (
                       <div css={styles.boxHeader}>
                         <h6 style={{ margin: 0, flex: 1 }}>SOP - {data.id}</h6>
-                        <div onClick={() => handleSOPDeleteClick(data.id)}>
+                        <div onClick={() => handleSOPDeleteClick(index)}>
                           <MdRemoveCircleOutline color="#EB0F0A" size={23} />
                         </div>
                       </div>
                     )}
                     <div className="formFlex">
                       <div className="d-flex">
-                        <label className="secondary-text">Name</label>
+                        <label className="secondary-text" htmlFor="Name">
+                          Name <span style={{ color: "#ec1c24" }}>*</span>
+                        </label>
                       </div>
                       <label>
                         <input
                           type="text"
-                          id="name"
+                          id="Name"
+                          name="Name"
+                          value={formData.sop.Name}
+                          onChange={(e) => handleSopChange(index, e)}
                           className="secondary-text"
                           css={styles.inputBox}
+                          required
                         />
                       </label>
                     </div>
                     <div className="formFlex">
                       <div className="d-flex">
-                        <label className="secondary-text">Type</label>
+                        <label className="secondary-text" htmlFor="sop_type">
+                          Type
+                        </label>
                       </div>
                       <Select
-                        id="sop"
-                        value={selectedSOP}
-                        onChange={handleSelectSOPChange}
-                        options={SOPOptions}
+                        id="sop_type"
+                        name="sop_type"
+                        value={selectedSopType}
+                        onChange={(e) => handleSOPTypeChange(e, index)}
+                        options={sopTypes?.map((data) => {
+                          return {
+                            value: data.id,
+                            label: data.attributes.name,
+                          };
+                        })}
                         placeholder="Add or Select SOP type"
                         styles={selectBoxStyle}
                         components={{
@@ -208,7 +403,7 @@ const CreateCheckList = () => {
                       />
                     ) : (
                       <div>
-                        <Upload onChange={onSOPChange} />
+                        <Upload onChange={(e) => onSOPChange(e, index)} />
                       </div>
                     )}
                     {sopData && sopData.length > 1 && <hr />}
@@ -225,10 +420,7 @@ const CreateCheckList = () => {
         </div>
         {/* EQUIPMENT */}
         <div style={{ margin: "0px 20px 0px 20px" }}>
-          <label className="secondary-text">
-            Equipment <span style={{ color: "#ec1c24" }}>*</span>
-          </label>
-          {/* EQUIPMENT */}
+          <label className="secondary-text">Equipment</label>
           <div css={styles.box}>
             {equipmentData &&
               equipmentData.map((data, index) => {
@@ -239,19 +431,24 @@ const CreateCheckList = () => {
                         <h6 style={{ margin: 0, flex: 1 }}>
                           Equipment - {data.id}
                         </h6>
-                        <div onClick={() => handleEquipDeleteClick(data.id)}>
+                        <div onClick={() => handleEquipDeleteClick(index)}>
                           <MdRemoveCircleOutline color="#EB0F0A" size={23} />
                         </div>
                       </div>
                     )}
                     <div className="formFlex">
                       <div className="d-flex">
-                        <label className="secondary-text">Name</label>
+                        <label className="secondary-text" htmlFor="Name">
+                          Name
+                        </label>
                       </div>
                       <label>
                         <input
                           type="text"
-                          id="name"
+                          id="Name"
+                          name="Name"
+                          value={formData.equipment.Name}
+                          onChange={(e) => handleEquipChange(index, e)}
                           className="secondary-text"
                           placeholder="Enter Equipment name"
                           css={styles.inputBox}
@@ -260,12 +457,17 @@ const CreateCheckList = () => {
                     </div>
                     <div className="formFlex">
                       <div className="d-flex">
-                        <label className="secondary-text">Remarks</label>
+                        <label className="secondary-text" htmlFor="Remarks">
+                          Remarks
+                        </label>
                       </div>
                       <label>
                         <input
                           type="text"
                           id="Remarks"
+                          name="Remarks"
+                          value={formData.equipment.Remarks}
+                          onChange={(e) => handleEquipChange(index, e)}
                           className="secondary-text"
                           css={styles.inputBox}
                         />
@@ -279,7 +481,7 @@ const CreateCheckList = () => {
                       />
                     ) : (
                       <div>
-                        <Upload onChange={onEquipChange} />
+                        <Upload onChange={(e) => onEquipChange(e, index)} belongTo={"checklist"} />
                       </div>
                     )}
                     {equipmentData && equipmentData.length > 1 && <hr />}
@@ -302,19 +504,35 @@ const CreateCheckList = () => {
           <div css={styles.box}>
             <div css={styles.inputStyle}>
               <div>
-                <label className="secondary-text">Reason</label>
+                <label
+                  className="secondary-text"
+                  htmlFor="reasonForProperUniform">
+                  Reason
+                </label>
                 <input
                   type="text"
-                  name="reason"
-                  id="reason"
+                  name="reasonForProperUniform"
+                  id="reasonForProperUniform"
+                  value={formData.reasonForProperUniform}
+                  onChange={handleInputChange}
                   placeholder="Enter reason"
                 />
               </div>
             </div>
             <div css={styles.inputStyle}>
               <div>
-                <label className="secondary-text">Action Taken</label>
-                <input type="text" name="action-taken" id="action-taken" />
+                <label
+                  className="secondary-text"
+                  htmlFor="actionTakenForProperUniform">
+                  Action Taken
+                </label>
+                <input
+                  type="text"
+                  name="actionTakenForProperUniform"
+                  id="actionTakenForProperUniform"
+                  value={formData.actionTakenForProperUniform}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
           </div>
@@ -327,8 +545,18 @@ const CreateCheckList = () => {
           <div css={styles.box}>
             <div css={styles.inputStyle}>
               <div>
-                <label className="secondary-text">Action Taken</label>
-                <input type="text" name="action-taken" id="action-taken" />
+                <label
+                  className="secondary-text"
+                  htmlFor="actionTakenForWelfare">
+                  Action Taken
+                </label>
+                <input
+                  type="text"
+                  name="actionTakenForWelfare"
+                  id="actionTakenForWelfare"
+                  value={formData.actionTakenForWelfare}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
           </div>
@@ -336,27 +564,55 @@ const CreateCheckList = () => {
         {/* comment */}
         <div css={styles.inputStyle}>
           <div>
-            <label className="secondary-text">
+            <label className="secondary-text" htmlFor="suggestions">
               Comments on Improvement/Suggestions
             </label>
-            <input type="text" name="comments" id="comments" />
+            <input
+              type="text"
+              name="suggestions"
+              id="suggestions"
+              value={formData.suggestions}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
         <div css={styles.inputStyle}>
           <div>
-            <label className="secondary-text">Guards on Duty at Site</label>
-            <input type="text" name="duty" id="duty" />
+            <label className="secondary-text" htmlFor="guardOnDuty">
+              Guards on Duty at Site
+            </label>
+            <input
+              type="text"
+              name="guardOnDuty"
+              id="guardOnDuty"
+              value={formData.guardOnDuty}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
         <div css={styles.inputStyle}>
           <div>
-            <label className="secondary-text">Remarks</label>
-            <input type="text" name="remarks" id="remarks" />
+            <label className="secondary-text" htmlFor="remarks">
+              Remarks
+            </label>
+            <input
+              type="text"
+              name="remarks"
+              id="remarks"
+              value={formData.remarks}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
         <div css={styles.btnContainer}>
-          <button css={styles.cancelBtn}>Cancel</button>
-          <button css={styles.createBtn}>Create</button>
+          <button
+            css={styles.cancelBtn}
+            onClick={() => router.push("/checklist")}>
+            Cancel
+          </button>
+          <button css={styles.createBtn} type="submit">
+            Create
+          </button>
         </div>
       </form>
     </Layout>
@@ -520,9 +776,10 @@ const styles = {
   cancelBtn: css`
     border-radius: 10px;
     padding: 5px 50px;
-    border:1px solid #A0AEC0;
-    color: #A0AEC0;
-    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08), 0px 4px 6px 0px rgba(50, 50, 93, 0.11);
+    border: 1px solid #a0aec0;
+    color: #a0aec0;
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
+      0px 4px 6px 0px rgba(50, 50, 93, 0.11);
   `,
   createBtn: css`
     border-radius: 10px;

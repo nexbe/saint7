@@ -50,7 +50,7 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
   const fetchExistingDataByID = async (id) => {
     const attachmentInfo = await getAllDocuments({
       apolloClient,
-      where: { userId: id },
+      where: {},
     });
     setDocumentData(attachmentInfo[0]);
   };

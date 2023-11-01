@@ -21,6 +21,7 @@ import CertificationIcon from "/public/icons/certificationIcon";
 import CameraIcon from "/public/icons/cameraIcon";
 import AddCertificateModal from "../../components/profile/AddCertificateModal";
 import EditCertificateModal from "../../components/profile/EditCertificateModal";
+import ViewCertificateModal from "../../components/profile/ViewCertificateModal";
 import DeleteModal from "../../components/Modal/DeleteModal";
 import NotificationBox from "../../components/notification/NotiBox";
 import profileStore from "../../store/profile";
@@ -60,6 +61,7 @@ const Profile = () => {
   const [showAchievementDetail, setShowAchievementDetail] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [startDate, setStartDate] = useState(
     profileInfo[0]?.joinDate ? new Date(profileInfo[0]?.joinDate) : null
@@ -109,6 +111,10 @@ const Profile = () => {
     setEditModalOpen(!editModalOpen);
   };
 
+  const viewCertificateModal = () => {
+    setViewModalOpen(!viewModalOpen);
+  };
+
   const deleteCertificateModal = () => {
     setDeleteModalOpen(!deleteModalOpen);
   };
@@ -154,7 +160,7 @@ const Profile = () => {
       query: {
         message: !errUploadProfile ? "Success!" : "Apologies!",
         belongTo: !errUploadProfile ? "uploadProfileSuccess" : "error",
-        userId: user?.id,
+        userId: router?.query ? router?.query?.userId : user?.id,
       },
     });
   };
@@ -176,8 +182,8 @@ const Profile = () => {
         pathname: `/profile`,
         query: {
           message: !errUploadProfile ? "Success!" : "Apologies!",
-          belongTo: !errUploadProfile ? "Personal" : "error",
-          userId: user?.id,
+          belongTo: !errUploadProfile ? "Personal Info" : "error",
+          userId: router?.query ? router?.query?.userId : user?.id,
           action: "edit",
         },
       });
@@ -194,7 +200,7 @@ const Profile = () => {
         message: !errDeleteCertificate ? "Success!" : "Apologies!",
         belongTo: !errDeleteCertificate ? "Certificate" : "error",
         action: "delete",
-        userId: user?.id,
+        userId: router?.query ? router?.query?.userId : user?.id,
       },
     });
   };
@@ -241,18 +247,15 @@ const Profile = () => {
           </div>
           <label className="header-text">My Profile</label>
         </div>
-        <div
-          css={styles.bodyContainer}
-          style={{
-            marginBottom: personalEdit ? "55px" : "",
-          }}
-        >
+        <div css={styles.bodyContainer}>
           <div css={styles.profileContent}>
             <NotificationBox
               message={router.query.message}
               belongTo={router.query.belongTo}
               timeout={5000}
-              action={router.query.action}
+              action={router?.query?.action}
+              label={router?.query?.label}
+              userId={router?.query ? router?.query?.userId : user?.id}
             />
             <div css={styles.attachBox}>
               <label css={styles.attachBtn}>
@@ -484,7 +487,13 @@ const Profile = () => {
                       style={{ margin: "5px 0" }}
                       key={index}
                     >
-                      <div css={styles.certificateDetail}>
+                      <div
+                        css={styles.certificateDetail}
+                        onClick={() => {
+                          setSelectedCertificate(eachCertificate);
+                          viewCertificateModal();
+                        }}
+                      >
                         <label className="secondary-text">
                           <AchievementIcon /> {eachCertificate.name}
                         </label>
@@ -545,7 +554,9 @@ const Profile = () => {
                   <AddCertificateModal
                     isOpen={modalOpen}
                     close={() => setModalOpen(!modalOpen)}
-                    userId={user?.id}
+                    userId={
+                      router?.query?.userId ? router?.query?.userId : user?.id
+                    }
                   />
                 )}
               </div>
@@ -582,7 +593,14 @@ const Profile = () => {
           isOpen={editModalOpen}
           setEditModalOpen={setEditModalOpen}
           selectedCertificate={selectedCertificate}
-          userId={user?.id}
+          userId={router?.query?.userId ? router?.query?.userId : user?.id}
+        />
+      )}
+      {viewModalOpen && (
+        <ViewCertificateModal
+          isOpen={viewModalOpen}
+          close={() => setViewModalOpen(!viewModalOpen)}
+          selectedCertificate={selectedCertificate}
         />
       )}
     </Layout>
@@ -619,7 +637,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 20px;
+    margin: 10px;
     font-family: Inter;
     font-style: normal;
     ::-webkit-scrollbar {
@@ -643,7 +661,7 @@ const styles = {
     background: var(--mobile-color-usage-white, #fff);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     position: absolute;
-    margin-top: -25px;
+    margin-top: -30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -751,8 +769,9 @@ const styles = {
     margin-left: -25px;
   `,
   attachBox: css`
+    z-index: 0;
     position: absolute;
-    margin-top: -70px;
+    margin-top: -80px;
     cursor: pointer;
     img {
       width: 60px;
@@ -833,12 +852,11 @@ const styles = {
     }
   `,
   actionButton: css`
-    position: absolute;
-    bottom: 70px;
     div {
       display: flex;
-      gap: 60%;
+      justify-content: space-between;
     }
+    display: flex;
     button {
       border-radius: 10px;
       padding: 3px 20px;
