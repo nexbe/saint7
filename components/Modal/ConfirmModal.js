@@ -19,7 +19,14 @@ const ConfirmModal = ({ modal, setModal, setEditModal }) => {
       </div>
       <div css={styles.actions}>
         <div onClick={openEditModal}>Cancel</div>
-        <div onClick={() => setModal(false)}>Leave this page</div>
+        <div
+          onClick={() => {
+            setModal(false);
+            setEditModal(false);
+          }}
+        >
+          Leave this page
+        </div>
       </div>
     </Modal>
   );

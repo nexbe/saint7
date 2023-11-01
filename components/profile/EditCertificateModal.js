@@ -54,10 +54,6 @@ const EditCertificateModal = ({
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
-  const handleEditModalClose = () => {
-    setEditModalOpen(false);
-    setConfirmOpen(true);
-  };
 
   const onChange = async (e) => {
     const selectedFiles = [...e.target.files];
@@ -155,12 +151,16 @@ const EditCertificateModal = ({
 
   return (
     <>
-      <Modal size="md" isOpen={isOpen} toggle={toggle} css={styles.modal}>
+      <Modal size="md" isOpen={!confirmOpen} toggle={toggle} css={styles.modal}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div css={styles.formContent}>
             <div className="primary-text" css={styles.formHeader}>
               Edit Certifications{" "}
-              <div onClick={handleEditModalClose}>
+              <div
+                onClick={() => {
+                  setConfirmOpen(true);
+                }}
+              >
                 <IoCloseSharp size={20} color="rgba(117, 117, 117, 1)" />
               </div>
             </div>
