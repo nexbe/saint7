@@ -12,11 +12,10 @@ import userStore from "../../store/auth";
 import attendenceStore from "../../store/attendance";
 import { useState } from "react";
 import SiteIcon from "../../public/icons/siteIcon";
-import ArrowUpIcon from "/public/icons/ArrowUpIcon";
-import ArrowDownIcon from "/public/icons/ArrowDownIcon";
+import ArrowUpIcon from "../..//public/icons/arrowUpIcon";
+import ArrowDownIcon from "../..//public/icons/arrowDownIcon";
 import SuperVisorIcon from "../../public/icons/superVisorIcon";
 import { siteData } from "../../utils/mock";
-import DocumentIcon from "/public/icons/documentIcon";
 import EsuperVisorIcon from "../../public/icons/eSuperVisorIcon";
 import SopIcon from "../../public/icons/sopIcon";
 

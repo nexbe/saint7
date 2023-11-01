@@ -7,12 +7,9 @@ import { useApolloClient } from "@apollo/client";
 import dayjs from "dayjs";
 
 import NotiIcon from "/public/icons/notiIcon";
-import MapPineLineIcon from "/public/icons/mapPineLineIcon";
-import CheckInIcon from "/public/icons/checkInIcon";
-import ProgressIcon from "/public/icons/progressIcon";
 import AttendanceIcon from "/public/icons/attendanceIcon";
 import ELeaveIcon from "/public/icons/eLeaveIcon";
-import AnnouncementIcon from "/public/icons/AnnouncementIcon";
+import AnnouncementIcon from "/public/icons/announcementIcon";
 import PayslipIcon from "/public/icons/payslipIcon";
 import ClaimsIcon from "/public/icons/claimsIcon";
 import UserIcon from "/public/icons/userIcon";
