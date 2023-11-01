@@ -8,11 +8,11 @@ const siteCheckListStore = create((set) => ({
   errorCreateCheckList: null,
   errorDeleteCheckLists: null,
   createCheckList: async (data,jwt) => {
-    console.log("=> ",data)
+    console.log("->> ",data)
     try {
       await client.mutate({
         mutation: CREATE_SITE_CHECKLIST,
-        variables: { data : data },
+        variables: data,
         context:{
           headers: {
             Authorization : `Bearer ${jwt}`

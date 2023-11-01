@@ -26,7 +26,6 @@ const SiteCheckList = () => {
   useEffect(() => {
     fetchCheckList(user?.jwt);
   }, [ router, setDeleteModal]);
-  console.log(user.id)
   //delete announcements
   const handleSelect = (selectedId) => {
     setSelectedDeletedData((prevData) => {

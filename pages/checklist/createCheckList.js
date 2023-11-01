@@ -26,7 +26,7 @@ const CreateCheckList = () => {
   const [fileList, setFileList] = useState([]);
   const [equipFileList, setEquipFileList] = useState([]);
   const { fetchSopTypes, sopTypes } = sopStore();
-  const [selectedSopType, setSelectedSopTypes] = useState();
+  const [selectedSopType, setSelectedSopTypes] = useState([]);
   const [sopData, setSopData] = useState([
     {
       id: 1,
@@ -68,6 +68,12 @@ const CreateCheckList = () => {
   useEffect(() => {
     fetchSopTypes(user?.jwt);
   }, []);
+
+  const handleSOPTypeChange = (selected, index) => {
+    const updatedSopTypes = [...selectedSopType];
+    updatedSopTypes[index] = selected;
+    setSelectedSopTypes(updatedSopTypes);
+  }
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -120,7 +126,7 @@ const CreateCheckList = () => {
       id: lastId + 1,
       Name: "",
       Attachments: "",
-      sop_type: "",
+      sop_type: null,
     };
     setSopData((prevBoxes) => [...prevBoxes, newRow]);
   };
@@ -168,19 +174,29 @@ const CreateCheckList = () => {
 
   const handleSopChange = (index, event) => {
     let data = [...sopData];
-    console.log(event)
     data[index][event?.target?.name ] =
       event?.target?.value || event.value;
       
     const attachments = fileList[index] || [];
     data[index].Attachments = attachments;
-    data[index].sop_type = ''
-    
+
+    const sopType = selectedSopType[index]?.value || null;
+
+    const updatedSop = data.map((sop, i) => {
+    if (i === index) {
+      return {
+        Attachments: attachments,
+        Name: sop.Name,
+        id: sop.id,
+        sop_type: sopType,
+      };
+    }
+    return sop;
+  });
+
     setFormData({
       ...formData,
-      sop: [
-        ...data,
-      ],
+      sop: updatedSop,
     });
   };
 
@@ -202,9 +218,25 @@ const CreateCheckList = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
     if (formData) {
-      createCheckList(formData, user?.jwt);
+      createCheckList({
+        "data" : { 
+      "actionTakenForProperUniform": formData?.actionTakenForProperUniform,
+      "actionTakenForWelfare": formData?.actionTakenForWelfare,
+      "createdUser": user?.id,
+      "dateVisited": formData?.dateVisited,
+      "equipment": [],
+      "guardOnDuty": formData?.guardOnDuty,
+      "location": formData?.location,
+      "reasonForProperUniform": formData?.reasonForProperUniform,
+      "remarks": formData?.remarks,
+      "sop": [ ...formData?.sop],
+      "suggestions": formData?.suggestions,
+      "timeVisited": formData?.timeVisited,
+      "title": formData?.title,
+      "visitedBy": formData?.visitedBy
+      }
+      }, user?.jwt);
       router.push({
         pathname: `/checklist`,
         query: {
@@ -347,7 +379,7 @@ const CreateCheckList = () => {
                         id="sop_type"
                         name="sop_type"
                         value={selectedSopType}
-                        onChange={(e) => handleSopChange(index, e)}
+                        onChange={(e) => handleSOPTypeChange(e, index)}
                         options={sopTypes?.map((data) => {
                           return {
                             value: data.id,
