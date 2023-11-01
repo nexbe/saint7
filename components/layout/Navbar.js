@@ -7,10 +7,15 @@ import IssueIcon from "../../public/icons/IssueIcon";
 import PatrolIcon from "../../public/icons/PatrolIcon";
 import MoreIcon from "../../public/icons/MoreIcon";
 import { css } from "@emotion/react";
+import HrmIcon from "../../public/icons/hrmIcon";
+import OperationIcon from "../../public/icons/operationIcon";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import HrmNavBar from "../../public/icons/hrmNavBarIcon";
 
-const RenderNavLinkItems = ({ href, label, icon }) => {
+const RenderNavLinkItems = ({ href, label, icon, setHandleLink }) => {
   return (
-    <Link href={href} css={styles.navLink}>
+    <Link href={href} css={styles.navLink} onClick={() => setHandleLink(label)}>
       {icon}
       <span>{label}</span>
     </Link>
@@ -18,36 +23,39 @@ const RenderNavLinkItems = ({ href, label, icon }) => {
 };
 
 const Navbar = () => {
+  const [handleLink, setHandleLink] = useState(null);
+  const router = useRouter();
+  console.log("here", router);
   const icons = [
     {
       id: 0,
       href: "/home",
       label: "Home",
-      icon: <HomeIcon />,
+      icon: <HomeIcon disable={router.pathname == "/home"} />,
     },
     {
       id: 1,
-      href: "/emergency",
-      label: "Emergency",
-      icon: <EmergencyIcon />,
+      href: "/HRM",
+      label: "HRM",
+      icon: <HrmNavBar disable={router.pathname == "/HRM"} />,
     },
     {
       id: 2,
-      href: "/issues",
-      label: "Issues",
-      icon: <IssueIcon />,
+      href: "/operation",
+      label: "OPS",
+      icon: <OperationIcon disable={router.pathname == "/operation"} />,
     },
     {
       id: 3,
       href: "/patrol",
       label: "Patrol",
-      icon: <PatrolIcon />,
+      icon: <PatrolIcon disable={router.pathname == "/patrol"} />,
     },
     {
       id: 4,
       href: "/more",
       label: "More",
-      icon: <MoreIcon />,
+      icon: <MoreIcon disable={router.pathname == "/more"} />,
     },
   ];
   return (
@@ -60,6 +68,7 @@ const Navbar = () => {
               label={icon.label}
               icon={icon.icon}
               key={icon.id}
+              setHandleLink={setHandleLink}
             />
           );
         })}

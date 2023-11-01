@@ -77,7 +77,7 @@ const Announcement = () => {
 
   return (
     <Layout>
-      <HeaderNoti title={"Announcement"} href={"/more"} />
+      <HeaderNoti title={"Announcement"} href={"/HRM"} />
       <div css={styles.wrapper}>
         <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox

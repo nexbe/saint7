@@ -137,9 +137,9 @@ const Home = () => {
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/eLeave")}>
+                <button onClick={() => router.push("/operation")}>
                   <OperationIcon />
-                  e-Leave
+                  Operations
                 </button>
               </div>
             </div>
@@ -337,7 +337,7 @@ const styles = {
       justify-content: center;
       align-items: center;
       height: 90px;
-      gap: 5px;
+      gap: 10px;
       @media (max-width: 1400px) {
         width: 100%;
       }
