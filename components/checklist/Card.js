@@ -24,7 +24,10 @@ const Card = ({ isEdit, isDelete, isChecked, handleSelect, data }) => {
       <span style={{textAlign:"start"}}>{data?.attributes.title}</span>
       {isEdit && (
         <div
-          onClick={() => router.push(`/checklist/editCheckList`)}
+        onClick={() => router.push({
+          pathname: '/checklist/editCheckList',
+          query: { id: data.id }
+        })}
           style={{ margin:'auto' }}>
           <EditPencil />
         </div>
