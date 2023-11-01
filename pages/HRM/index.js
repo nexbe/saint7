@@ -7,17 +7,19 @@ import { useApolloClient } from "@apollo/client";
 import dayjs from "dayjs";
 
 import NotiIcon from "/public/icons/notiIcon";
-import MapPineLineIcon from "/public/icons/mapPineLineIcon";
-import CheckInIcon from "/public/icons/checkInIcon";
-import ProgressIcon from "/public/icons/progressIcon";
+import AttendanceIcon from "/public/icons/attendanceIcon";
 import ELeaveIcon from "/public/icons/eLeaveIcon";
+import AnnouncementIcon from "/public/icons/announcementIcon";
+import PayslipIcon from "/public/icons/payslipIcon";
+import ClaimsIcon from "/public/icons/claimsIcon";
+import UserIcon from "/public/icons/userIcon";
+import DocumentIcon from "/public/icons/documentIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import Map from "../../components/Map";
 import attendenceStore from "../../store/attendance";
 import { useState } from "react";
-import HrmIcon from "../../public/icons/hrmIcon";
-import OperationIcon from "../../public/icons/operationIcon";
+import HRMuserIcon from "../../public/icons/hrmUserIcon";
 
 const Home = () => {
   const router = useRouter();
@@ -81,65 +83,76 @@ const Home = () => {
             <NotiIcon />
           </div>
         </div>
-        <div css={styles.bodyContainer}>
-          <div css={styles.mapContainer}>
-            <Map />
-          </div>
-          <div css={styles.mapLine}>
-            <div css={styles.address}>
-              <MapPineLineIcon />
-              <label>{addressData}</label>
-            </div>
-            <hr
-              style={{
-                borderTop: " 3px solid var(--darker-gray)",
-                margin: "0 -30px 0 -30px",
-              }}
-            />
-            <div css={styles.checkIn}>
-              <div>
-                <CheckInIcon />
-                <label>CheckIn </label>
-              </div>
-              <span>
-                &#128342; {dayjs(new Date().toISOString()).format("HH:MM")}
-              </span>
-            </div>
-            <div className="d-flex">
-              <span className="lineDash"></span>
-            </div>
-            <div css={styles.taskProgress}>
-              <div className="progressLabel">
-                <ProgressIcon />
-                <label>Task Progress</label>
-              </div>
-              <div css={styles.progressContent}>
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: `20%` }}></div>
-                </div>{" "}
-                20%
-              </div>
-            </div>
-          </div>
 
+        <div css={styles.bodyContainer}>
+          <h1 css={styles.headerHrm}>HRM</h1>
           <div css={styles.buttonContainer}>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>
                 <button
                   onClick={() => {
                     router.push({
-                      pathname: "/HRM",
+                      pathname: "/announcement",
                     });
                   }}
                 >
-                  <HrmIcon />
-                  HRM
+                  <AnnouncementIcon />
+                  Annoucement
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/operation")}>
-                  <OperationIcon />
-                  Operations
+                <button
+                  onClick={() => {
+                    router.push({
+                      pathname: "/attendance",
+                    });
+                  }}
+                >
+                  <AttendanceIcon />
+                  Attendance
+                </button>
+              </div>
+              <div css={styles.formFlexChildDiv}>
+                <button onClick={() => router.push("/eLeave")}>
+                  <ELeaveIcon />
+                  e-Leave
+                </button>
+              </div>
+              <div css={styles.formFlexChildDiv}>
+                <button
+                  onClick={() =>
+                    router.push(
+                      user?.role?.name === "Admin"
+                        ? "/claims/claimApproval"
+                        : user?.role?.name === "Manager"
+                        ? "/HRMclaims/Manager"
+                        : "/claims"
+                    )
+                  }
+                >
+                  <ClaimsIcon />
+                  Claims
+                </button>
+              </div>
+            </div>
+            <div css={styles.formFlexDiv}>
+              <div css={styles.formFlexChildDiv}>
+                <button onClick={() => router.push("/documents")}>
+                  <DocumentIcon />
+                  Documents
+                </button>
+              </div>
+
+              <div css={styles.formFlexChildDiv}>
+                <button onClick={() => router.push("/team")}>
+                  <HRMuserIcon />
+                  Team
+                </button>
+              </div>
+              <div css={styles.formFlexChildDiv}>
+                <button onClick={() => router.push("/payslip")}>
+                  <PayslipIcon />
+                  Payslip
                 </button>
               </div>
             </div>
@@ -194,6 +207,16 @@ const styles = {
     font-size: 14px;
     padding-top: 5px;
   `,
+
+  headerHrm: css`
+    color: var(-primary);
+    font-family: Inter;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  `,
+
   bodyContainer: css`
     display: flex;
     flex-direction: column;
@@ -221,104 +244,13 @@ const styles = {
       margin: 30px;
     }
   `,
-  mapContainer: css`
-    display: flex;
-    flex-direction: column;
 
-    .leaflet-bottom {
-      display: none;
-    }
-    .leaflet-touch .leaflet-bar {
-      margin-top: 50px;
-    }
-  `,
-  mapIcon: css`
-    display: flex;
-    img {
-      width: 100%;
-    }
-  `,
-  mapLine: css`
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    color: var(--primary-font);
-    font-size: 14px;
-    font-weight: 600;
-    gap: 3px;
-    border-radius: 10px;
-    background: #eff8ff;
-    padding: 10px 20px;
-    border: 1px solid var(--primary);
-
-    div {
-      display: flex;
-    }
-    label {
-      padding-left: 5px;
-    }
-    .lineDash {
-      border: 1px dashed var(--darker-gray);
-      height: 40px;
-      margin-top: -37px;
-      margin-left: 8px;
-    }
-  `,
-  address: css`
-    display: flex;
-    color: var(--font-gray);
-    font-size: 16px;
-    font-weight: 600;
-    label {
-      margin-top: -3px;
-      line-height: normal;
-    }
-  `,
-  checkIn: css`
-    flex-direction: column;
-    span {
-      padding-left: 22px;
-      margin-top: -8px;
-    }
-    div {
-      align-items: center;
-    }
-  `,
-  taskProgress: css`
-    flex-direction: column;
-    margin-top: -10px;
-    .progressLabel {
-      align-items: center;
-    }
-  `,
-  progressContent: css`
-    padding-left: 25px;
-    justify-content: center;
-    align-items: center;
-
-    .progress-bar {
-      display: flex;
-      width: 100%;
-      height: 10px;
-      background-color: #d9d9d9;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-right: 5px;
-    }
-    .progress {
-      height: 100%;
-      text-align: center;
-      color: #fff;
-      background-color: #5fa452;
-      transition: width 0.3s ease;
-    }
-  `,
   buttonContainer: css`
     width: 100%;
     height: 100%;
-    padding-top: 10px;
+    padding: 10px 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex: 1 1 auto;
     button {
       color: var(--primary);
@@ -328,16 +260,17 @@ const styles = {
       font-style: normal;
       font-weight: 700;
       line-height: normal;
-      padding: 7px;
+      padding: 15px;
       border-radius: 10px;
-      border: 1px solid var(--primary);
+      border: none;
       background: var(--white);
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      flex-direction: row;
+
       align-items: center;
-      height: 90px;
-      gap: 10px;
+      height: 70px;
+      gap: 5px;
+      box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
       @media (max-width: 1400px) {
         width: 100%;
       }
@@ -350,9 +283,10 @@ const styles = {
     display: flex;
     justify-content: fit-content;
     width: 100%;
-    flex-direction: row;
+    flex-direction: column;
+    margin: 0 5px;
     @media (max-width: 1400px) {
-      gap: 15px;
+      gap: 13px;
     }
     @media (min-width: 1400px) {
       gap: 30px;
@@ -361,7 +295,7 @@ const styles = {
   formFlexChildDiv: css`
     width: 100%;
     display: flex;
-
+    margin-bottom: 10px;
     flex-direction: row;
     @media (max-width: 1400px) {
       width: 100%;

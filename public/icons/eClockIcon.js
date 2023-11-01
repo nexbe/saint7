@@ -1,6 +1,6 @@
 import React from "react";
 
-function Icon() {
+function EclockIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -14,17 +14,23 @@ function Icon() {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M9 14.25h6M9 11.25h6M15 3.75h3.75a.75.75 0 01.75.75v15.75a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V4.5a.75.75 0 01.75-.75H9"
+        d="M12 6.75V12h5.25"
+      ></path>
+      <path
+        stroke="#2F4858"
+        strokeMiterlimit="10"
+        strokeWidth="1.5"
+        d="M12 20.25a8.25 8.25 0 100-16.5 8.25 8.25 0 000 16.5z"
       ></path>
       <path
         stroke="#2F4858"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M8.25 6.75V6a3.75 3.75 0 017.5 0v.75h-7.5z"
+        d="M18.363 2.454l3.182 3.182M2.453 5.636l3.182-3.182"
       ></path>
     </svg>
   );
 }
 
-export default Icon;
+export default EclockIcon;

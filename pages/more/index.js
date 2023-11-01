@@ -127,7 +127,7 @@ const styles = {
     display: flex;
     gap: 30px;
     border-radius: 10px;
-    margin: 20px;
+    margin: 20px 20px 10px 20px;
     padding: 20px;
     background: #fff;
     height: 70vh;

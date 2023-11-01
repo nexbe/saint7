@@ -4,13 +4,16 @@ import { css } from "@emotion/react";
 import BackArrow from "../../public/icons/backArrow";
 import NotiIcon from "../../public/icons/notiIcon";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const HeaderNoti = ({ title, href }) => {
+  const router = useRouter();
+
   return (
     <div css={styles.wrapper}>
-      <Link href={href}>
+      <div onClick={() => router.back()} style={{ cursor: "pointer" }}>
         <BackArrow />
-      </Link>
+      </div>
       {title}
       <Link href={"/notifications"}>
         <NotiIcon />
