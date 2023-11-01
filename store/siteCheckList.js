@@ -8,6 +8,7 @@ const siteCheckListStore = create((set) => ({
   filterCheckList:null,
   errorCreateCheckList: null,
   errorDeleteCheckLists: null,
+  errorUpdateCheckLists:null,
   createCheckList: async (data,jwt) => {
     try {
       await client.mutate({

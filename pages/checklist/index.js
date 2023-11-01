@@ -25,7 +25,7 @@ const SiteCheckList = () => {
   const [selectedDeletedData, setSelectedDeletedData] = useState([]);
   useEffect(() => {
     fetchCheckList(user?.jwt);
-  }, [ router, setDeleteModal]);
+  }, [ router, setDeleteModal, isEdit]);
   //delete announcements
   const handleSelect = (selectedId) => {
     setSelectedDeletedData((prevData) => {

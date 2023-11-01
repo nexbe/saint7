@@ -44,10 +44,9 @@ const EditCheckList = () => {
   const { user } = useAuth();
   const router = useRouter();
   const checklistId = router.query.id;
-  console.log(checklistId)
   let equipListArr = _.values(equipFileList);
   let fileListArr = _.values(fileList);
-  const { updateCheckLists,errorCreateCheckList, filterCheckList, fetchFilteredCheckList } = siteCheckListStore();
+  const { updateCheckLists,errorUpdateCheckLists, filterCheckList, fetchFilteredCheckList } = siteCheckListStore();
   const [formData, setFormData] = useState({
     title: filterCheckList?.[0]?.attributes?.title,
     location: filterCheckList?.[0]?.attributes?.location,
@@ -64,7 +63,6 @@ const EditCheckList = () => {
     actionTakenForWelfare:filterCheckList?.[0]?.attributes?.actionTakenForWelfare,
     createdUser: user?.id,
   });
- console.log(filterCheckList)
   useEffect(() => {
     fetchSopTypes(user?.jwt);
     fetchFilteredCheckList({
@@ -222,30 +220,31 @@ const EditCheckList = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData) {
-      updateCheckLists({
+      updateCheckLists( {
         "data" : { 
-      "actionTakenForProperUniform": formData?.actionTakenForProperUniform,
-      "actionTakenForWelfare": formData?.actionTakenForWelfare,
+      "actionTakenForProperUniform": formData.actionTakenForProperUniform,
+      "actionTakenForWelfare": formData.actionTakenForWelfare,
       "createdUser": user?.id,
       "dateVisited": formData?.dateVisited,
-      "equipment": [],
+      "equipment": formData?.equipment,
       "guardOnDuty": formData?.guardOnDuty,
       "location": formData?.location,
       "reasonForProperUniform": formData?.reasonForProperUniform,
       "remarks": formData?.remarks,
-      "sop": [ ...formData?.sop],
+      "sop": formData?.sop,
       "suggestions": formData?.suggestions,
       "timeVisited": formData?.timeVisited,
       "title": formData?.title,
       "visitedBy": formData?.visitedBy
-      }, id: formData.id
+        },
+        "id": filterCheckList?.[0]?.id
       }, user?.jwt);
       router.push({
         pathname: `/checklist`,
         query: {
-          message: !errorCreateCheckList ? "Success!" : "Apologies!",
-          belongTo: !errorCreateCheckList ? "Checklists" : "error",
-          action: "create",
+          message: !errorUpdateCheckLists ? "Success!" : "Apologies!",
+          belongTo: !errorUpdateCheckLists ? "Checklists" : "error",
+          action: "update",
           userId: user?.id,
         },
       })
