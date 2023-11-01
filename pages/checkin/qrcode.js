@@ -27,7 +27,7 @@ const QrCode = (props) => {
             Step 1{" "}
           </h3>
           <label for="image-description" className="m-3 ">
-            Please scan the QR Code to check out.
+            Please scan the QR Code to check in.
           </label>
         </div>
         <>

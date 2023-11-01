@@ -37,6 +37,9 @@ const CheckInOut = () => {
     });
     return resultTime;
   };
+
+  console.log(AssignUsers);
+
   const router = useRouter();
   return (
     <div>

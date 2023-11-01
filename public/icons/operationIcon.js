@@ -1,6 +1,6 @@
 import React from "react";
 
-function Icon() {
+function OperationIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,19 +11,20 @@ function Icon() {
     >
       <path
         stroke="#293991"
-        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M8.25 15a4.875 4.875 0 100-9.75 4.875 4.875 0 000 9.75z"
+        d="M21.167 1H2.833A1.833 1.833 0 001 2.833v18.334A1.833 1.833 0 002.833 23h18.334A1.833 1.833 0 0023 21.167V2.833A1.833 1.833 0 0021.167 1z"
       ></path>
       <path
         stroke="#293991"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M14.57 5.432A4.876 4.876 0 1115.893 15M1.5 18.506a8.252 8.252 0 0113.5 0M15.895 15a8.24 8.24 0 016.75 3.505"
+        d="M10.168 16.278l3.056 2.444 4.889-6.11M5.89 6.5h12.222M5.89 11.389h4.889"
       ></path>
     </svg>
   );
 }
 
-export default Icon;
+export default OperationIcon;

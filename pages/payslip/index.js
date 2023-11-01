@@ -13,6 +13,4 @@ const Payslip = () => {
   );
 };
 
-
 export default Payslip;
-
