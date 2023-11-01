@@ -102,8 +102,8 @@ const Home = () => {
 
               {openhandle ? (
                 <>
-                  {siteData?.map((data) => (
-                    <div css={styles.formFlexDiv}>
+                  {siteData?.map((data, index) => (
+                    <div css={styles.formFlexDiv} key={index}>
                       <div css={styles.formFlexChildDiv}>
                         <button
                         // onClick={() => {
