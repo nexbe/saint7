@@ -81,7 +81,7 @@ const AddDocModal = ({ modal, setModal, userId }) => {
         query: {
           message: errCreateDocument ? "Success!" : "Apologies!",
           belongTo: errCreateDocument ? "Document" : "error",
-          action: "create",
+          label: data?.title + " has successfully created.",
         },
       });
     }

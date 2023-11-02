@@ -20,7 +20,13 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      title: selectedDocument?.title,
+      description: selectedDocument?.description,
+    },
+  });
+
   const router = useRouter();
   const apolloClient = useApolloClient();
   const { getAllDocuments, updateDocument } = documentStore((state) => state);
@@ -87,10 +93,9 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
       fetchExistingDataByID(selectedDocument?.users_permissions_users[0]?.id);
     }
   }, [selectedDocument]);
-
+  let filesArrToSend = [];
   const onSubmit = async (data) => {
     if (!!saveAction) {
-      let filesArrToSend = [];
       for (let file of fileListArr) {
         let fileData = {};
         let uploadFiles = {};
@@ -124,7 +129,7 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
         query: {
           message: errEditDocument ? "Success!" : "Apologies!",
           belongTo: errEditDocument ? "Document" : "error",
-          action: "edit",
+          label: data?.title + " has successfully updated.",
           userId: userId,
         },
       });
@@ -157,7 +162,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
               <input
                 type={"text"}
                 className="secondary-text"
-                defaultValue={selectedDocument?.title}
                 required
                 {...register("title", {
                   required: true,
@@ -174,7 +178,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
               <input
                 type={"text"}
                 className="secondary-text"
-                defaultValue={selectedDocument?.description}
                 required
                 {...register("description", {
                   required: true,

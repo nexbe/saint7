@@ -216,7 +216,7 @@ const ExpenseRequestStatus = () => {
           <NotificationBox
             message={router.query.message}
             belongTo={router.query.belongTo}
-            timeout={5000}
+            timeout={3000}
             action={router?.query?.action}
             label={router?.query?.label}
           />

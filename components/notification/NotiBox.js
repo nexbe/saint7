@@ -72,9 +72,7 @@ const NotificationBox = ({
             <div className="d-flex" style={{ flexDirection: "column" }}>
               {message}
               <label>
-                {belongTo === "uploadProfileSuccess"
-                  ? "Your Personal Photo has successfully uploaded."
-                  : action === "delete"
+                {action === "delete"
                   ? "Your " + belongTo + " has successfully deleted."
                   : action === "create"
                   ? "Your " + belongTo + " has successfully created."
