@@ -7,10 +7,12 @@ import CloseIcon from "../../public/icons/closeIcon";
 import CheckInIcon from "../../public/icons/checkInIcon";
 import CheckOutIcon from "../../public/icons/CheckOutIcon";
 
-const DutyModal = ({ isOpen = false, close = () => {} }) => {
+const DutyModal = ({ isOpen = false, setModal }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-
+  const close = () => {
+    setModal(!isOpen)
+  }
   const handleStartDateChange = (date) => {
     setStartDate(date);
   };
