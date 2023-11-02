@@ -5,14 +5,7 @@ import { AiOutlineClose, AiFillInfoCircle } from "react-icons/ai";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { useRouter } from "next/router";
 
-const NotificationBox = ({
-  message,
-  belongTo,
-  timeout,
-  action,
-  label,
-  userId,
-}) => {
+const NotificationBox = ({ message, belongTo, timeout, label, userId }) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -71,17 +64,7 @@ const NotificationBox = ({
             </div>
             <div className="d-flex" style={{ flexDirection: "column" }}>
               {message}
-              <label>
-                {action === "delete"
-                  ? "Your " + belongTo + " has successfully deleted."
-                  : action === "create"
-                  ? "Your " + belongTo + " has successfully created."
-                  : action === "edit"
-                  ? "Your " + belongTo + " has successfully updated."
-                  : belongTo === "error"
-                  ? "There was an error. Please try again later."
-                  : label}
-              </label>
+              <label>{label}</label>
             </div>
             <div css={styles.closeIcon}>
               <AiOutlineClose

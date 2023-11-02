@@ -405,8 +405,9 @@ const Profile = () => {
                       type="email"
                       className="primary-text"
                       disabled={!personalEdit}
+                      required
                       {...register("email", {
-                        required: false,
+                        required: true,
                       })}
                     />
                   </div>
@@ -417,7 +418,7 @@ const Profile = () => {
                   </div>
                   <div css={styles.formFlexChildDiv}>
                     <input
-                      type="text"
+                      type="number"
                       className="primary-text"
                       disabled={!personalEdit}
                       {...register("contactNumber", {
