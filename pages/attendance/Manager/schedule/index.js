@@ -41,7 +41,10 @@ const styles = {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    margin-bottom:65%;
+    margin-bottom:15%;
+    @media (max-width: 680px) {
+      margin-bottom:65%;
+    }
   `,
   calendarCard: css`
     display: flex;
@@ -137,5 +140,8 @@ const styles = {
       font-size: 16px;
       font-weight: 600;
      }
+     @media (max-width: 375px) {
+      max-height:35vh;
+    }
   `
 };
