@@ -104,7 +104,8 @@ const Home = () => {
                 <button
                   onClick={() => {
                     router.push({
-                      pathname: "/attendance",
+                      pathname :  (user?.role?.name === "Admin" || user?.role?.name === "Manager") ? 
+                      "/attendance/Manager" : "/attendance"
                     });
                   }}
                 >
