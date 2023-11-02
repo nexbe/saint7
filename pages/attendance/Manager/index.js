@@ -16,7 +16,7 @@ const Attendance = () => {
         <div className="header-text" onClick={() => router.push("/attendance/Manager/assignUser")}>
           Assign User
         </div>
-        <div className="header-text" onClick={() => router.push("/")}>
+        <div className="header-text" onClick={() => router.push("/attendance/Manager/schedule")}>
           Schedule
         </div>
       </div>

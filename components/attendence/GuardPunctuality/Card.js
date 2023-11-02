@@ -24,6 +24,7 @@ const Card = ({ state }) => {
             data.length > 5 &&
             data?.slice(0, 5)?.map((index) => {
               return (
+                <div key={index}>
                 <img
                   id={index}
                   src={"images/defaultImage.jpg"}
@@ -34,12 +35,14 @@ const Card = ({ state }) => {
                     marginLeft: "-10px",
                   }}
                 />
+                </div>
               );
             })}
           {data &&
             data.length < 5 &&
             data?.map((index) => {
               return (
+                <div key={index}>
                 <img
                   id={index}
                   src={"images/defaultImage.jpg"}
@@ -50,6 +53,7 @@ const Card = ({ state }) => {
                     marginLeft: "-10px",
                   }}
                 />
+                </div>
               );
             })}
           {data && data.length > 5 && (

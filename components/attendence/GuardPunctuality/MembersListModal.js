@@ -24,7 +24,7 @@ const MembersListModal = ({ isOpen, setModal, setViewDutyModal }) => {
         {data &&
           data.map((index) => {
             return (
-              <div css={styles.container}>
+              <div css={styles.container} key={index}>
                 <div>
                 <img
                   id={index}
