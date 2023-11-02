@@ -14,6 +14,8 @@ import OPSIcon from "../../public/icons/opsIcon";
 import UserIcon from "/public/icons/userIcon";
 import NavUserIcon from "../../public/icons/navUserIcon";
 import SettingIcon from "../../public/icons/settingIcon";
+import NavUserActiveIcon from "../../public/icons/navUserActiveIcon";
+import SettingActiveIcon from "../../public/icons/settingActiveIcon";
 
 const RenderNavLinkItems = ({ href, label, icon }) => {
   const router = useRouter();
@@ -61,13 +63,15 @@ const Navbar = () => {
       id: 3,
       href: "/profile",
       label: "Profile",
-      icon: <NavUserIcon />,
+      icon:
+        router.pathname == "/profile" ? <NavUserActiveIcon /> : <NavUserIcon />,
     },
     {
       id: 4,
       href: "/more",
       label: "Settings",
-      icon: <SettingIcon />,
+      icon:
+        router.pathname == "/more" ? <SettingActiveIcon /> : <SettingIcon />,
     },
   ];
   return (
