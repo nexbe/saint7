@@ -32,7 +32,7 @@ const AssignUser = () => {
   };
   return (
     <Layout>
-      <HeaderNoti title={"Attendance"} href={"/attendance/Manager"} />
+      <HeaderNoti title={"Assign User"} href={"/attendance/Manager"} />
       <div css={styles.container}>
         <form css={styles.formStyle}>
           <div>

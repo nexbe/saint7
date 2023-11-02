@@ -7,7 +7,7 @@ import Card from "../../../../components/attendence/GuardPunctuality/Card";
 const GuardPunctuality = () => {
   return (
     <Layout>
-      <HeaderNoti title={"Attendance"} href={"/attendance/Manager"} />
+      <HeaderNoti title={"Check Guard Punctuality"} href={"/attendance/Manager"} />
       <div css={styles.bodyWrapper}>
         <div>
           <h4>Today</h4>

@@ -3,11 +3,14 @@ import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Layout from "../../../../components/layout/Layout";
+import HeaderNoti from "../../../../components/layout/HeaderNoti";
 
 const Schedule = () => {
   const [startDate, setStartDate] = useState();
   return (
-    <div>
+    <Layout>
+      <HeaderNoti title={"Schedule"} href={"/attendance/Manager"}/>
       <div css={styles.caledarContainer}>
         <div css={styles.calendarCard}>
           <DatePicker
@@ -19,7 +22,7 @@ const Schedule = () => {
           />
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
