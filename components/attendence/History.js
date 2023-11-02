@@ -11,13 +11,15 @@ import { setCookie, parseCookies } from "nookies";
 const Historty = () => {
   const cookies = parseCookies();
 
-  const { attendanceData, getAttendanceData } = attendenceStore(
+  const { attendanceData, getAttendanceData, getHistroyData } = attendenceStore(
     (state) => state
   );
+
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
   const [startDate, setStartDate] = useState(null);
   const [dutyModalOpen, setDutyModalOpen] = useState(false);
+  const [attendData, setAttendData] = useState(null);
 
   useEffect(() => {
     setStartDate(new Date());
@@ -27,11 +29,11 @@ const Historty = () => {
     getAttendanceData(userData?.id, moment(startDate).format("YYYY-MM-DD"));
   }, [startDate]);
 
-  const dutyModal = () => {
+  const dutyModal = (data) => {
+    getHistroyData(data);
     setDutyModalOpen(!dutyModalOpen);
   };
 
-  // console.log(typeof attendanceData?.attendanceData[0].check_in_time);
   const formatTime = (timeString) => {
     const timeParts = timeString?.split(":"); // Split the string by colon
 
@@ -43,7 +45,7 @@ const Historty = () => {
   };
 
   return (
-    <div>
+    <>
       <div css={styles.bodyContainer}>
         <div css={styles.caledarContainer}>
           <div css={styles.calendarCard}>
@@ -58,7 +60,7 @@ const Historty = () => {
         </div>
         <div css={styles.requestCard}>
           {attendanceData?.attendanceData?.map((data, index) => (
-            <div onClick={dutyModal} key={index}>
+            <div onClick={() => dutyModal(data)} key={index}>
               <label className="primary-text">
                 {moment(data?.date).format("Do MMMM YYYY")}
               </label>
@@ -93,7 +95,7 @@ const Historty = () => {
           close={() => setDutyModalOpen(!dutyModalOpen)}
         />
       )}
-    </div>
+    </>
   );
 };
 

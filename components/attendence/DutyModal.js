@@ -6,8 +6,29 @@ import { css } from "@emotion/react";
 import CloseIcon from "../../public/icons/closeIcon";
 import CheckInIcon from "../../public/icons/checkInIcon";
 import CheckOutIcon from "../../public/icons/CheckOutIcon";
+import attendenceStore from "../../store/attendance";
+import { useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
+import moment from "moment";
 
 const DutyModal = ({ isOpen = false, setModal }) => {
+  const apolloClient = useApolloClient();
+  const {
+    AttendanceUser: AttendanceUser,
+    getAttendanceUser,
+    historyData,
+    updateAttendance,
+  } = attendenceStore((state) => state);
+
+  useEffect(() => {
+    if (historyData?.id) {
+      getAttendanceUser({
+        apolloClient,
+        where: { id: historyData?.id },
+      });
+    }
+  }, [historyData]);
+
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const close = () => {
@@ -18,6 +39,16 @@ const DutyModal = ({ isOpen = false, setModal }) => {
   };
   const handleEndDateChange = (date) => {
     setEndDate(date);
+  };
+
+  const formatTime = (timeString) => {
+    const timeParts = timeString?.split(":"); // Split the string by colon
+
+    // Extract hours and minutes
+    const hours = timeParts[0];
+    const minutes = timeParts[1];
+    const formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
   };
 
   return (
@@ -31,15 +62,37 @@ const DutyModal = ({ isOpen = false, setModal }) => {
       <div css={styles.dutyDetails}>
         <div className="timeBox">
           <div style={{ fontSize: "16px" }}>
-            Wednesday<label className="d-flex">17th Jun, 2023</label>
+            {moment(historyData?.date).format("dddd")}
+            <label className="d-flex">
+              {moment(historyData?.date).format("Do MMMM YYYY")}
+            </label>
           </div>
           <div>
             Time of Duty (Planned)
             <label className="d-flex" css={styles.boldText}>
-              09:00 to 18:00
+              {AttendanceUser?.attributes?.assignee_shift?.data?.attributes
+                ?.shift?.data?.attributes?.timeRange?.StartTime
+                ? formatTime(
+                    AttendanceUser?.attributes?.assignee_shift?.data?.attributes
+                      ?.shift?.data?.attributes?.timeRange?.StartTime
+                  )
+                : "00:00:00"}{" "}
+              to{" "}
+              {AttendanceUser?.attributes?.assignee_shift?.data?.attributes
+                ?.shift?.data?.attributes?.timeRange?.EndTime
+                ? formatTime(
+                    AttendanceUser?.attributes?.assignee_shift?.data?.attributes
+                      ?.shift?.data?.attributes?.timeRange?.EndTime
+                  )
+                : "00:00:00"}
             </label>
           </div>
-          <div>3891 Ranchview Dr. Richardson, California 62639</div>
+          <div>
+            {
+              AttendanceUser?.attributes?.assignee_shift?.data?.attributes?.site
+                ?.data?.attributes?.name
+            }
+          </div>
         </div>
         <div className="checkInBox">
           <div className="d-flex" style={{ gap: "10px" }}>
@@ -47,7 +100,9 @@ const DutyModal = ({ isOpen = false, setModal }) => {
             <label>
               Actual Check-in Time{" "}
               <label className="d-flex" css={styles.boldText}>
-                09:05
+                {historyData?.check_in_time
+                  ? formatTime(historyData?.check_in_time)
+                  : "00:00"}
               </label>
             </label>
           </div>
@@ -56,7 +111,9 @@ const DutyModal = ({ isOpen = false, setModal }) => {
             <label>
               Actual Check-out Time{" "}
               <label className="d-flex" css={styles.boldText}>
-                N.A
+                {historyData?.status == "Complete" && historyData?.check_in_time
+                  ? formatTime(historyData?.check_out_t_ime)
+                  : "N.A"}
               </label>
             </label>
           </div>

@@ -1,5 +1,8 @@
 import { create } from "zustand";
-import { GET_ATTENDANCE } from "../graphql/queries/attendance";
+import {
+  GET_ATTENDANCE,
+  GET_ALL_ATTENDANCE,
+} from "../graphql/queries/attendance";
 // import { sanitizeResults } from "../utils/sanitizer";
 
 const attendenceStore = create((set, get) => ({
@@ -18,6 +21,15 @@ const attendenceStore = create((set, get) => ({
     try {
       if (data) {
         set({ addressData: data });
+      }
+    } catch (error) {}
+  },
+
+  getHistroyData: async (data) => {
+    set({ loading: true });
+    try {
+      if (data) {
+        set({ historyData: data });
       }
     } catch (error) {}
   },
@@ -98,6 +110,26 @@ const attendenceStore = create((set, get) => ({
     }
   },
 
+  getAllAttendance: async ({ apolloClient, where }) => {
+    set({ loading: true });
+    const { data, error, loading } = await apolloClient.query({
+      query: GET_ALL_ATTENDANCE,
+      variables: where,
+
+      fetchPolicy: "network-only",
+    });
+
+    if (data) {
+      let allAttendances = data.attendances.data;
+
+      set({ loading: false });
+      set({ AllAttendances: allAttendances });
+      return new Promise((resolve) => {
+        resolve(allAttendances);
+      });
+    }
+  },
+
   fetch: false,
   loading: true,
   locationData: {},
@@ -105,6 +137,8 @@ const attendenceStore = create((set, get) => ({
   attendanceData: [],
   checkInData: "",
   AttendanceUser: {},
+  AllAttendances: [],
+  historyData: {},
 }));
 
 export default attendenceStore;

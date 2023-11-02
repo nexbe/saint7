@@ -42,7 +42,7 @@ const CheckInOut = () => {
 
   const router = useRouter();
   return (
-    <div>
+    <>
       <div className="d-flex justify-content-between">
         <p className="m-3 text-black">
           {dateTime?.currentDay}, {dateTime?.currentDate}
@@ -105,7 +105,7 @@ const CheckInOut = () => {
         }
         icon={<CalendarIcon />}
       />
-    </div>
+    </>
   );
 };
 

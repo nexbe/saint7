@@ -20,7 +20,13 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      title: selectedDocument?.title,
+      description: selectedDocument?.description,
+    },
+  });
+
   const router = useRouter();
   const apolloClient = useApolloClient();
   const { getAllDocuments, updateDocument } = documentStore((state) => state);
@@ -39,11 +45,9 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
   const onChange = async (e) => {
     const selectedFiles = [...e.target.files];
     const uploadedFiles = {};
-
-    for (let file of selectedFiles) {
-      uploadedFiles[0] = file;
-    }
-
+    selectedFiles?.map((eachFile, index) => {
+      return (uploadedFiles[index] = eachFile);
+    });
     setFileList({ ...fileList, ...uploadedFiles });
   };
 
@@ -87,23 +91,18 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
       fetchExistingDataByID(selectedDocument?.users_permissions_users[0]?.id);
     }
   }, [selectedDocument]);
-
+  let filesArrToSend = [];
   const onSubmit = async (data) => {
     if (!!saveAction) {
-      let filesArrToSend = [];
       for (let file of fileListArr) {
-        let fileData = {};
-        let uploadFiles = {};
         const formData = new FormData();
         formData.append("files", file[1]);
-        const response = await uploadFile(formData);
-        const json = await response.json();
-        if (response.status === 200) {
-          const term = json[0].id;
-          fileData.attachment = term;
-          filesArrToSend.push(json[0]);
-          uploadFiles[term] = file;
-        }
+        await uploadFile(formData).then(async (response) => {
+          const json = await response.json();
+          if (response.status === 200) {
+            filesArrToSend.push(json[0]);
+          }
+        });
       }
       await updateDocument({
         updateDocumentAction,
@@ -124,7 +123,7 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
         query: {
           message: errEditDocument ? "Success!" : "Apologies!",
           belongTo: errEditDocument ? "Document" : "error",
-          action: "edit",
+          label: data?.title + " has successfully updated.",
           userId: userId,
         },
       });
@@ -157,7 +156,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
               <input
                 type={"text"}
                 className="secondary-text"
-                defaultValue={selectedDocument?.title}
                 required
                 {...register("title", {
                   required: true,
@@ -174,7 +172,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
               <input
                 type={"text"}
                 className="secondary-text"
-                defaultValue={selectedDocument?.description}
                 required
                 {...register("description", {
                   required: true,

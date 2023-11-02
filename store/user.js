@@ -24,7 +24,6 @@ const userStore = create((set, get) => ({
   },
 
   getUserById: async ({ apolloClient, where }) => {
-    // set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
       query: GET_USER_BY_ID,
       variables: where,
@@ -33,8 +32,6 @@ const userStore = create((set, get) => ({
 
     if (data) {
       let userData = data.usersPermissionsUsers.data;
-
-      // set({ loading: false });
       set({ UserData: userData });
       return new Promise((resolve) => {
         resolve(userData);
@@ -43,7 +40,6 @@ const userStore = create((set, get) => ({
   },
 
   getAssignUsers: async ({ apolloClient, where }) => {
-    // set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
       query: GET_ASSIGN_SHIFTS,
       variables: where,
@@ -52,13 +48,22 @@ const userStore = create((set, get) => ({
 
     if (data) {
       let assignUsers = data.assigneeShifts.data;
-
-      // set({ loading: false });
       set({ AssignUsers: assignUsers });
       return new Promise((resolve) => {
         resolve(assignUsers);
       });
     }
+  },
+
+  updateUser: async ({ updateUserAction, id, userData }) => {
+    try {
+      await updateUserAction({
+        variables: {
+          data: userData,
+          id: id,
+        },
+      }).then((value) => {});
+    } catch (error) {}
   },
 
   fetch: false,
