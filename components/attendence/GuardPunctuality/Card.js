@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 import { useState } from "react";
 import MembersListModal from "./MembersListModal";
-import ViewDutyModal from "./ViewDutyModal";
+import DutyModal from "../DutyModal";
 
 const Card = ({ state }) => {
   const [viewModal, setViewModal] = useState(false);
@@ -76,7 +76,7 @@ const Card = ({ state }) => {
           : "completed my duties and am ready to check out."}
       </div>
       <MembersListModal isOpen={viewModal} setModal={setViewModal} setViewDutyModal={setViewDutyModal}/>
-      <ViewDutyModal isOpen={viewDutyModal} setModal={setViewDutyModal}/>
+      <DutyModal isOpen={viewDutyModal} setModal={setViewDutyModal}/>
     </div>
   );
 };
