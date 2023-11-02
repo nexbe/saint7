@@ -125,7 +125,7 @@ const Home = () => {
                       user?.role?.name === "Admin"
                         ? "/claims/claimApproval"
                         : user?.role?.name === "Manager"
-                        ? "/HRMclaims/Manager"
+                        ? "/claims/Manager"
                         : "/claims"
                     )
                   }
@@ -142,13 +142,14 @@ const Home = () => {
                   Documents
                 </button>
               </div>
-
-              <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/team")}>
-                  <HRMuserIcon />
-                  Team
-                </button>
-              </div>
+              {user?.role?.name.toLowerCase() != "guard" && (
+                <div css={styles.formFlexChildDiv}>
+                  <button onClick={() => router.push("/team")}>
+                    <HRMuserIcon />
+                    Team
+                  </button>
+                </div>
+              )}
               <div css={styles.formFlexChildDiv}>
                 <button onClick={() => router.push("/payslip")}>
                   <PayslipIcon />
