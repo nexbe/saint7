@@ -25,9 +25,11 @@ import ViewCertificateModal from "../../components/profile/ViewCertificateModal"
 import DeleteModal from "../../components/Modal/DeleteModal";
 import NotificationBox from "../../components/notification/NotiBox";
 import profileStore from "../../store/profile";
-import userStore from "../../store/auth";
+import userStore from "../../store/user";
+import authStore from "../../store/auth";
 import certificateStore from "../../store/certificate";
 import { UPDATE_PROFILE } from "../../graphql/mutations/profile";
+import { UPDATE_USER } from "../../graphql/mutations/user";
 import { uploadFile } from "../../components/upload/upload";
 import { DELETE_CERTIFICATE } from "../../graphql/mutations/certificate";
 
@@ -39,14 +41,15 @@ const Profile = () => {
   const {
     getAllProfiles,
     ProfileInfo: profileInfo,
-    loading,
     updateProfile,
   } = profileStore((state) => state);
+  const { updateUser } = userStore((state) => state);
   const [updateProfileAction, { errUploadProfile }] =
     useMutation(UPDATE_PROFILE);
+  const [updateUserAction, { errUploadUser }] = useMutation(UPDATE_USER);
   const [deleteCertificateAction, { errDeleteCertificate }] =
     useMutation(DELETE_CERTIFICATE);
-  const { user } = userStore((state) => state);
+  const { user } = authStore((state) => state);
 
   const selectedProfile = !!router.query.userId
     ? profileInfo.filter((item) => {
@@ -96,6 +99,7 @@ const Profile = () => {
   const {
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -160,6 +164,7 @@ const Profile = () => {
       query: {
         message: !errUploadProfile ? "Success!" : "Apologies!",
         belongTo: !errUploadProfile ? "uploadProfileSuccess" : "error",
+        label: "Your Personal Photo has successfully uploaded.",
         userId: router?.query ? router?.query?.userId : user?.id,
       },
     });
@@ -178,15 +183,27 @@ const Profile = () => {
         },
         updatedAt: new Date().toISOString(),
       });
+      await updateUser({
+        updateUserAction,
+        id: profileInfo[0]?.user?.id,
+        userData: {
+          email: data.email,
+        },
+      });
       router.push({
         pathname: `/profile`,
         query: {
           message: !errUploadProfile ? "Success!" : "Apologies!",
-          belongTo: !errUploadProfile ? "Personal Info" : "error",
+          belongTo: !errUploadProfile ? "Personal" : "error",
           userId: router?.query ? router?.query?.userId : user?.id,
-          action: "edit",
+          label: "Your Personal Information has successfully updated.",
         },
       });
+    } else {
+      setValue("email", selectedProfile[0]?.user?.email);
+      setValue("contactNumber", selectedProfile[0]?.contactNumber);
+      setValue("position", selectedProfile[0]?.position);
+      setStartDate(new Date(selectedProfile[0]?.joinDate));
     }
   };
 
@@ -199,7 +216,7 @@ const Profile = () => {
       query: {
         message: !errDeleteCertificate ? "Success!" : "Apologies!",
         belongTo: !errDeleteCertificate ? "Certificate" : "error",
-        action: "delete",
+        label: selectedCertificate?.name + " has successfully deleted.",
         userId: router?.query ? router?.query?.userId : user?.id,
       },
     });
@@ -208,7 +225,7 @@ const Profile = () => {
   const onFavouriteChange = async (addFavourite) => {
     if (!!addFavourite) {
       await updateProfile({
-        updateProfileAction,
+        updateUserAction,
         id: profileInfo[0]?.id,
         profileData: {
           favoriteUsers: [...favLists, user?.id],
@@ -233,6 +250,19 @@ const Profile = () => {
     });
   };
 
+  useEffect(() => {
+    if (!!profileInfo) {
+      const selectedProfile = !!router.query.userId
+        ? profileInfo.filter((item) => {
+            if (item?.user?.id === router.query.userId) return item;
+          })
+        : profileInfo;
+      setValue("email", selectedProfile[0]?.user?.email);
+      setValue("contactNumber", selectedProfile[0]?.contactNumber);
+      setValue("position", selectedProfile[0]?.position);
+    }
+  }, [profileInfo, router?.query?.userId]);
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -252,8 +282,7 @@ const Profile = () => {
             <NotificationBox
               message={router.query.message}
               belongTo={router.query.belongTo}
-              timeout={5000}
-              action={router?.query?.action}
+              timeout={3000}
               label={router?.query?.label}
               userId={router?.query ? router?.query?.userId : user?.id}
             />
@@ -375,10 +404,10 @@ const Profile = () => {
                     <input
                       type="email"
                       className="primary-text"
-                      defaultValue={selectedProfile[0]?.user?.email}
                       disabled={!personalEdit}
+                      required
                       {...register("email", {
-                        required: false,
+                        required: true,
                       })}
                     />
                   </div>
@@ -389,10 +418,9 @@ const Profile = () => {
                   </div>
                   <div css={styles.formFlexChildDiv}>
                     <input
-                      type="text"
+                      type="number"
                       className="primary-text"
                       disabled={!personalEdit}
-                      defaultValue={selectedProfile[0]?.contactNumber}
                       {...register("contactNumber", {
                         required: false,
                       })}
@@ -408,7 +436,6 @@ const Profile = () => {
                       type="text"
                       className="primary-text"
                       disabled={!personalEdit}
-                      defaultValue={selectedProfile[0]?.position}
                       {...register("position", {
                         required: false,
                       })}
@@ -569,6 +596,7 @@ const Profile = () => {
                 <button
                   css={styles.cancelBtn}
                   onClick={() => {
+                    setEditConfirm(false);
                     setPersonalEdit(false);
                   }}
                 >

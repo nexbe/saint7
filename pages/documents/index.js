@@ -66,20 +66,12 @@ const Documents = () => {
       query: {
         message: !errDeleteDocument ? "Success!" : "Apologies!",
         belongTo: !errDeleteDocument ? "Document" : "error",
-        action: "delete",
+        label:
+          selectedDeletedData?.length + " documents has successfully deleted.",
         userId: user?.id,
       },
     });
   };
-
-  // const handleEdit = (id) => {
-  //   if (isEdit) {
-  //     const filteredData = documentInfo.filter((data) => {
-  //       return data.id === id;
-  //     });
-  //     setSelectedDocument(filteredData[0]);
-  //   }
-  // };
 
   return (
     <Layout>
@@ -89,8 +81,8 @@ const Documents = () => {
           <NotificationBox
             message={router.query.message}
             belongTo={router.query.belongTo}
-            timeout={5000}
-            action={router.query.action}
+            timeout={3000}
+            label={router?.query?.label}
           />
         </div>
         <div css={styles.bodyContainer}>
@@ -165,28 +157,32 @@ const Documents = () => {
               </button>
             </div>
           )}
-          <AddDocModal
-            modal={addModal}
-            setModal={setAddModal}
-            userId={user?.id}
-          />
-          <EditDocModal
-            modal={editModal}
-            setModal={setEditModal}
-            selectedDocument={selectedDocument}
-            userId={user?.id}
-          />
-          {deleteModal && (
-            <DeleteModal
-              isOpen={deleteModal}
-              close={() => setDeleteModal(!deleteModal)}
-              handleDeleteConfirm={handleDeleteConfirm}
-              selectedData={selectedDeletedData}
-              belongTo={"document"}
-            />
-          )}
         </div>
       </div>
+      {addModal && (
+        <AddDocModal
+          modal={addModal}
+          setModal={setAddModal}
+          userId={user?.id}
+        />
+      )}
+      {editModal && (
+        <EditDocModal
+          modal={editModal}
+          setModal={setEditModal}
+          selectedDocument={selectedDocument}
+          userId={user?.id}
+        />
+      )}
+      {deleteModal && (
+        <DeleteModal
+          isOpen={deleteModal}
+          close={() => setDeleteModal(!deleteModal)}
+          handleDeleteConfirm={handleDeleteConfirm}
+          selectedData={selectedDeletedData}
+          belongTo={"document"}
+        />
+      )}
     </Layout>
   );
 };

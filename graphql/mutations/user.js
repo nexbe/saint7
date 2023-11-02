@@ -36,10 +36,23 @@ export const GET_USER = gql`
         id
         username
         email
-        role{
+        role {
           id
           name
         }
+      }
+    }
+  }
+`;
+
+export const UPDATE_USER = gql`
+  mutation updateUsersPermissionsUser(
+    $data: UsersPermissionsUserInput!
+    $id: ID!
+  ) {
+    updateUsersPermissionsUser(data: $data, id: $id) {
+      data {
+        id
       }
     }
   }
