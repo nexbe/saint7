@@ -1,30 +1,30 @@
 import React from "react";
 
-function Icon() {
+function OperationIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="26"
-      height="26"
+      width="24"
+      height="24"
       fill="none"
-      viewBox="0 0 26 26"
+      viewBox="0 0 24 24"
     >
       <path
         stroke="#293991"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M13 7.313v1.625M13 17.063v1.625M13 22.75c5.385 0 9.75-4.365 9.75-9.75S18.385 3.25 13 3.25 3.25 7.615 3.25 13s4.365 9.75 9.75 9.75z"
+        d="M21.167 1H2.833A1.833 1.833 0 001 2.833v18.334A1.833 1.833 0 002.833 23h18.334A1.833 1.833 0 0023 21.167V2.833A1.833 1.833 0 0021.167 1z"
       ></path>
       <path
         stroke="#293991"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M10.563 17.063h3.656a2.031 2.031 0 000-4.063H11.78a2.031 2.031 0 010-4.063h3.656"
+        d="M10.168 16.278l3.056 2.444 4.889-6.11M5.89 6.5h12.222M5.89 11.389h4.889"
       ></path>
     </svg>
   );
 }
 
-export default Icon;
+export default OperationIcon;

@@ -1,6 +1,6 @@
 import React from "react";
 
-function Icon() {
+function EoccurenceIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -14,17 +14,17 @@ function Icon() {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M9 14.25h6M9 11.25h6M15 3.75h3.75a.75.75 0 01.75.75v15.75a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V4.5a.75.75 0 01.75-.75H9"
+        d="M18.75 21H5.25a.75.75 0 01-.75-.75V3.75A.75.75 0 015.25 3h9l5.25 5.25v12a.75.75 0 01-.75.75z"
       ></path>
       <path
         stroke="#2F4858"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
-        d="M8.25 6.75V6a3.75 3.75 0 017.5 0v.75h-7.5z"
+        d="M14.25 3v5.25h5.25M13.48 15.731l1.5 1.5M11.625 16.5a2.625 2.625 0 100-5.25 2.625 2.625 0 000 5.25z"
       ></path>
     </svg>
   );
 }
 
-export default Icon;
+export default EoccurenceIcon;

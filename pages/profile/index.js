@@ -623,7 +623,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     background: var(--primary);
-    height: 95px;
+    height: 90px;
   `,
   backIcon: css`
     position: absolute;
