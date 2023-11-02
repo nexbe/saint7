@@ -2,16 +2,27 @@
 import { Modal } from "reactstrap";
 import { css } from "@emotion/react";
 import CloseIcon from "../../../public/icons/closeIcon";
+import attendenceStore from "../../../store/attendance";
 
-const MembersListModal = ({ isOpen, setModal, setViewDutyModal }) => {
+const MembersListModal = ({
+  isOpen,
+  setModal,
+  setViewDutyModal,
+  attendanceData,
+}) => {
   const close = () => {
     setModal(!isOpen);
   };
-  const data = [
-    { id: 0, name: "lyn" },
-    { id: 1, name: "lyn" },
-    { id: 2, name: "lyn" },
-  ];
+
+  const { getAttendanceData, getHistroyData } = attendenceStore(
+    (state) => state
+  );
+
+  // const data = [
+  //   { id: 0, name: "lyn" },
+  //   { id: 1, name: "lyn" },
+  //   { id: 2, name: "lyn" },
+  // ];
   return (
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
       <div css={styles.actions}>
@@ -21,26 +32,40 @@ const MembersListModal = ({ isOpen, setModal, setViewDutyModal }) => {
         </div>
       </div>
       <div css={styles.lists}>
-        {data &&
-          data.map((index) => {
+        {attendanceData &&
+          attendanceData.map((attendance, index) => {
             return (
               <div css={styles.container} key={index}>
                 <div>
-                <img
-                  id={index}
-                  src={"images/defaultImage.jpg"}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                  }}
-                />
-                <span>Christopher Young</span>
+                  <img
+                    id={attendance?.id}
+                    src={
+                      attendance?.attributes?.assignee_shift?.data
+                        ? `https://saint7-office.singaporetestlab.com${attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                        : "images/defaultImage.jpg"
+                    }
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                    }}
+                  />
+                  <span>
+                    {
+                      attendance?.attributes?.assignee_shift?.data?.attributes
+                        ?.users_permissions_user?.data?.attributes?.username
+                    }
+                  </span>
                 </div>
-                <div onClick={() => {
-                  setViewDutyModal(true)
-                  setModal(false)
-                }}>View Duty</div>
+                <div
+                  onClick={() => {
+                    setViewDutyModal(true);
+                    setModal(false);
+                    getHistroyData(attendance);
+                  }}
+                >
+                  View Duty
+                </div>
               </div>
             );
           })}
@@ -86,9 +111,10 @@ const styles = {
     justify-content: space-between;
     font-size: 14px;
     font-weight: 500;
+    align-items: center;
     span {
       color: #386fff;
-      margin-left:9px;
+      margin-left: 9px;
     }
     div {
       color: var(--primary);

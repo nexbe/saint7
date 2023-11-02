@@ -24,7 +24,6 @@ const styles = {
     width: 100%;
     background: var(--background);
     overflow-x: hidden;
-    overflow-y: hidden;
   `,
   wrapper: css`
     width: 100%;

@@ -3,60 +3,67 @@ import { css } from "@emotion/react";
 import { useState } from "react";
 import MembersListModal from "./MembersListModal";
 import DutyModal from "../DutyModal";
+import attendenceStore from "../../../store/attendance";
+import { useEffect } from "react";
 
-const Card = ({ state }) => {
+const Card = ({ state, attendanceData }) => {
   const [viewModal, setViewModal] = useState(false);
   const [viewDutyModal, setViewDutyModal] = useState(false);
-  const data = [
-    { id: 0 },
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 5 },
-    { id: 6 },
-    { id: 6 },
-  ];
+  // const [viewDutyModal, setViewDutyModal] = useState(false);
+
+  const handleClick = () => {
+    setViewModal(true);
+  };
+
   return (
     <div css={styles.wrapper}>
       <div css={styles.container}>
-        <div css={styles.profileContainer} onClick={() => setViewModal(true)}> 
-          {data &&
-            data.length > 5 &&
-            data?.slice(0, 5)?.map((index) => {
+        <div css={styles.profileContainer} onClick={() => handleClick()}>
+          {attendanceData &&
+            attendanceData?.length > 5 &&
+            attendanceData?.slice(0, 5)?.map((attendance, index) => {
               return (
                 <div key={index}>
-                <img
-                  id={index}
-                  src={"images/defaultImage.jpg"}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    marginLeft: "-10px",
-                  }}
-                />
+                  <img
+                    id={attendance?.id}
+                    src={
+                      attendance?.attributes?.assignee_shift?.data
+                        ? `https://saint7-office.singaporetestlab.com${attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                        : "images/defaultImage.jpg"
+                    }
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      marginLeft: "-10px",
+                    }}
+                  />
                 </div>
               );
             })}
-          {data &&
-            data.length < 5 &&
-            data?.map((index) => {
+          {attendanceData &&
+            attendanceData?.length < 5 &&
+            attendanceData?.map((attendance, index) => {
               return (
                 <div key={index}>
-                <img
-                  id={index}
-                  src={"images/defaultImage.jpg"}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    marginLeft: "-10px",
-                  }}
-                />
+                  <img
+                    id={attendance?.id}
+                    src={
+                      attendance?.attributes?.assignee_shift?.data
+                        ? `https://saint7-office.singaporetestlab.com${attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                        : "images/defaultImage.jpg"
+                    }
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      marginLeft: "-10px",
+                    }}
+                  />
                 </div>
               );
             })}
-          {data && data.length > 5 && (
+          {attendanceData && attendanceData?.length > 5 && (
             <div css={styles.circle}>
               <span
                 style={{
@@ -66,8 +73,9 @@ const Card = ({ state }) => {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: "22px",
-                }}>
-                +{data?.length - 5}
+                }}
+              >
+                +{attendanceData?.length - 5}
               </span>
             </div>
           )}
@@ -79,8 +87,16 @@ const Card = ({ state }) => {
           ? "checked in and ready to take on any duties."
           : "completed my duties and am ready to check out."}
       </div>
-      <MembersListModal isOpen={viewModal} setModal={setViewModal} setViewDutyModal={setViewDutyModal}/>
-      <DutyModal isOpen={viewDutyModal} setModal={setViewDutyModal}/>
+      <MembersListModal
+        isOpen={viewModal}
+        setModal={setViewModal}
+        setViewDutyModal={setViewDutyModal}
+        attendanceData={attendanceData}
+      />
+      <DutyModal
+        isOpen={viewDutyModal}
+        close={() => setViewDutyModal(!viewDutyModal)}
+      />
     </div>
   );
 };
