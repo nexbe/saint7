@@ -34,7 +34,7 @@ const ScheduleCard = ({ state }) => {
           </p>
         </div>
       </div>
-      <DutyModal isOpen={modal} setModal={setModal} />
+      <DutyModal isOpen={modal} close={() => setModal(!modal)} />
     </div>
   );
 };

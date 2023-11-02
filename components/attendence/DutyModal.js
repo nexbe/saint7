@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
 import moment from "moment";
 
-const DutyModal = ({ isOpen = false, setModal }) => {
+const DutyModal = ({ isOpen = false, close = () => {} }) => {
   const apolloClient = useApolloClient();
   const {
     AttendanceUser: AttendanceUser,
@@ -31,9 +31,7 @@ const DutyModal = ({ isOpen = false, setModal }) => {
 
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const close = () => {
-    setModal(!isOpen)
-  }
+
   const handleStartDateChange = (date) => {
     setStartDate(date);
   };
