@@ -3,18 +3,26 @@ import Layout from "../../../../components/layout/Layout";
 import HeaderNoti from "../../../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
 import Select, { components } from "react-select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import SuccessModal from "../../../../components/attendence/SuccessModal";
 import { useRouter } from "next/router";
 import DatePicker from "react-multi-date-picker";
+import siteStore from "../../../../store/sites";
+import shiftStore from "../../../../store/shift";
+import { useApolloClient } from "@apollo/client";
+import userStore from "../../../../store/user";
 
 const AssignUser = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
   const [selectedShiftName, setSelectedShiftName] = useState();
   const [selectedSite, setSelectedSite] = useState();
   const [assignedUsers, setAssignedUsers] = useState();
   const [modal, setModal] = useState(false);
+  const {sites, getSites} = siteStore();
+  const {shifts, getShifts} = shiftStore();
   const today = new Date();
   const tomorrow = new Date();
 
@@ -26,6 +34,35 @@ const AssignUser = () => {
     { value: "strawberry", label: "Strawberry" },
     { value: "vanilla", label: "Vanilla" },
   ];
+
+  useEffect(() => {
+    getSites();
+    getShifts();
+    getAllUsers({
+      apolloClient,
+      where: {},
+    })
+  },[])
+  console.log(userInfo)
+  const handleSiteChange = (selectedOption) => {
+    setSelectedSite(selectedOption);
+  };
+
+  const handleShiftsChange = (selectedOption) => {
+    setSelectedShiftName(selectedOption);
+  };
+
+  const siteOptions = sites?.map((eachOption) => ({
+    value: eachOption?.id,
+    label: eachOption?.attributes?.name,
+  }));
+
+  const shiftsOptions = shifts?.map((eachOption) => ({
+    value: eachOption?.id,
+    label: eachOption?.attributes?.title,
+  }));
+
+
 
   const DropdownIndicator = (props) => {
     return (
@@ -58,8 +95,9 @@ const AssignUser = () => {
             <Select
               id="site_name"
               name="site_name"
+              onChange={handleSiteChange}
               value={selectedSite}
-              options={options}
+              options={siteOptions}
               placeholder="Select Site"
               styles={selectBoxStyle}
               components={{
@@ -75,8 +113,9 @@ const AssignUser = () => {
             <Select
               id="shift_name"
               name="shift_name"
+              onChange={handleShiftsChange}
               value={selectedShiftName}
-              options={options}
+              options={shiftsOptions}
               placeholder="Select Shift"
               styles={selectBoxStyle}
               components={{
