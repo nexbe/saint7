@@ -12,6 +12,7 @@ import siteStore from "../../../../store/sites";
 import shiftStore from "../../../../store/shift";
 import { useApolloClient } from "@apollo/client";
 import userStore from "../../../../store/user";
+import attendenceStore from "../../../../store/attendance";
 
 const AssignUser = () => {
   const router = useRouter();
@@ -23,17 +24,12 @@ const AssignUser = () => {
   const [modal, setModal] = useState(false);
   const {sites, getSites} = siteStore();
   const {shifts, getShifts} = shiftStore();
+  const { createAssignedUser } = attendenceStore();
   const today = new Date();
   const tomorrow = new Date();
 
   tomorrow.setDate(tomorrow.getDate() + 1);
   const [dutyDates, setDutyDates] = useState([today, tomorrow]);
-
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
 
   useEffect(() => {
     getSites();
@@ -43,7 +39,6 @@ const AssignUser = () => {
       where: {},
     })
   },[])
-  console.log(userInfo)
   const handleSiteChange = (selectedOption) => {
     setSelectedSite(selectedOption);
   };
@@ -52,6 +47,11 @@ const AssignUser = () => {
     setSelectedShiftName(selectedOption);
   };
 
+  const handleUsersChange = (selectedOption) => {
+    setAssignedUsers(selectedOption);
+  };
+  //console.log(selectedShiftName.value,selectedSite.value,assignedUsers,dutyDates)
+  
   const siteOptions = sites?.map((eachOption) => ({
     value: eachOption?.id,
     label: eachOption?.attributes?.name,
@@ -62,8 +62,37 @@ const AssignUser = () => {
     label: eachOption?.attributes?.title,
   }));
 
+  const userOptions = userInfo?.map((eachOption) => ({
+    value: eachOption?.id,
+    label: eachOption?.username,
+  }));
 
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const dates = []
+    const assingnedUserLists = []
+   
+    if(dutyDates){
+      dutyDates?.map((date)=> {
+        return dates.push(`${date.year}-${date.month}-${date.day}`)
+      })
+    }
+    if(assignedUsers){
+      assignedUsers?.map((user) => {
+        return assingnedUserLists.push(`${user.value}`)
+      })
+    }
+     if(assingnedUserLists){
+      createAssignedUser({
+        "data": {
+          "dates":dates,
+          "site":selectedSite?.value,
+          "shift":selectedShiftName?.value,
+          "users":assingnedUserLists
+        }
+      })
+    }
+  }
   const DropdownIndicator = (props) => {
     return (
       components.DropdownIndicator && (
@@ -131,8 +160,9 @@ const AssignUser = () => {
             <Select
               id="assign_user"
               name="assign_user"
+              onChange={handleUsersChange}
               value={assignedUsers}
-              options={options}
+              options={userOptions}
               styles={selectBoxStyle}
               components={{
                 DropdownIndicator: () => null,
@@ -153,7 +183,7 @@ const AssignUser = () => {
           Assign
         </div>
       </div>
-      <SuccessModal isOpen={modal} setModal={setModal} />
+      <SuccessModal isOpen={modal} setModal={setModal} handleSubmit={handleSubmit}/>
     </Layout>
   );
 };

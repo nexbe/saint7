@@ -3,6 +3,7 @@ import {
   GET_ATTENDANCE,
   GET_ALL_ATTENDANCE,
 } from "../graphql/queries/attendance";
+import axios from "axios";
 // import { sanitizeResults } from "../utils/sanitizer";
 
 const attendenceStore = create((set, get) => ({
@@ -129,7 +130,6 @@ const attendenceStore = create((set, get) => ({
       });
     }
   },
-
   fetch: false,
   loading: true,
   locationData: {},
@@ -139,6 +139,19 @@ const attendenceStore = create((set, get) => ({
   AttendanceUser: {},
   AllAttendances: [],
   historyData: {},
+  createAssignedUser: async (data) => {
+    console.log(data)
+    try {
+      const response = await axios.post(
+        "http://128.199.205.178:1337/api/shift-assign",
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating assigned user:", error);
+      throw error;
+    }
+  },
 }));
 
 export default attendenceStore;

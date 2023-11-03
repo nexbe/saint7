@@ -2,7 +2,7 @@
 import { Modal } from "reactstrap";
 import { css } from "@emotion/react";
 
-const SuccessModal = ({ isOpen, setModal }) => {
+const SuccessModal = ({ isOpen, setModal, handleSubmit }) => {
   const close = () => {
     setModal(!isOpen);
   };
@@ -14,7 +14,7 @@ const SuccessModal = ({ isOpen, setModal }) => {
           <b>14 users</b> has been created successfully.
         </p>
       </div>
-      <div css={styles.btn}>OK</div>
+      <div css={styles.btn} onClick={handleSubmit}>OK</div>
     </Modal>
   );
 };

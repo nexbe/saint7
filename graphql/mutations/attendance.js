@@ -18,3 +18,13 @@ export const UPDATE_ATTENDANCE = gql`
     }
   }
 `;
+
+export const CREATE_ASSIGNED_USERS = gql`
+  mutation ($data: AssigneeShiftInput!) {
+    createAssigneeShift(data: $data) {
+      data {
+        id
+      }
+    }
+  }
+`;
