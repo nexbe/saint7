@@ -134,3 +134,71 @@ export const GET_ALL_ATTENDANCE = gql`
     }
   }
 `;
+
+export const GET_ATTENDANCE_SCHEDULE = gql`
+  query ($date: Date!) {
+    attendances(filters: { date: { eq: $date } }) {
+      data {
+        id
+        attributes {
+          checkInTime
+          checkOutTIme
+          address
+          date
+          status
+          assignee_shift {
+            data {
+              attributes {
+                shift {
+                  data {
+                    attributes {
+                      timeRange {
+                        StartTime
+                        EndTime
+                      }
+                    }
+                  }
+                }
+                users_permissions_user {
+                  data {
+                    id
+                    attributes {
+                      username
+                      facialScanImage {
+                        data {
+                          attributes {
+                            url
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                site {
+                  data {
+                    attributes {
+                      checkpoints {
+                        Name
+                        Location {
+                          Name
+                        }
+                      }
+
+                      name
+                      location {
+                        Lat
+                        Lng
+                        Name
+                      }
+                      description
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;

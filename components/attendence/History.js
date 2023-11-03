@@ -78,7 +78,8 @@ const Historty = () => {
                       background:
                         data?.status == "Complete" ? "#293991" : "#EC1C24",
                     },
-                  ]}>
+                  ]}
+                >
                   {data?.status == "Complete" ? "Complete" : "Incomplete"}
                 </span>
               </div>
@@ -237,7 +238,6 @@ const styles = {
   `,
   requestCard: css`
     position: relative;
-    margin-top: 15rem;
     border-radius: 10px;
     background: var(--white);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);

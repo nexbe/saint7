@@ -6,19 +6,45 @@ import HeaderNoti from "../../../../components/layout/HeaderNoti";
 import ScheduleCard from "../../../../components/attendence/ScheduleCard";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import attendenceStore from "../../../../store/attendance";
+import { parseCookies } from "nookies";
+import { useApolloClient } from "@apollo/client";
+import moment from "moment";
 
 const Schedule = () => {
+  const cookies = parseCookies();
+  const apolloClient = useApolloClient();
+  const { AttendanceSchedule, getAttendanceSchedule } = attendenceStore(
+    (state) => state
+  );
   const [dates, setDates] = useState(new Date());
-  console.log(dates);
+
+  useEffect(() => {
+    getAttendanceSchedule({
+      apolloClient,
+      where: { date: moment(dates).format("YYYY-MM-DD") },
+    });
+  }, [dates]);
+
+  console.log(AttendanceSchedule);
+
   return (
     <Layout>
       <HeaderNoti title={"Schedule"} href={"/attendance/Manager"} />
-      <div>
+      <div style={{ height: 0 }}>
         <Calendar onChange={setDates} value={dates} css={styles.calendar} />
         <div css={styles.container}>
-          <h5>16th june ,2023</h5>
-          <ScheduleCard state={true} />
-          <ScheduleCard state={false} />
+          <h5>{moment(dates).format("Do MMMM YYYY")}</h5>
+          {AttendanceSchedule?.map((attendances, index) => (
+            <div key={index}>
+              <ScheduleCard
+                state={
+                  attendances?.attributes?.status == "Complete" ? true : false
+                }
+                attendanceData={attendances}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </Layout>
@@ -47,8 +73,7 @@ const styles = {
     border-radius: 10px;
     margin-top: 10px;
     padding: 20px;
-    max-height: 46vh;
-    overflow-y: scroll;
+
     h5 {
       color: #2f4858;
       font-size: 16px;
