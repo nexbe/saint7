@@ -18,11 +18,6 @@ const MembersListModal = ({
     (state) => state
   );
 
-  // const data = [
-  //   { id: 0, name: "lyn" },
-  //   { id: 1, name: "lyn" },
-  //   { id: 2, name: "lyn" },
-  // ];
   return (
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
       <div css={styles.actions}>
@@ -41,8 +36,8 @@ const MembersListModal = ({
                     id={attendance?.id}
                     src={
                       attendance?.attributes?.assignee_shift?.data
-                        ? `https://saint7-office.singaporetestlab.com${attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
-                        : "images/defaultImage.jpg"
+                        ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                        : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
                     }
                     style={{
                       width: "50px",
