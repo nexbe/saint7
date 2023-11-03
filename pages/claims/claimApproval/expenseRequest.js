@@ -337,7 +337,6 @@ const ExpenseRequestStatus = () => {
         <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox
             message={router.query.message}
-            belongTo={router.query.belongTo}
             timeout={3000}
             label={router?.query?.label}
           />
@@ -407,7 +406,7 @@ const ExpenseRequestStatus = () => {
                 css={activeTab == 1 ? styles.activeColor : ""}
                 onClick={() => setActiveTab(1)}
               >
-                Pending [{requestCount}]
+                Request [{requestCount}]
               </label>
               <label
                 css={activeTab == 2 ? styles.activeColor : ""}

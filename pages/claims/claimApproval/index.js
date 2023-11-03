@@ -367,15 +367,15 @@ const Claims = () => {
                     </div>
                     <div className="primary-text">
                       <span css={styles.percentageStatus}>
-                        {requestTotal} $ -{" "}
+                        {requestTotal} SGD -{" "}
                         {((requestCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
                       <span css={styles.percentageStatus}>
-                        {approvedTotal} $ -{" "}
+                        {approvedTotal} SGD -{" "}
                         {((approvedCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
                       <span css={styles.percentageStatus}>
-                        {rejectedTotal} $ -{" "}
+                        {rejectedTotal} SGD -{" "}
                         {((rejectedCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
                     </div>

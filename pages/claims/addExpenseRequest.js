@@ -117,11 +117,9 @@ const Claims = () => {
   const onChange = async (e) => {
     const selectedFiles = [...e.target.files];
     const uploadedFiles = {};
-
-    for (let file of selectedFiles) {
-      uploadedFiles[0] = file;
-    }
-
+    selectedFiles?.map((eachFile, index) => {
+      return (uploadedFiles[index] = eachFile);
+    });
     setFileList({ ...fileList, ...uploadedFiles });
   };
 
@@ -129,18 +127,14 @@ const Claims = () => {
     if (!!saveAction) {
       let filesArrToSend = [];
       for (let file of fileListArr) {
-        let fileData = {};
-        let uploadFiles = {};
         const formData = new FormData();
         formData.append("files", file[1]);
-        const response = await uploadFile(formData);
-        const json = await response.json();
-        if (response.status === 200) {
-          const term = json[0].id;
-          fileData.attachment = term;
-          filesArrToSend.push(json[0]);
-          uploadFiles[term] = file;
-        }
+        await uploadFile(formData).then(async (response) => {
+          const json = await response.json();
+          if (response.status === 200) {
+            filesArrToSend.push(json[0]);
+          }
+        });
       }
       await createClaim({
         createClaimAction,

@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AiOutlineClose, AiFillInfoCircle } from "react-icons/ai";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { useRouter } from "next/router";
 
-const NotificationBox = ({ message, belongTo, timeout, label, userId }) => {
+const NotificationBox = ({ message, timeout, label }) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -14,22 +14,6 @@ const NotificationBox = ({ message, belongTo, timeout, label, userId }) => {
     if (isVisible) {
       timer = setTimeout(() => {
         setIsVisible(false);
-        belongTo == "uploadProfileSuccess" ||
-        belongTo === "Certificate" ||
-        belongTo === "Personal"
-          ? router.push({
-              pathname: `/profile`,
-              query: {
-                userId: userId,
-              },
-            })
-          : belongTo === "Document"
-          ? router.push("/documents")
-          : belongTo == "Announcement"
-          ? router.push("/announcement")
-          : belongTo == "ClaimApproval"
-          ? router.push("/claims/claimApproval/expenseRequest")
-          : "";
       }, timeout);
     }
 
@@ -39,8 +23,8 @@ const NotificationBox = ({ message, belongTo, timeout, label, userId }) => {
   }, [isVisible, timeout]);
 
   useMemo(() => {
-    !!message && setIsVisible(true);
-  }, [message]);
+    !!router?.query?.label && setIsVisible(true);
+  }, [message, router.query]);
 
   return (
     <div
