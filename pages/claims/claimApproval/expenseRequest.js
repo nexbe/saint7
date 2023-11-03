@@ -406,7 +406,7 @@ const ExpenseRequestStatus = () => {
                 css={activeTab == 1 ? styles.activeColor : ""}
                 onClick={() => setActiveTab(1)}
               >
-                Pending [{requestCount}]
+                Request [{requestCount}]
               </label>
               <label
                 css={activeTab == 2 ? styles.activeColor : ""}
