@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Layout from "../../../../components/layout/Layout";
 import HeaderNoti from "../../../../components/layout/HeaderNoti";
+import ScheduleCard from "../../../../components/attendence/ScheduleCard";
 
 const Schedule = () => {
   const [startDate, setStartDate] = useState();
@@ -22,6 +23,11 @@ const Schedule = () => {
           />
         </div>
       </div>
+      <div css={styles.container}>
+        <h5>16th june ,2023</h5>
+        <ScheduleCard state={true} />
+        <ScheduleCard state={false}/>
+      </div>
     </Layout>
   );
 };
@@ -35,6 +41,10 @@ const styles = {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
+    margin-bottom:15%;
+    @media (max-width: 680px) {
+      margin-bottom:65%;
+    }
   `,
   calendarCard: css`
     display: flex;
@@ -120,4 +130,18 @@ const styles = {
       font-size: 16px;
     }
   `,
+  container:css`
+     background:#fff;
+     padding:20px;
+     max-height:50vh;
+     overflow-y:scroll;
+     h5{
+      color: #2F4858;
+      font-size: 16px;
+      font-weight: 600;
+     }
+     @media (max-width: 375px) {
+      max-height:35vh;
+    }
+  `
 };
