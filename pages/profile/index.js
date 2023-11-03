@@ -67,7 +67,7 @@ const Profile = () => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [startDate, setStartDate] = useState(
-    profileInfo[0]?.joinDate ? new Date(profileInfo[0]?.joinDate) : null
+    profileInfo[0]?.joinDate ? new Date(profileInfo[0]?.joinDate) : new Date()
   );
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [addFavourite, setAddFavourite] = useState(false);
@@ -178,7 +178,6 @@ const Profile = () => {
         profileData: {
           contactNumber: data.contactNumber,
           position: data.position,
-          // user: { email: data.email },
           joinDate: new Date(startDate).toISOString(),
         },
         updatedAt: new Date().toISOString(),
@@ -267,12 +266,7 @@ const Profile = () => {
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
-          <div
-            css={styles.backIcon}
-            onClick={() =>
-              router.push(router?.query?.team === "Team" ? "/team" : "/home")
-            }
-          >
+          <div css={styles.backIcon} onClick={() => router.back()}>
             <BackIcon />
           </div>
           <label className="header-text">My Profile</label>
@@ -281,10 +275,8 @@ const Profile = () => {
           <div css={styles.profileContent}>
             <NotificationBox
               message={router.query.message}
-              belongTo={router.query.belongTo}
               timeout={3000}
               label={router?.query?.label}
-              userId={router?.query ? router?.query?.userId : user?.id}
             />
             <div css={styles.attachBox}>
               <label css={styles.attachBtn}>
@@ -419,6 +411,8 @@ const Profile = () => {
                   <div css={styles.formFlexChildDiv}>
                     <input
                       type="number"
+                      min={0}
+                      onWheel={(event) => event.currentTarget.blur()}
                       className="primary-text"
                       disabled={!personalEdit}
                       {...register("contactNumber", {
@@ -454,6 +448,8 @@ const Profile = () => {
                         onChange={handleStartDateChange}
                         dateFormat="dd MMM yyyy"
                         disabled={!personalEdit}
+                        showYearDropdown
+                        popperPlacement="top"
                       />
                     </label>
                   </div>
@@ -786,6 +782,31 @@ const styles = {
     }
     .react-datepicker__input-container {
       position: unset;
+    }
+    .react-datepicker {
+      span {
+        color: #000;
+        font-weiht: 700;
+        font-size: 16px;
+      }
+    }
+    .react-datepicker__triangle {
+      display: none;
+    }
+    .react-datepicker__navigation-icon--next {
+      top: 11px;
+      left: -10px;
+      font-size: 16px;
+    }
+    .react-datepicker__navigation-icon--previous {
+      top: 11px;
+      left: 5px;
+      font-size: 16px;
+    }
+    .react-datepicker__year-read-view--down-arrow {
+      top: 7px;
+      font-size: 16px;
+      border-color: none;
     }
   `,
   selectedImage: css`
