@@ -7,6 +7,7 @@ import { useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import SuccessModal from "../../../../components/attendence/SuccessModal";
 import { useRouter } from "next/router";
+import DatePicker from "react-multi-date-picker";
 
 const AssignUser = () => {
   const router = useRouter();
@@ -14,6 +15,11 @@ const AssignUser = () => {
   const [selectedSite, setSelectedSite] = useState();
   const [assignedUsers, setAssignedUsers] = useState();
   const [modal, setModal] = useState(false);
+  const today = new Date();
+  const tomorrow = new Date();
+
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const [dutyDates, setDutyDates] = useState([today, tomorrow]);
 
   const options = [
     { value: "chocolate", label: "Chocolate" },
@@ -35,11 +41,17 @@ const AssignUser = () => {
       <HeaderNoti title={"Assign User"} href={"/attendance/Manager"} />
       <div css={styles.container}>
         <form css={styles.formStyle}>
-          <div>
+          <div css={styles.datePickerStyle}>
             <label>
               Date <span>*</span>
             </label>
-            <input type="text" />
+            <DatePicker
+              multiple
+              value={dutyDates}
+              onChange={setDutyDates}
+              className="custom-calendar"
+              format="DD/MM/YYYY"
+            />
           </div>
           <div>
             <label>Site Name</label>
@@ -180,6 +192,35 @@ const styles = {
         border-right: none;
         border-bottom: 2px solid rgba(0, 0, 0, 0.1);
       }
+    }
+  `,
+  datePickerStyle: css`
+    .custom-calendar.rmdp-wrapper,
+    .rmdp-container .custom-calendar.ep-arrow::after {
+      background-color: #fff;
+    }
+
+    .rmdp-calendar {
+      width: 30vh;
+    }
+    .rmdp-input{
+      width:100%;
+    }
+    .rmdp-header div{
+      flex-direction: row !important;
+      padding:6px;
+    }
+    .rmdp-week,
+    .rmdp-ym, .rmdp-header-values {
+      display: flex;
+      flex-direction: row !important;
+      justify-content: space-evenly;
+    }
+    div span{
+      color:#000 !important;
+      display:flex;
+      flex-direction:row !important;
+      justify-content: space-evenly;
     }
   `,
   btns: css`
