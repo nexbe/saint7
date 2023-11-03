@@ -62,7 +62,7 @@ const Team = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Team"} href={"/more"} />
+        <HeaderNoti title={"Team"} href={"/home"} />
         <div css={styles.bodyContainer}>
           <div css={styles.searchBox}>
             <input

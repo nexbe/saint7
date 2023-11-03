@@ -76,11 +76,10 @@ const Documents = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Documents"} href={"/home"} />
+        <HeaderNoti title={"Documents"} href={"/HRM"} />
         <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox
             message={router.query.message}
-            belongTo={router.query.belongTo}
             timeout={3000}
             label={router?.query?.label}
           />
