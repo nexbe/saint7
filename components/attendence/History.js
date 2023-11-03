@@ -77,7 +77,17 @@ const Historty = () => {
                     <span className="address">{data?.address}</span>
                   </label>
                 </label>
-                <span css={styles.expenseStatus}>{data?.status}</span>
+                <span
+                  css={[
+                    styles.expenseStatus,
+                    {
+                      background:
+                        data?.status == "Complete" ? "#293991" : "#EC1C24",
+                    },
+                  ]}
+                >
+                  {data?.status == "Complete" ? "Complete" : "Incomplete"}
+                </span>
               </div>
               <hr
                 style={{
@@ -256,7 +266,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     border-radius: 8px;
-    background: #293991;
+
     color: #ffffff;
   `,
   offDay: css`
