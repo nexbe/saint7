@@ -28,28 +28,54 @@ const LeaveCalendar = () => {
               />
             </div>
           </div>
-          <div css={styles.requestCard}>
-            <label className="primary-text">9th October ,2023</label>
-            <div css={styles.eachCard} className="primary-text">
-              <label>
-                Request Leave
-                <span className="requestDate">
-                  <span css={styles.circleStyle}></span>
-                  <span css={styles.lineStyle}></span>{" "}
-                  <BiCalendar color="var(--dark-gray)" size={15} /> Friday 7
-                  October
-                </span>
-                <span className="requestDate" style={{ marginTop: "-18px" }}>
-                  <span
-                    css={styles.circleStyle}
-                    style={{ marginRight: "6px" }}
-                  ></span>
-                  <BiCalendar color="var(--dark-gray)" size={15} />
-                  Friday 7 October
-                </span>
-                <label style={{ fontSize: "14px" }}>1 Day off</label>
-              </label>
-              <span css={styles.expenseStatus}>Pending</span>
+          <div style={{ height: "50%" }}>
+            <div css={styles.requestCard}>
+              <label className="primary-text">9th October ,2023</label>
+              <div css={styles.eachCard} className="primary-text">
+                <label>
+                  Request Leave
+                  <span className="requestDate">
+                    <span css={styles.circleStyle}></span>
+                    <span css={styles.lineStyle}></span>{" "}
+                    <BiCalendar color="var(--dark-gray)" size={15} /> Friday 7
+                    October
+                  </span>
+                  <span className="requestDate" style={{ marginTop: "-18px" }}>
+                    <span
+                      css={styles.circleStyle}
+                      style={{ marginRight: "6px" }}
+                    ></span>
+                    <BiCalendar color="var(--dark-gray)" size={15} />
+                    Friday 7 October
+                  </span>
+                  <label style={{ fontSize: "14px" }}>1 Day off</label>
+                </label>
+                <span css={styles.expenseStatus}>Pending</span>
+              </div>
+            </div>
+            <div css={styles.requestCard}>
+              <label className="primary-text">9th October ,2023</label>
+              <div css={styles.eachCard} className="primary-text">
+                <label>
+                  Request Leave
+                  <span className="requestDate">
+                    <span css={styles.circleStyle}></span>
+                    <span css={styles.lineStyle}></span>{" "}
+                    <BiCalendar color="var(--dark-gray)" size={15} /> Friday 7
+                    October
+                  </span>
+                  <span className="requestDate" style={{ marginTop: "-18px" }}>
+                    <span
+                      css={styles.circleStyle}
+                      style={{ marginRight: "6px" }}
+                    ></span>
+                    <BiCalendar color="var(--dark-gray)" size={15} />
+                    Friday 7 October
+                  </span>
+                  <label style={{ fontSize: "14px" }}>1 Day off</label>
+                </label>
+                <span css={styles.expenseStatus}>Pending</span>
+              </div>
             </div>
           </div>
         </div>
@@ -92,6 +118,7 @@ const styles = {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
+    height: 50%;
   `,
   calendarCard: css`
     display: flex;
@@ -176,24 +203,15 @@ const styles = {
       left: 5px;
       font-size: 16px;
     }
-    .react-datepicker__day {
-      :focus {
-        background: var(--primary);
-        width: 30px;
-        height: 30px;
-        border-radius: 50px;
-        color: var(--white);
-        border: none;
-      }
+   
     }
   `,
   requestCard: css`
     position: relative;
-    margin-top: 17rem;
     border-radius: 10px;
     background: var(--white);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
-    padding: 20px;
+    padding: 8px 20px;
   `,
   eachCard: css`
     display: flex;

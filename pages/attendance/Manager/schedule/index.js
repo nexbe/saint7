@@ -11,22 +11,26 @@ const Schedule = () => {
   const [startDate, setStartDate] = useState();
   return (
     <Layout>
-      <HeaderNoti title={"Schedule"} href={"/attendance/Manager"}/>
-      <div css={styles.caledarContainer}>
-        <div css={styles.calendarCard}>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            dateFormat="dd/MM/yyyy"
-            open
-            formatWeekDay={(nameOfDay) => nameOfDay.substr(0, 3)}
-          />
+      <HeaderNoti title={"Schedule"} href={"/attendance/Manager"} />
+      <div css={styles.bodyContainer}>
+        <div>
+          <div css={styles.caledarContainer}>
+            <div css={styles.calendarCard}>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                dateFormat="dd/MM/yyyy"
+                open
+                formatWeekDay={(nameOfDay) => nameOfDay.substr(0, 3)}
+              />
+            </div>
+          </div>
+          <div css={styles.container}>
+            <h5>16th june ,2023</h5>
+            <ScheduleCard state={true} />
+            <ScheduleCard state={false} />
+          </div>
         </div>
-      </div>
-      <div css={styles.container}>
-        <h5>16th june ,2023</h5>
-        <ScheduleCard state={true} />
-        <ScheduleCard state={false}/>
       </div>
     </Layout>
   );
@@ -41,9 +45,9 @@ const styles = {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    margin-bottom:15%;
+    margin-bottom: 15%;
     @media (max-width: 680px) {
-      margin-bottom:65%;
+      margin-bottom: 65%;
     }
   `,
   calendarCard: css`
@@ -130,18 +134,31 @@ const styles = {
       font-size: 16px;
     }
   `,
-  container:css`
-     background:#fff;
-     padding:20px;
-     max-height:50vh;
-     overflow-y:scroll;
-     h5{
-      color: #2F4858;
+  container: css`
+    background: #fff;
+    padding: 20px;
+    max-height: 40vh;
+    overflow-y: scroll;
+
+    ::-webkit-scrollbar {
+      width: 2px;
+      background-color: transparent;
+    }
+    h5 {
+      color: #2f4858;
       font-size: 16px;
       font-weight: 600;
-     }
-     @media (max-width: 375px) {
-      max-height:35vh;
     }
-  `
+    @media (max-width: 375px) {
+      max-height: 35vh;
+    }
+  `,
+  bodyContainer: css`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    overflow-x: hidden;
+    min-height: 200px;
+  `,
 };
