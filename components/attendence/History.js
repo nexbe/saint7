@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import DutyModal from "./DutyModal";
 import moment from "moment";
 import attendenceStore from "../../store/attendance";
 import { setCookie, parseCookies } from "nookies";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 const Historty = () => {
   const cookies = parseCookies();
@@ -47,17 +47,11 @@ const Historty = () => {
   return (
     <>
       <div css={styles.bodyContainer}>
-        <div css={styles.caledarContainer}>
-          <div css={styles.calendarCard}>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              dateFormat="dd/MM/yyyy"
-              open
-              formatWeekDay={(nameOfDay) => nameOfDay.substr(0, 3)}
-            />
-          </div>
-        </div>
+        <Calendar
+          onChange={setStartDate}
+          value={startDate}
+          css={styles.calendar}
+        />
         <div css={styles.requestCard}>
           {attendanceData?.attendanceData?.map((data, index) => (
             <div onClick={() => dutyModal(data)} key={index}>
@@ -84,8 +78,7 @@ const Historty = () => {
                       background:
                         data?.status == "Complete" ? "#293991" : "#EC1C24",
                     },
-                  ]}
-                >
+                  ]}>
                   {data?.status == "Complete" ? "Complete" : "Incomplete"}
                 </span>
               </div>
@@ -119,6 +112,20 @@ const styles = {
     flex-direction: column;
     margin: 0;
     background: var(--white);
+  `,
+  calendar: css`
+    width: 100%;
+    border: none;
+    border-radius: 0px 0px 16px 16px;
+    .react-calendar__tile--active:enabled:hover,
+    .react-calendar__tile--active:enabled:focus,
+    .react-calendar__tile--active {
+      background: #386fff;
+      border-radius: 9px;
+    }
+    .react-calendar__tile--now {
+      border-radius: 9px;
+    }
   `,
   bodyContainer: css`
     display: flex;
