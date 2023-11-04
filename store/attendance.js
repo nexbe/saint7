@@ -143,7 +143,7 @@ const attendenceStore = create((set, get) => ({
     console.log(data)
     try {
       const response = await axios.post(
-        "http://128.199.205.178:1337/api/shift-assign",
+        "https://saint7-office.singaporetestlab.com/api/shift-assign",
         data
       );
       return response.data;
