@@ -51,7 +51,6 @@ const AssignUser = () => {
     setAssignedUsers(selectedOption);
   };
   //console.log(selectedShiftName.value,selectedSite.value,assignedUsers,dutyDates)
-  
   const siteOptions = sites?.map((eachOption) => ({
     value: eachOption?.id,
     label: eachOption?.attributes?.name,
@@ -119,7 +118,7 @@ const AssignUser = () => {
               format="DD/MM/YYYY"
             />
           </div>
-          <div>
+          <div style={{marginTop:"15px"}}>
             <label>Site Name</label>
             <Select
               id="site_name"
@@ -137,7 +136,7 @@ const AssignUser = () => {
               isClearable={false}
             />
           </div>
-          <div>
+          <div style={{marginTop:"15px"}}>
             <label>Shift Name</label>
             <Select
               id="shift_name"
@@ -155,7 +154,7 @@ const AssignUser = () => {
               isClearable={false}
             />
           </div>
-          <div>
+          <div css={styles.selectUserStyle}>
             <label>Assign User</label>
             <Select
               id="assign_user"
@@ -163,7 +162,6 @@ const AssignUser = () => {
               onChange={handleUsersChange}
               value={assignedUsers}
               options={userOptions}
-              styles={selectBoxStyle}
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
@@ -233,7 +231,7 @@ const selectBoxStyle = {
     borderTop: "0px",
     borderLeft: "0px",
     borderRight: "0px",
-    borderBottom: "2px solid rgba(0, 0, 0, 0.10);",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.10);",
     color: "var(--primary-font)",
     fontWeight: "400",
     display: "flex",
@@ -303,4 +301,29 @@ const styles = {
       padding: 8px 30px;
     }
   `,
+  selectUserStyle:css`
+   margin-top:10px;
+  .css-3w2yfm-ValueContainer, .css-13cymwt-control, .css-1p3m7a8-multiValue{
+    display:flex;
+    flex-direction:row !important;
+    justify-content:start !important;
+  }
+  .css-13cymwt-control{
+    border-left:none;
+    border-right:none;
+    border-top:none;
+    flex-wrap:nowrap;
+    outline: none !important;
+    border-bottom:1px solid rgba(0, 0, 0, 0.1);
+  }
+  .css-1p3m7a8-multiValue{
+    border-radius: 9px;
+    background-color: rgba(0, 171, 209, 0.10);
+  }
+  .css-1fdsijx-ValueContainer{
+    align-items:start;
+    justify-content:start !important;
+
+  }
+  `
 };
