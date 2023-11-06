@@ -29,6 +29,10 @@ export const GET_ASSIGN_SHIFTS = gql`
               attributes {
                 name
                 address
+                checkpoints {
+                  UUID
+                  Name
+                }
               }
             }
           }

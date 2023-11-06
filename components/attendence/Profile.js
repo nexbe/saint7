@@ -9,6 +9,8 @@ import { useApolloClient, useMutation } from "@apollo/client";
 import moment from "moment";
 import { format } from "util";
 import { UPDATE_ATTENDANCE } from "../../graphql/mutations/attendance";
+import GlobalNotiBox from "../notification/GlobalNotiBox";
+import userStore from "../../store/user";
 
 const Profile = () => {
   const cookies = parseCookies();
@@ -30,7 +32,6 @@ const Profile = () => {
       },
     }
   );
-
   const {
     AttendanceUser: AttendanceUser,
     getAttendanceUser,

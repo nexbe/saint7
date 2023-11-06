@@ -66,11 +66,20 @@ const userStore = create((set, get) => ({
     } catch (error) {}
   },
 
+  getNotiData: async (data) => {
+    try {
+      if (data) {
+        set({ notiData: data });
+      }
+    } catch (error) {}
+  },
+
   fetch: false,
   loading: true,
   UserInfo: [],
   UserData: [],
   AssignUsers: [],
+  notiData: {},
 }));
 
 export default userStore;
