@@ -124,16 +124,16 @@ const FaceScanner = (props) => {
   return (
     <>
       <HeaderNoti title={"Check In"} href={"/attendance"} />
+      <div style={{ position: "relative", margin: "2px 10px" }}>
+        <GlobalNotiBox
+          message={notiData?.message}
+          belongTo={notiData?.belongTo}
+          timeout={5000}
+          action={notiData?.action}
+          label={notiData?.label}
+        />
+      </div>
       <div className="text-center container">
-        <div style={{ position: "relative", margin: "2px 10px" }}>
-          <GlobalNotiBox
-            message={notiData?.message}
-            belongTo={notiData?.belongTo}
-            timeout={5000}
-            action={notiData?.action}
-            label={notiData?.label}
-          />
-        </div>
         <div className="text-start">
           <h3 style={{ textAlign: "center", color: "#000", marginTop: "20px" }}>
             Step 2{" "}
