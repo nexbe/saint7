@@ -11,6 +11,7 @@ import Profile from "../../components/attendence/Profile";
 import userStore from "../../store/user";
 import { useApolloClient } from "@apollo/client";
 import moment from "moment";
+import GlobalNotiBox from "../../components/notification/GlobalNotiBox";
 
 const Index = () => {
   const {
@@ -18,7 +19,7 @@ const Index = () => {
 
     getAttendanceData,
   } = attendenceStore((state) => state);
-  const { getAssignUsers, AssignUsers } = userStore((state) => state);
+  const { getAssignUsers, AssignUsers, notiData } = userStore((state) => state);
   const apolloClient = useApolloClient();
 
   const cookies = parseCookies();
@@ -46,6 +47,15 @@ const Index = () => {
   return (
     <Layout className="container ">
       <HeaderNoti title={"Attendance"} href={"/home"} />
+      <div style={{ position: "relative", margin: "2px 10px" }}>
+        <GlobalNotiBox
+          message={notiData?.message}
+          belongTo={notiData?.belongTo}
+          timeout={5000}
+          action={notiData?.action}
+          label={notiData?.label}
+        />
+      </div>
       <div css={styles.tabComponent}>
         <div
           css={activeComponent === "check" ? styles.activeTab : styles.tabpane}

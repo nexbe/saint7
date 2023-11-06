@@ -1,26 +1,37 @@
 /** @jsxImportSource @emotion/react */
 import React, { useState, useRef, useEffect } from "react";
-import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
-import NotificationBox from "../../components/notification/NotiBox";
 import { useRouter } from "next/router";
-import * as faceapi from "face-api.js";
 import userStore from "../../store/user";
 import { useApolloClient, useMutation } from "@apollo/client";
 import moment from "moment";
 import { CREATE_ATTENDANCE } from "../../graphql/mutations/attendance";
 import attendenceStore from "../../store/attendance";
 import { setCookie, parseCookies } from "nookies";
+import { css } from "@emotion/react";
+import GlobalNotiBox from "../../components/notification/GlobalNotiBox";
 
 const FaceScanner = (props) => {
   const [resultUser, setResultUser] = useState(null);
 
   const router = useRouter();
-  const videoRef = React.useRef();
   const videoHeight = "100%";
   const videoWidth = "100%";
+
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const [stream, setStream] = useState(null);
   const apolloClient = useApolloClient();
   const cookies = parseCookies();
+  const {
+    getUserById,
+    UserData: user,
+    getAssignUsers,
+    AssignUsers,
+    notiData,
+    getNotiData,
+  } = userStore((state) => state);
 
   const [createAttendanceAction, errCreateAttendance] = useMutation(
     CREATE_ATTENDANCE,
@@ -29,7 +40,13 @@ const FaceScanner = (props) => {
         console.log("error", errCreateAttendance);
       },
       onCompleted: async (data) => {
-        console.log(data);
+        getNotiData({
+          message: "Success!",
+          belongTo: "Attendance",
+          label: "Facial Recognition Success.",
+          action: "none",
+          timeout: 5000,
+        });
         setCookie(null, "attendance", data?.createAttendance?.data.id, {
           maxAge: 30 * 24 * 60 * 60,
           path: "/",
@@ -43,29 +60,6 @@ const FaceScanner = (props) => {
 
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
-  const {
-    getUserById,
-    UserData: user,
-    getAssignUsers,
-    AssignUsers,
-  } = userStore((state) => state);
-
-  useEffect(() => {
-    const loadModels = async () => {
-      const MODEL_URL = "/models";
-
-      Promise.all([
-        faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
-      ]).then();
-    };
-    loadModels();
-    startVideo();
-  }, []);
-
   useEffect(() => {
     getUserById({
       apolloClient,
@@ -78,7 +72,11 @@ const FaceScanner = (props) => {
   }, [user]);
 
   useEffect(() => {
-    if (resultUser == userData?.username) {
+    startCamera();
+  }, []);
+
+  useEffect(() => {
+    if (resultUser) {
       createAttendance({
         createAttendanceAction,
         data: {
@@ -96,101 +94,46 @@ const FaceScanner = (props) => {
     }
   }, [resultUser]);
 
-  const startVideo = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: { width: 300 } })
-      .then((stream) => {
-        let video = videoRef.current;
-        video.srcObject = stream;
-        video.play();
-      })
-      .catch((err) => {
-        console.error("error:", err);
+  const startCamera = async () => {
+    try {
+      const userMedia = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
       });
+      setStream(userMedia);
+      if (videoRef.current) {
+        videoRef.current.srcObject = userMedia;
+      }
+    } catch (error) {
+      console.error("Error accessing the camera:", error);
+    }
   };
 
-  function getLabeledFaceDescriptions() {
-    return Promise.all(
-      AssignUsers?.map(async (label) => {
-        const descriptions = [];
-        const imageUrl =
-          label?.attributes.users_permissions_user?.data?.attributes
-            ?.facialScanImage?.data?.attributes?.url;
-        const img = await faceapi.fetchImage(
-          `${process.env.NEXT_PUBLIC_APP_URL}${imageUrl}`
-        );
-
-        const detections = await faceapi
-          .detectSingleFace(img)
-          .withFaceLandmarks()
-          .withFaceDescriptor();
-        descriptions.push(detections.descriptor);
-
-        return new faceapi.LabeledFaceDescriptors(
-          label?.attributes.users_permissions_user?.data?.attributes?.username,
-
-          descriptions
-        );
-      })
-    );
-  }
-
-  async function handleVideoOnPlay() {
-    let video = videoRef.current;
-    if (AssignUsers?.length) {
-      const labeledFaceDescriptors = await getLabeledFaceDescriptions();
-      const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
-      const canvas = faceapi.createCanvasFromMedia(video);
-      // video.parentNode.appendChild(canvas);
-      const displaySize = { width: video.width, height: video.height };
-      faceapi.matchDimensions(canvas, displaySize);
-
-      const intervalId = setInterval(async () => {
-        if (!video.paused && !video.ended) {
-          const detections = await faceapi
-            .detectAllFaces(video)
-            .withFaceLandmarks()
-            .withFaceDescriptors();
-
-          const resizedDetections = faceapi.resizeResults(
-            detections,
-            displaySize
-          );
-
-          canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-
-          const results = resizedDetections.map((d) => {
-            return faceMatcher.findBestMatch(d.descriptor);
-          });
-
-          setResultUser(results[0]?._label);
-          results.forEach((result, i) => {
-            const box = resizedDetections[i].detection.box;
-            const drawBox = new faceapi.draw.DrawBox(box, {
-              label: result.toString(), // Convert the result to a string
-            });
-            drawBox.draw(canvas);
-          });
-        } else {
-          clearInterval(intervalId); // Stop the recognition when the video pauses or ends
-        }
-      }, 1000);
+  const captureImage = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const capturedImage = canvas.toDataURL("image/png");
+      setResultUser(capturedImage);
+      console.log(capturedImage);
     }
-  }
+  };
 
   return (
     <>
       <HeaderNoti title={"Check In"} href={"/attendance"} />
       <div className="text-center container">
-        {/* <div style={{ position: "relative", margin: "2px 10px" }}>
-          <NotificationBox
-            message={router.query.message}
-            belongTo={router.query.belongTo}
+        <div style={{ position: "relative", margin: "2px 10px" }}>
+          <GlobalNotiBox
+            message={notiData?.message}
+            belongTo={notiData?.belongTo}
             timeout={5000}
-            action={router.query.action}
-            label={router.query.action}
+            action={notiData?.action}
+            label={notiData?.label}
           />
-        </div> */}
+        </div>
         <div className="text-start">
           <h3 style={{ textAlign: "center", color: "#000", marginTop: "20px" }}>
             Step 2{" "}
@@ -199,20 +142,44 @@ const FaceScanner = (props) => {
             Please make sure face is align in the frame.
           </label>
         </div>
-        <video
-          ref={videoRef}
-          height={videoHeight}
-          width={videoWidth}
-          onPlay={handleVideoOnPlay}
-          autoPlay
-          style={{
-            borderRadius: "10px",
-            transform: "scaleX(-1)", // Apply a 180-degree rotation
-          }}
-        />
+        <div css={styles.wrapper}>
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            style={{
+              borderRadius: "5px",
+              transform: "scaleX(-1)", // Apply a 180-degree rotation
+            }}
+          />
+          <button css={styles.button} onClick={captureImage}>
+            Capture Image
+          </button>
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+        </div>
       </div>
     </>
   );
 };
 
 export default FaceScanner;
+
+const styles = {
+  wrapper: css`
+    display: flex;
+    flex-direction: column;
+  `,
+  button: css`
+    margin-top: 20px;
+    margin-top: 5px;
+    width: 100%;
+    font-size: 18px;
+    padding: 4px;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background: var(--primary);
+    color: var(--white);
+  `,
+};

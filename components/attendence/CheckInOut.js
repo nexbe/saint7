@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Card from "../../components/documents/Card";
+import Card from "./Card";
 import CalendarIcon from "../../public/icons/calendarIcon";
 import LocationIcon from "../../public/icons/locationIcon";
 import ScanIcon from "../../public/icons/scanIcon";
