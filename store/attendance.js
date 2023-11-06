@@ -139,8 +139,7 @@ const attendenceStore = create((set, get) => ({
   AttendanceUser: {},
   AllAttendances: [],
   historyData: {},
-  createAssignedUser: async (data) => {
-    console.log(data)
+  createAssignedUser: async ({data}) => {
     try {
       const response = await axios.post(
         "https://saint7-office.singaporetestlab.com/api/shift-assign",

@@ -25,11 +25,7 @@ const AssignUser = () => {
   const {sites, getSites} = siteStore();
   const {shifts, getShifts} = shiftStore();
   const { createAssignedUser } = attendenceStore();
-  const today = new Date();
-  const tomorrow = new Date();
-
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const [dutyDates, setDutyDates] = useState([today, tomorrow]);
+  const [dutyDates, setDutyDates] = useState([]);
 
   useEffect(() => {
     getSites();
@@ -73,7 +69,9 @@ const AssignUser = () => {
    
     if(dutyDates){
       dutyDates?.map((date)=> {
-        return dates.push(`${date.year}-${date.month}-${date.day}`)
+        const formattedDay = String(date.day).padStart(2, '0');
+        const formattedMonth = String(date.month).padStart(2, '0');
+        return dates.push(`${date.year}-${formattedMonth}-${formattedDay}`)
       })
     }
     if(assignedUsers){
@@ -90,6 +88,7 @@ const AssignUser = () => {
           "users":assingnedUserLists
         }
       })
+      setModal(false)
     }
   }
   const DropdownIndicator = (props) => {
