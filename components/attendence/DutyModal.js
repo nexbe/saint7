@@ -60,9 +60,9 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
       <div css={styles.dutyDetails}>
         <div className="timeBox">
           <div style={{ fontSize: "16px" }}>
-            {moment(historyData?.date).format("dddd")}
+            {moment(AttendanceUser?.attributes?.date).format("dddd")}
             <label className="d-flex">
-              {moment(historyData?.date).format("Do MMMM YYYY")}
+              {moment(AttendanceUser?.attributes?.date).format("Do MMMM YYYY")}
             </label>
           </div>
           <div>
@@ -98,8 +98,8 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
             <label>
               Actual Check-in Time{" "}
               <label className="d-flex" css={styles.boldText}>
-                {historyData?.check_in_time
-                  ? formatTime(historyData?.check_in_time)
+                {AttendanceUser?.attributes?.checkInTime
+                  ? formatTime(AttendanceUser?.attributes?.checkInTime)
                   : "00:00"}
               </label>
             </label>
@@ -109,8 +109,9 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
             <label>
               Actual Check-out Time{" "}
               <label className="d-flex" css={styles.boldText}>
-                {historyData?.status == "Complete" && historyData?.check_in_time
-                  ? formatTime(historyData?.check_out_t_ime)
+                {AttendanceUser?.attributes?.status == "Complete" &&
+                AttendanceUser?.attributes?.checkOutTime
+                  ? formatTime(AttendanceUser?.attributes?.checkOutTime)
                   : "N.A"}
               </label>
             </label>
