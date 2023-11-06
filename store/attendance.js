@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   GET_ATTENDANCE,
   GET_ALL_ATTENDANCE,
+  GET_ATTENDANCE_SCHEDULE,
 } from "../graphql/queries/attendance";
 // import { sanitizeResults } from "../utils/sanitizer";
 
@@ -110,6 +111,25 @@ const attendenceStore = create((set, get) => ({
     }
   },
 
+  getAttendanceSchedule: async ({ apolloClient, where }) => {
+    set({ loading: true });
+    const { data, error, loading } = await apolloClient.query({
+      query: GET_ATTENDANCE_SCHEDULE,
+      variables: where,
+      fetchPolicy: "network-only",
+    });
+
+    if (data) {
+      let attendanceData = data.attendances.data;
+
+      set({ loading: false });
+      set({ AttendanceSchedule: attendanceData });
+      return new Promise((resolve) => {
+        resolve(attendanceData);
+      });
+    }
+  },
+
   getAllAttendance: async ({ apolloClient, where }) => {
     set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
@@ -139,6 +159,7 @@ const attendenceStore = create((set, get) => ({
   AttendanceUser: {},
   AllAttendances: [],
   historyData: {},
+  AttendanceSchedule: [],
 }));
 
 export default attendenceStore;
