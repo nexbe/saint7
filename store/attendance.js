@@ -4,6 +4,7 @@ import {
   GET_ALL_ATTENDANCE,
   GET_ATTENDANCE_SCHEDULE,
 } from "../graphql/queries/attendance";
+import axios from "axios";
 // import { sanitizeResults } from "../utils/sanitizer";
 
 const attendenceStore = create((set, get) => ({
@@ -149,7 +150,6 @@ const attendenceStore = create((set, get) => ({
       });
     }
   },
-
   fetch: false,
   loading: true,
   locationData: {},
@@ -159,6 +159,18 @@ const attendenceStore = create((set, get) => ({
   AttendanceUser: {},
   AllAttendances: [],
   historyData: {},
+  createAssignedUser: async ({data}) => {
+    try {
+      const response = await axios.post(
+        "https://saint7-office.singaporetestlab.com/api/shift-assign",
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating assigned user:", error);
+      throw error;
+    }
+  },
   AttendanceSchedule: [],
 }));
 

@@ -3,30 +3,94 @@ import Layout from "../../../../components/layout/Layout";
 import HeaderNoti from "../../../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
 import Select, { components } from "react-select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import SuccessModal from "../../../../components/attendence/SuccessModal";
 import { useRouter } from "next/router";
 import DatePicker from "react-multi-date-picker";
+import siteStore from "../../../../store/sites";
+import shiftStore from "../../../../store/shift";
+import { useApolloClient } from "@apollo/client";
+import userStore from "../../../../store/user";
+import attendenceStore from "../../../../store/attendance";
 
 const AssignUser = () => {
   const router = useRouter();
+  const apolloClient = useApolloClient();
+  const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
   const [selectedShiftName, setSelectedShiftName] = useState();
   const [selectedSite, setSelectedSite] = useState();
   const [assignedUsers, setAssignedUsers] = useState();
   const [modal, setModal] = useState(false);
-  const today = new Date();
-  const tomorrow = new Date();
+  const {sites, getSites} = siteStore();
+  const {shifts, getShifts} = shiftStore();
+  const { createAssignedUser } = attendenceStore();
+  const [dutyDates, setDutyDates] = useState([]);
 
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const [dutyDates, setDutyDates] = useState([today, tomorrow]);
+  useEffect(() => {
+    getSites();
+    getShifts();
+    getAllUsers({
+      apolloClient,
+      where: {},
+    })
+  },[])
+  const handleSiteChange = (selectedOption) => {
+    setSelectedSite(selectedOption);
+  };
 
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
+  const handleShiftsChange = (selectedOption) => {
+    setSelectedShiftName(selectedOption);
+  };
 
+  const handleUsersChange = (selectedOption) => {
+    setAssignedUsers(selectedOption);
+  };
+  //console.log(selectedShiftName.value,selectedSite.value,assignedUsers,dutyDates)
+  const siteOptions = sites?.map((eachOption) => ({
+    value: eachOption?.id,
+    label: eachOption?.attributes?.name,
+  }));
+
+  const shiftsOptions = shifts?.map((eachOption) => ({
+    value: eachOption?.id,
+    label: eachOption?.attributes?.title,
+  }));
+
+  const userOptions = userInfo?.map((eachOption) => ({
+    value: eachOption?.id,
+    label: eachOption?.username,
+  }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const dates = []
+    const assingnedUserLists = []
+   
+    if(dutyDates){
+      dutyDates?.map((date)=> {
+        const formattedDay = String(date.day).padStart(2, '0');
+        const formattedMonth = String(date.month).padStart(2, '0');
+        return dates.push(`${date.year}-${formattedMonth}-${formattedDay}`)
+      })
+    }
+    if(assignedUsers){
+      assignedUsers?.map((user) => {
+        return assingnedUserLists.push(`${user.value}`)
+      })
+    }
+     if(assingnedUserLists){
+      createAssignedUser({
+        "data": {
+          "dates":dates,
+          "site":selectedSite?.value,
+          "shift":selectedShiftName?.value,
+          "users":assingnedUserLists
+        }
+      })
+      setModal(false)
+    }
+  }
   const DropdownIndicator = (props) => {
     return (
       components.DropdownIndicator && (
@@ -53,13 +117,14 @@ const AssignUser = () => {
               format="DD/MM/YYYY"
             />
           </div>
-          <div>
+          <div style={{marginTop:"15px"}}>
             <label>Site Name</label>
             <Select
               id="site_name"
               name="site_name"
+              onChange={handleSiteChange}
               value={selectedSite}
-              options={options}
+              options={siteOptions}
               placeholder="Select Site"
               styles={selectBoxStyle}
               components={{
@@ -70,13 +135,14 @@ const AssignUser = () => {
               isClearable={false}
             />
           </div>
-          <div>
+          <div style={{marginTop:"15px"}}>
             <label>Shift Name</label>
             <Select
               id="shift_name"
               name="shift_name"
+              onChange={handleShiftsChange}
               value={selectedShiftName}
-              options={options}
+              options={shiftsOptions}
               placeholder="Select Shift"
               styles={selectBoxStyle}
               components={{
@@ -87,14 +153,14 @@ const AssignUser = () => {
               isClearable={false}
             />
           </div>
-          <div>
+          <div css={styles.selectUserStyle}>
             <label>Assign User</label>
             <Select
               id="assign_user"
               name="assign_user"
+              onChange={handleUsersChange}
               value={assignedUsers}
-              options={options}
-              styles={selectBoxStyle}
+              options={userOptions}
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
@@ -114,7 +180,7 @@ const AssignUser = () => {
           Assign
         </div>
       </div>
-      <SuccessModal isOpen={modal} setModal={setModal} />
+      <SuccessModal isOpen={modal} setModal={setModal} handleSubmit={handleSubmit}/>
     </Layout>
   );
 };
@@ -164,7 +230,7 @@ const selectBoxStyle = {
     borderTop: "0px",
     borderLeft: "0px",
     borderRight: "0px",
-    borderBottom: "2px solid rgba(0, 0, 0, 0.10);",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.10);",
     color: "var(--primary-font)",
     fontWeight: "400",
     display: "flex",
@@ -234,4 +300,29 @@ const styles = {
       padding: 8px 30px;
     }
   `,
+  selectUserStyle:css`
+   margin-top:10px;
+  .css-3w2yfm-ValueContainer, .css-13cymwt-control, .css-1p3m7a8-multiValue{
+    display:flex;
+    flex-direction:row !important;
+    justify-content:start !important;
+  }
+  .css-13cymwt-control{
+    border-left:none;
+    border-right:none;
+    border-top:none;
+    flex-wrap:nowrap;
+    outline: none !important;
+    border-bottom:1px solid rgba(0, 0, 0, 0.1);
+  }
+  .css-1p3m7a8-multiValue{
+    border-radius: 9px;
+    background-color: rgba(0, 171, 209, 0.10);
+  }
+  .css-1fdsijx-ValueContainer{
+    align-items:start;
+    justify-content:start !important;
+
+  }
+  `
 };
