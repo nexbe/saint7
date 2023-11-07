@@ -112,7 +112,7 @@ const PayslipDetails = () => {
                   (data) => {
                     if (data.options === "add") {
                       return (
-                        <tr>
+                        <tr key={data?.id}>
                           <td className="label">{data.key}</td>
                           <td className="value">$ {data.value}</td>
                         </tr>
@@ -135,7 +135,7 @@ const PayslipDetails = () => {
                   (data) => {
                     if (data.options === "deduct") {
                       return (
-                        <tr>
+                        <tr key={data?.id}>
                           <td className="label">{data.key}</td>
                           <td className="value">$ {data.value}</td>
                         </tr>

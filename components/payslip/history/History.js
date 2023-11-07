@@ -5,17 +5,20 @@ import Card from "./Card";
 import payslipStore from "../../../store/payslip";
 
 const History = () => {
-  const { getPayslip ,payslips } = payslipStore();
+  const { getPayslip, payslips } = payslipStore();
   useEffect(() => {
     getPayslip();
-  },[])
+  }, []);
   return (
     <div css={styles.wrapper}>
-      {payslips && payslips.data?.map((payslip) => {
-        return (
-          <Card data={payslip} key={payslip?.id} />
-        )
-      })}
+      {payslips &&
+        payslips.data?.map((payslip) => {
+          return (
+            <div key={payslip?.id}>
+              <Card data={payslip} />
+            </div>
+          );
+        })}
     </div>
   );
 };
@@ -27,7 +30,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 9px;
-    margin:20px;
+    margin: 20px;
     max-height: 72vh;
     overflow-y: scroll;
     color: #000;
