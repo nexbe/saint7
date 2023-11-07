@@ -1,7 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
+import { useApolloClient } from "@apollo/client";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@apollo/client";
+import dayjs from "dayjs";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import Select, { components } from "react-select";
@@ -11,46 +15,223 @@ import { BsArrowRight } from "react-icons/bs";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
-import { redirect } from "next/dist/server/api-utils";
+import userStore from "../../store/user";
+import authStore from "../../store/auth";
+import leavestore from "../../store/eLeave";
+import { CREATE_LEAVE } from "../../graphql/mutations/eLeave";
 
 const ApplyLeave = () => {
   const haldDayOptions = [
-    { value: "firstHalf", label: "First Half (AM)" },
-    { value: "secondHalf", label: "Second Half (PM)" },
-  ];
-  const sendRequestOptions = [
-    { value: "all", label: "All" },
-    { value: "admin", label: "Ken Ling (Admin)" },
-    { value: "manager1", label: "John Smith (Manager)" },
-    { value: "manager2", label: "Thin Thin (Manager)" },
+    { value: "Firsthalf", label: "First Half (AM)" },
+    { value: "Secondhalf", label: "Second Half (PM)" },
   ];
   const leaveTypeOptions = [
-    { value: "annual", label: "Annual Leave (Vacation Leave)" },
-    { value: "sick", label: "Sick Leave" },
-    { value: "maternity", label: "Maternity Leave" },
-    { value: "paternity", label: "Paternity Leave" },
-    { value: "parental", label: "Parental Leave" },
-    { value: "bereavement", label: "Bereavement Leave" },
-    { value: "compensatory", label: "Compensatory Time Off (Comp Time)" },
-    { value: "unpaid", label: "Unpaid Leave" },
-    { value: "educational", label: "Educational Leave" },
+    { value: "Annual_Leave", label: "Annual Leave (Vacation Leave)" },
+    { value: "Sick_Leave", label: "Sick Leave" },
+    { value: "Maternity_Leave", label: "Maternity Leave" },
+    { value: "Paternity_Leave", label: "Paternity Leave" },
+    { value: "Parental_Leave", label: "Parental Leave" },
+    { value: "Bereavement_Leave", label: "Bereavement Leave" },
+    {
+      value: "Compensatory_Time_Off",
+      label: "Compensatory Time Off (Comp Time)",
+    },
+    { value: "Unpaid_Leave", label: "Unpaid Leave" },
+    { value: "Educational_Leave", label: "Educational Leave" },
+    { value: "Jury_Duty_Leave", label: "Jury Duty Leave" },
+    { value: "Military_Leave", label: "Military Leave" },
+    { value: "Sabbatical_Leave", label: "Sabbatical Leave" },
+    { value: "Emergency_Leave", label: "Emergency Leave" },
+    {
+      value: "Leave_Act_FMLA_Leave",
+      label: "Family and Medical Leave Act (FMLA) Leave",
+    },
   ];
   const router = useRouter();
-  const [chosenType, setChosenType] = useState(null);
+  const apolloClient = useApolloClient();
+  const {
+    register,
+    reset,
+    handleSubmit,
+
+    formState: { errors },
+  } = useForm();
+  const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
+  const { user } = authStore((state) => state);
+  const { createLeave } = leavestore((state) => state);
+  const [createLeaveAction, errCreateLeave] = useMutation(CREATE_LEAVE);
+  const [chosenType, setChosenType] = useState("Fullday");
   const [checkHalfDay, setCheckHalfDay] = useState(false);
   const [selectedHalfDayOption, setSelectedHalfDayOption] = useState(
     haldDayOptions[0]
   );
   const [selectedLeaveTypeOption, setSelectedLeaveTypeOption] = useState();
-  const [selectedSendRequestOption, setSelectedSendRequestOption] = useState();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
+  const [refetch, setRefetch] = useState(1);
+  const [requestTosOptionList, setRequestTosOptionList] = useState();
+  const [selectedRequestTosOptions, setSelectedRequestTosOptions] = useState();
+  const [numOfDay, setNumOfDay] = useState(1);
+  const [saveAction, setSaveAction] = useState(false);
+
+  useEffect(() => {
+    getAllUsers({
+      apolloClient,
+      where: {},
+    });
+  }, [user]);
+
+  const calculateNumOfMaxDays = (startDate, endDate) => {
+    const totalDays = dayjs(endDate).date() - dayjs(startDate).date() + 1;
+    let numOfDays = 0;
+    if (totalDays >= 7) {
+      numOfDays = parseInt(totalDays / 7) * 5 + (totalDays % 7);
+      if (new Date(endDate).getDay() == 6) numOfDays = numOfDays - 1;
+      if (new Date(endDate).getDay() == 0) numOfDays = numOfDays - 2;
+      if (
+        new Date(startDate).getDay() > new Date(endDate).getDay() &&
+        new Date(endDate).getDay() != 0 &&
+        startDate.getDay() - endDate.getDay() > 1
+      ) {
+        numOfDays = numOfDays - 2;
+      }
+    } else {
+      numOfDays =
+        new Date(startDate).getDay() > new Date(endDate).getDay()
+          ? 6 - new Date(startDate).getDay() + new Date(endDate).getDay()
+          : new Date(endDate).getDay() == 6
+          ? dayjs(endDate).date() - dayjs(startDate).date()
+          : dayjs(endDate).date() - dayjs(startDate).date() + 1;
+    }
+    return numOfDays;
   };
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
+
+  const calculateNumOfDays = useCallback(async () => {
+    if (
+      (endDate == null || new Date(endDate) < new Date(startDate)) &&
+      refetch != 1
+    ) {
+      setEndDate(startDate);
+    }
+
+    let totalDays = 0;
+    let numOfDays = 0;
+    if (dayjs(endDate).isSame(dayjs(startDate), "month")) {
+      numOfDays = calculateNumOfMaxDays(startDate, endDate);
+    } else if (dayjs(endDate).isAfter(dayjs(startDate), "month")) {
+      totalDays =
+        dayjs(startDate).daysInMonth() -
+        dayjs(startDate).date() +
+        dayjs(endDate).date() +
+        1;
+
+      if (totalDays > 7) {
+        numOfDays = parseInt(totalDays / 7) * 5 + (totalDays % 7);
+        if (new Date(endDate).getDay() == 6) numOfDays = numOfDays - 1;
+        else if (new Date(endDate).getDay() == 0 && totalDays % 7 != 0)
+          numOfDays = numOfDays - 2;
+        else if (
+          new Date(startDate).getDay() > new Date(endDate).getDay() &&
+          new Date(endDate).getDay() != 0 &&
+          startDate.getDay() - endDate.getDay() > 1
+        ) {
+          numOfDays = numOfDays - 2;
+        }
+      } else {
+        numOfDays =
+          new Date(startDate).getDay() > new Date(endDate).getDay()
+            ? 6 - new Date(startDate).getDay() + new Date(endDate).getDay()
+            : new Date(endDate).getDay() == 6
+            ? dayjs(startDate).daysInMonth() -
+              dayjs(startDate).date() +
+              dayjs(endDate).date()
+            : dayjs(startDate).daysInMonth() -
+              dayjs(startDate).date() +
+              dayjs(endDate).date() +
+              1;
+      }
+    }
+
+    setNumOfDay(numOfDays);
+  }, [startDate, endDate]);
+
+  const requestTosOption = async () => {
+    const options = [];
+    userInfo?.map((users) => {
+      if (
+        users?.role?.name == "Admin" ||
+        (users?.role?.name == "Manager" && users?.id != user?.id)
+      ) {
+        options.push({
+          value: parseInt(users?.id),
+          label: users?.username + " (" + users?.role?.name + ")",
+        });
+      }
+    });
+    setRequestTosOptionList(options);
   };
+
+  const Option = (props) => {
+    return (
+      <div>
+        <components.Option {...props}>
+          <input
+            type="checkbox"
+            checked={props.isSelected}
+            onChange={() => null}
+          />{" "}
+          <label>{props.label}</label>
+        </components.Option>
+      </div>
+    );
+  };
+
+  const ValueContainer = ({ children, hasValue, ...props }) => {
+    if (!hasValue) {
+      return (
+        <components.ValueContainer {...props}>
+          {children}
+        </components.ValueContainer>
+      );
+    }
+    const [chips, otherChildren] = children;
+    const CHIPS_LIMIT = 1;
+    const overflowCounter = chips.slice(CHIPS_LIMIT).length;
+    const displayChips = chips.slice(
+      overflowCounter,
+      overflowCounter + CHIPS_LIMIT
+    );
+    return (
+      <components.ValueContainer {...props}>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            color: "#293991",
+          }}
+        >
+          {displayChips.map((displayChip, index) => (
+            <label style={{ color: "#293991", width: "80%" }} key={index}>
+              {displayChip}
+            </label>
+          ))}
+          {overflowCounter === 0 ? (
+            ""
+          ) : (
+            <label style={{ color: "#293991" }}>{`+ ${overflowCounter}`}</label>
+          )}
+        </div>
+      </components.ValueContainer>
+    );
+  };
+  const handleRequestTosSelect = (data) => {
+    setSelectedRequestTosOptions(data);
+  };
+
+  useEffect(() => {
+    requestTosOption();
+    calculateNumOfDays();
+  }, [userInfo, calculateNumOfDays, checkHalfDay, errors]);
 
   const handleSelectHalfDayChange = (selectedOption) => {
     setSelectedHalfDayOption(selectedOption);
@@ -58,16 +239,7 @@ const ApplyLeave = () => {
   const handleSelectLeaveTypeChange = (selectedOption) => {
     setSelectedLeaveTypeOption(selectedOption);
   };
-  const handleSendRequestChange = (selectedOption) => {
-    setSelectedSendRequestOption(selectedOption);
-  };
 
-  const CustomOption = ({ children, ...props }) => (
-    <div css={styles.selectBoxOptions} {...props.innerProps}>
-      <input type="checkbox" checked={props.isSelected} />
-      {children}
-    </div>
-  );
   const DropdownIndicator = (props) => {
     return (
       components.DropdownIndicator && (
@@ -78,12 +250,43 @@ const ApplyLeave = () => {
     );
   };
 
+  const onSubmit = async (data) => {
+    if (!!saveAction) {
+      await createLeave({
+        createLeaveAction,
+        data: {
+          from: dayjs(startDate).locale("en-US").format("YYYY-MM-DD"),
+          to: dayjs(endDate).locale("en-US").format("YYYY-MM-DD"),
+          status: "Pending",
+          reason: data.reason,
+          numberOfDays: chosenType === "Halfday" ? 0.5 : numOfDay,
+          leaveDuration: chosenType,
+          leaveType: selectedLeaveTypeOption?.value,
+          halfdayOptions: selectedHalfDayOption?.value,
+          users_permissions_user: user?.id,
+          requestedTos: selectedRequestTosOptions?.map((eachRequest) => {
+            return +eachRequest?.value;
+          }),
+          publishedAt: new Date().toISOString(),
+        },
+      });
+      router.push({
+        pathname: "/eLeave/leaveHistory",
+        query: {
+          userId: user?.id,
+          message: "Success!",
+          label: "Your leave request has been successfully sent.",
+        },
+      });
+    }
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
         <HeaderNoti title={"Apply Leave"} href={"/eLeave"} />
         <div css={styles.bodyContainer}>
-          <div>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div css={styles.formContent}>
               <div className="formFlex" style={{ border: "none" }}>
                 <div css={styles.dateContent}>
@@ -93,7 +296,14 @@ const ApplyLeave = () => {
                       <BiCalendarAlt size={20} />
                       <DatePicker
                         selected={startDate}
-                        onChange={handleStartDateChange}
+                        minDate={new Date()}
+                        shouldCloseOnSelect={true}
+                        onChange={(date) => {
+                          setStartDate(date);
+                          checkHalfDay === true || date > endDate
+                            ? setEndDate(date)
+                            : "";
+                        }}
                         dateFormat="MMM / dd / yy"
                       />
                     </label>
@@ -107,7 +317,13 @@ const ApplyLeave = () => {
                       <BiCalendarAlt size={20} />
                       <DatePicker
                         selected={endDate}
-                        onChange={handleEndDateChange}
+                        minDate={startDate}
+                        shouldCloseOnSelect={true}
+                        onChange={(date) => {
+                          checkHalfDay === false
+                            ? setEndDate(date)
+                            : setEndDate(startDate);
+                        }}
                         dateFormat="MMM / dd / yy"
                       />
                     </label>
@@ -119,13 +335,13 @@ const ApplyLeave = () => {
                   <label css={styles.radioLabel} className="secondary-text">
                     <input
                       type="radio"
-                      name="fullDay"
-                      value="fullDay"
+                      name="Fullday"
+                      value="Fullday"
                       css={styles.radioInput}
                       onChange={(event) =>
                         setChosenType(event.currentTarget.value)
                       }
-                      checked={chosenType == "fullDay"}
+                      checked={chosenType == "Fullday"}
                       onClick={() => {
                         setCheckHalfDay(false);
                       }}
@@ -144,15 +360,16 @@ const ApplyLeave = () => {
                   <label css={styles.radioLabel} className="secondary-text">
                     <input
                       type="radio"
-                      name="halfDay"
-                      value="halfDay"
+                      name="Halfday"
+                      value="Halfday"
                       css={styles.radioInput}
                       onChange={(event) =>
                         setChosenType(event.currentTarget.value)
                       }
-                      checked={chosenType == "halfDay"}
+                      checked={chosenType == "Halfday"}
                       onClick={() => {
                         setCheckHalfDay(true);
+                        setEndDate(startDate);
                       }}
                     />
                     <span
@@ -183,7 +400,6 @@ const ApplyLeave = () => {
                       DropdownIndicator: () => null,
                       IndicatorSeparator: () => null,
                       DropdownIndicator,
-                      Option: CustomOption,
                     }}
                     isClearable={false}
                   />
@@ -198,7 +414,8 @@ const ApplyLeave = () => {
                     type={"number"}
                     className="secondary-text"
                     placeholder="0"
-                    defaultValue={checkHalfDay ? 0.5 : 0}
+                    readOnly={true}
+                    value={checkHalfDay ? 0.5 : numOfDay}
                   />
                 </label>
               </div>
@@ -208,6 +425,7 @@ const ApplyLeave = () => {
                 </div>
 
                 <Select
+                  minMenuHeight={10}
                   value={selectedLeaveTypeOption}
                   onChange={handleSelectLeaveTypeChange}
                   options={leaveTypeOptions}
@@ -217,12 +435,11 @@ const ApplyLeave = () => {
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
                     DropdownIndicator,
-                    Option: CustomOption,
                   }}
                   isClearable={false}
                 />
               </div>
-              <div className="formFlex">
+              {/* <div className="formFlex">
                 <div className="d-flex">
                   <label className="secondary-text">Remaining Leaves</label>
                 </div>
@@ -233,12 +450,18 @@ const ApplyLeave = () => {
                     placeholder=""
                   />
                 </label>
-              </div>
+              </div> */}
               <div className="formFlex">
                 <div className="d-flex">
                   <label className="secondary-text">Leave Reason</label>
                 </div>
-                <input type={"text"} className="secondary-text" />
+                <input
+                  type={"text"}
+                  className="secondary-text"
+                  {...register("reason", {
+                    required: false,
+                  })}
+                />
               </div>
               <div className="formFlex">
                 <div className="d-flex">
@@ -247,19 +470,22 @@ const ApplyLeave = () => {
                   </label>
                 </div>
                 <Select
-                  value={selectedSendRequestOption}
-                  onChange={handleSendRequestChange}
-                  options={sendRequestOptions}
-                  placeholder="Please select"
-                  styles={selectBoxStyle}
                   isMulti
+                  allowSelectAll={true}
+                  placeholder="Please select"
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  options={requestTosOptionList}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
                     DropdownIndicator,
-                    Option: CustomOption,
+                    Option,
+                    ValueContainer,
                   }}
-                  isClearable={false}
+                  value={selectedRequestTosOptions}
+                  onChange={handleRequestTosSelect}
+                  styles={selectBoxStyle}
                 />
               </div>
             </div>
@@ -272,12 +498,14 @@ const ApplyLeave = () => {
               </button>
               <button
                 css={styles.addBtn}
-                onClick={() => router.push("/eLeave/leaveHistory")}
+                onClick={() => {
+                  setSaveAction(true);
+                }}
               >
                 Apply
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </Layout>
@@ -300,6 +528,9 @@ const selectBoxStyle = {
       ...styles,
       backgroundColor: "rgba(0, 171, 209, 0.10)",
       borderRadius: "10px",
+      color: "#293991",
+      width: "100%",
+      display: "flex",
     };
   },
   singleValue: (styles, { data }) => {
@@ -310,6 +541,8 @@ const selectBoxStyle = {
   menu: (provided, state) => ({
     ...provided,
     width: "100%",
+    maxHeight: "150px",
+    overflowY: "scroll",
     outline: "none",
   }),
   valueContainer: (provided, state) => ({
@@ -327,6 +560,20 @@ const selectBoxStyle = {
     fontWeight: "400",
     display: "flex",
   }),
+  option: (styles, { isSelected }) => {
+    return {
+      ...styles,
+      backgroundColor: isSelected ? "#E3F3FF" : "#fff",
+      color: "#000",
+      cursor: isSelected ? "not-allowed" : "pointer",
+      fontSize: "14px",
+      margin: "0",
+      padding: "5px 20px",
+      "&:hover": {
+        backgroundColor: "none",
+      },
+    };
+  },
 };
 
 const styles = {
@@ -345,7 +592,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 10px;
+    margin: 20px;
     gap: 12px;
     font-family: Inter;
     font-style: normal;
@@ -410,7 +657,7 @@ const styles = {
       width: 100%;
     }
     div {
-      color: #37474f;
+      
       font-size: 16px;
       font-weight: 600;
       line-height: 30px;
@@ -431,8 +678,20 @@ const styles = {
         font-size: 10px;
         font-weight: 400;
         line-height: normal;
-      }
+      } 
     }
+    .react-datepicker__triangle {
+        display: none;
+      }
+      .react-datepicker__navigation-icon--next {
+        top: -4px;
+       left: -10px;
+      }
+      .react-datepicker__navigation-icon--previous {
+        top: -4px;
+        left: 10px;
+        
+      }
   `,
   radioLabel: css`
     cursor: pointer;
@@ -446,19 +705,6 @@ const styles = {
     cursor: pointer;
     margin-right: 10px;
     align-items: center;
-  `,
-  selectBox: css`
-    border: none;
-    background: red;
-  `,
-  selectBoxOptions: css`
-    display: flex;
-    gap: 10px;
-    margin: 3px 20px;
-    line-height: 20px;
-    font-size: 13px;
-    color: #37474f;
-    cursor: pointer;
   `,
   actionButton: css`
     display: flex;

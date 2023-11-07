@@ -54,7 +54,7 @@ const LeaveHistory = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"Leave History"} href={"/eLeave"} />
+        <HeaderNoti title={"Leave Approval"} href={"/eLeave"} />
         <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox
             message={router.query.message}

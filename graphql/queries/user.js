@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 export const GET_USERS = gql`
   query {
-    usersPermissionsUsers {
+    usersPermissionsUsers(pagination: { limit: 100 }) {
       data {
         id
         attributes {
