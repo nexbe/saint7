@@ -4,32 +4,46 @@ import { useRouter } from "next/router";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
+import userStore from "../../store/auth";
 
 const ELeave = () => {
   const router = useRouter();
+  const { user } = userStore((state) => state);
   return (
     <Layout>
       <div css={styles.wrapper}>
         <HeaderNoti title={"E-Leave"} href={"/home"} />
         <div css={styles.bodyContainer}>
-          <div
-            className="header-text"
-            onClick={() => router.push("/eLeave/applyLeave")}
-          >
-            Apply Leave
-          </div>
+          {user?.role?.name?.toLowerCase() != "guard" && (
+            <div
+              className="header-text"
+              onClick={() => router.push("/eLeave/leaveApproval")}
+            >
+              Leave Approval
+            </div>
+          )}
+          {user?.role?.name?.toLowerCase() != "admin" && (
+            <div
+              className="header-text"
+              onClick={() => router.push("/eLeave/applyLeave")}
+            >
+              Apply Leave
+            </div>
+          )}
           <div
             className="header-text"
             onClick={() => router.push("/eLeave/leaveCalendar")}
           >
             Leave Calendar
           </div>
-          <div
-            className="header-text"
-            onClick={() => router.push("/eLeave/leaveHistory")}
-          >
-            Leave History
-          </div>
+          {user?.role?.name?.toLowerCase() != "admin" && (
+            <div
+              className="header-text"
+              onClick={() => router.push("/eLeave/leaveHistory")}
+            >
+              Leave History
+            </div>
+          )}
         </div>
       </div>
     </Layout>
