@@ -1,15 +1,24 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useEffect } from "react";
 import { css } from "@emotion/react";
 import Card from "./Card";
+import payslipStore from "../../../store/payslip";
 
 const History = () => {
+  const { getPayslip, payslips } = payslipStore();
+  useEffect(() => {
+    getPayslip();
+  }, []);
   return (
     <div css={styles.wrapper}>
-      <Card data={"August"} />
-      <Card data={"July"} />
-      <Card data={"June"} />
-      <Card data={"May"} />
+      {payslips &&
+        payslips.data?.map((payslip) => {
+          return (
+            <div key={payslip?.id}>
+              <Card data={payslip} />
+            </div>
+          );
+        })}
     </div>
   );
 };
@@ -21,8 +30,8 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 9px;
-    margin:20px;
-    max-height: 78vh;
+    margin: 20px;
+    max-height: 72vh;
     overflow-y: scroll;
     color: #000;
     @media (min-width: 440px) {

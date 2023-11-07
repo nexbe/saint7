@@ -45,7 +45,7 @@ const EditAnnouncementModal = ({ modal, setModal, data }) => {
       query: {
         message: !errorUpdateAnnouncement ? "Success!" : "Apologies!",
         belongTo: !errorUpdateAnnouncement ? "Announcement" : "error",
-        action: "edit",
+        label: data?.title + " has successfully updated.",
         userId: data.id,
       },
     })

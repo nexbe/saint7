@@ -21,7 +21,7 @@ const CreateNewPassword = () => {
       createNewPassword({
         password: password,
         passwordConfirmation: password,
-        code: verifiedOtpUserData.data.code,
+        code: verifiedOtpUserData.data?.code,
       });
       setModal(true);
     }
