@@ -1,26 +1,77 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 const Card = ({ data }) => {
   const router = useRouter();
+  const calculateTotalEarning = () => {
+    let total = 0;
+    if (
+      data?.attributes.additionalTransactions &&
+      data?.attributes.additionalTransactions.length !== 0
+    ) {
+      const totalAdditation = data?.attributes.additionalTransactions.reduce(
+        (accumulator, current) => {
+          if (current.options === "add") {
+            return accumulator + current?.value;
+          }
+          return accumulator;
+        },
+        0
+      );
+      total =
+        data?.attributes?.basicSalary +
+        (data?.attributes.allowance || 0) +
+        totalAdditation;
+    } else {
+      total = data?.attributes?.basicSalary + (data?.attributes.allowance || 0);
+    }
+    return total;
+  };
+
+  const calculateTotalDeduction = () => {
+    const totalDeduction = data?.attributes.additionalTransactions.reduce(
+      (accumulator, current) => {
+        if (current.options === "deduct") {
+          return accumulator + current.value;
+        }
+        return accumulator;
+      },
+      0
+    );
+
+    return totalDeduction;
+  };
+
   return (
     <div css={styles.wrapper}>
-      <h3 css={styles.title}>{data}</h3>
+      <h3 css={styles.title}>{data?.attributes?.month}</h3>
       <div css={styles.info}>
         <ul>
           <li>
-            <span> Total Earning</span>: <b>$550</b>
+            <span> Total Earning</span>: <b>${calculateTotalEarning()}</b>
           </li>
           <li>
-            <span>Total Deduction </span>: <b>$50</b>
+            <span>Total Deduction </span>: <b>${calculateTotalDeduction()}</b>
           </li>
           <li style={{ fontWeight: "600", marginTop: "9px" }}>
-            <span>Net Salary</span>: <b>$50</b>
+            <span>Net Salary</span>:{" "}
+            <b>{calculateTotalEarning() - calculateTotalDeduction()}</b>
           </li>
         </ul>
-        <button css={styles.viewSlipBtn} onClick={() => router.push(`/payslip/${2}`)}>View Slip</button>
+        <button
+          css={styles.viewSlipBtn}
+          onClick={() =>
+            router.push({ 
+              pathname: `/payslip/payslipDetails`,
+              query: {
+                id: data.id
+              }
+          })
+          }>
+          View Slip
+        </button>
       </div>
     </div>
   );
@@ -43,14 +94,14 @@ const styles = {
   info: css`
     display: flex;
     flex-direction: row;
-    justify-content:space-between;
+    justify-content: space-between;
     gap: 20px;
 
     ul {
       display: flex;
       flex-direction: column;
       gap: 9px;
-      padding-left:0rem;
+      padding-left: 0rem;
       margin-top: 5px;
     }
     li {
