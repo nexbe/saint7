@@ -170,6 +170,7 @@ const styles = {
   `,
   viewBox: css`
     color: #293991;
+    pointer: cursor;
     p {
       font-size: 14px;
       font-weight: 600;

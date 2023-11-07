@@ -21,19 +21,18 @@ const History = () => {
     });
   }, [payUserId]);
 
-  console.log(PayData);
-
   return (
     <Layout>
       <HeaderNoti title={"Payslip"} href={"/home"} />
       <div style={{ height: 0 }}>
         <div css={styles.wrapper}>
-          {PayData.length &&
-            PayData.map((data, index) => (
-              <div key={index}>
-                <Card data={data?.attributes.month} payData={data} />
-              </div>
-            ))}
+          {PayData.length
+            ? PayData.map((data, index) => (
+                <div key={index}>
+                  <Card data={data} />
+                </div>
+              ))
+            : null}
         </div>
       </div>
     </Layout>

@@ -22,6 +22,7 @@ const useAuth = create((set, get) => ({
   },
   verifiedOtpUserData: null,
   resetPasswordData :null,
+  errorLogin: null,
   register: async (data, router) => {
     try {
       const response = await client.mutate({
@@ -89,7 +90,10 @@ const useAuth = create((set, get) => ({
       }
       router.push("/home");
     } catch (err) {
-      console.log(err);
+      set((state) => ({
+        ...state,
+        errorLogin: err
+      }))
     }
   },
   setUser: (user) => set({ user }),

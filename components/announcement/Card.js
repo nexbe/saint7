@@ -57,7 +57,7 @@ const Card = ({
         )}
       </div>
       <p css={styles.paragraph}>
-        {data?.attributes?.description?.slice(0, 150)}
+        {data?.attributes?.description?.slice(0, 120)}
         {"   "}
         <b style={{ color: "#386FFF" }} onClick={() => setModal(true)}>
           View More

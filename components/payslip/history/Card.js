@@ -1,52 +1,75 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import { useRouter } from "next/navigation";
-import userStore from "../../../store/auth";
-import payslipStore from "../../../store/payslip";
+import { useRouter } from "next/router";
 
 const Card = ({ data, payData }) => {
   const router = useRouter();
-  const { user } = userStore((state) => state);
-  const { getPayInfo } = payslipStore((state) => state);
+  const calculateTotalEarning = () => {
+    let total = 0;
+    if (
+      data?.attributes.additionalTransactions &&
+      data?.attributes.additionalTransactions.length !== 0
+    ) {
+      const totalAdditation = data?.attributes.additionalTransactions.reduce(
+        (accumulator, current) => {
+          if (current.options === "add") {
+            return accumulator + current?.value;
+          }
+          return accumulator;
+        },
+        0
+      );
+      total =
+        data?.attributes?.basicSalary +
+        (data?.attributes.allowance || 0) +
+        totalAdditation;
+    } else {
+      total = data?.attributes?.basicSalary + (data?.attributes.allowance || 0);
+    }
+    return total;
+  };
 
-  const handleClick = () => {
-    getPayInfo(payData);
-    router.push({
-      pathname:
-        user?.role?.name === "Admin" || user?.role?.name === "Manager"
-          ? `/payslip/Manager/${2}`
-          : `/payslip/${2}`,
-    });
+  const calculateTotalDeduction = () => {
+    const totalDeduction = data?.attributes.additionalTransactions.reduce(
+      (accumulator, current) => {
+        if (current.options === "deduct") {
+          return accumulator + current.value;
+        }
+        return accumulator;
+      },
+      0
+    );
+
+    return totalDeduction;
   };
 
   return (
     <div css={styles.wrapper}>
-      <h3 css={styles.title}>{data}</h3>
+      <h3 css={styles.title}>{data?.attributes?.month}</h3>
       <div css={styles.info}>
         <ul>
           <li>
-            <span> Basic Salary</span>:{" "}
-            <b>${payData?.attributes?.basicSalary ?? 0}</b>
+            <span> Total Earning</span>: <b>${calculateTotalEarning()}</b>
           </li>
           <li>
-            <span>Total Deduction </span>:{" "}
-            <b>${payData?.attributes?.totalDeduction ?? 0}</b>
-          </li>
-          <li>
-            <span>Allowance</span>:{" "}
-            <b>${payData?.attributes?.allowance ?? 0}</b>
+            <span>Total Deduction </span>: <b>${calculateTotalDeduction()}</b>
           </li>
           <li style={{ fontWeight: "600", marginTop: "9px" }}>
             <span>Net Salary</span>:{" "}
-            <b>${payData?.attributes?.netSalary ?? 0}</b>
+            <b>{calculateTotalEarning() - calculateTotalDeduction()}</b>
           </li>
         </ul>
         <button
           css={styles.viewSlipBtn}
-          onClick={() => {
-            handleClick();
-          }}
+          onClick={() =>
+            router.push({
+              pathname: `/payslip/payslipDetails`,
+              query: {
+                id: data.id,
+              },
+            })
+          }
         >
           View Slip
         </button>

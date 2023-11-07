@@ -1,11 +1,57 @@
 import { create } from "zustand";
-import { sanitizeResults } from "../utils/sanitizer";
-import { GET_PAYSLIPS_BY_ID } from "../graphql/queries/paySlip";
+import client from "../graphql/apolloClient";
+import {
+  GET_PAYSLIP,
+  GET_PAYSLIP_BY_ID,
+  GET_PAYSLIPS_BY_USER,
+} from "../graphql/queries/payslip";
 
 const payslipStore = create((set, get) => ({
+  payslips: [],
+  payslipDetails: [],
+
+  fetch: false,
+  loading: true,
+  PayData: [],
+  payInfo: {},
+
+  getPayslip: async () => {
+    try {
+      const response = await client.query({
+        query: GET_PAYSLIP,
+        fetchPolicy: "network-only",
+      });
+      if (!response.error) {
+        set((state) => ({
+          ...state,
+          payslips: response.data.payslips,
+        }));
+      }
+    } catch (error) {
+      throw error;
+    }
+  },
+  getPayslipByID: async (data) => {
+    try {
+      const response = await client.query({
+        query: GET_PAYSLIP_BY_ID,
+        fetchPolicy: "network-only",
+        variables: data,
+      });
+      if (!response.error) {
+        set((state) => ({
+          ...state,
+          payslipDetails: response.data?.payslips?.data[0],
+        }));
+      }
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getPayslipById: async ({ apolloClient, where }) => {
     const { data, error, loading } = await apolloClient.query({
-      query: GET_PAYSLIPS_BY_ID,
+      query: GET_PAYSLIPS_BY_USER,
       variables: where,
       fetchPolicy: "network-only",
     });
@@ -26,11 +72,6 @@ const payslipStore = create((set, get) => ({
       }
     } catch (error) {}
   },
-
-  fetch: false,
-  loading: true,
-  PayData: [],
-  payInfo: {},
 }));
 
 export default payslipStore;

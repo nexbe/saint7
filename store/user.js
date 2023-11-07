@@ -46,7 +46,7 @@ const userStore = create((set, get) => ({
   getuserByRole: async ({ apolloClient, where }) => {
     const { data, error, loading } = await apolloClient.query({
       query: GET_USER_BY_ROLE,
-      variables: where,
+      // variables: where,
       fetchPolicy: "network-only",
     });
 

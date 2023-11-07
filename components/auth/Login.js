@@ -9,22 +9,25 @@ import useAuth from "../../store/auth";
 
 const Login = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, errorLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
 
-  const onSubmitHandler = async(e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
     if (email && password) {
-      try{
-        await login({
-          identifier: email,
-          password : password,
-        },router)
-      }catch(err){
-        console.log(err)
+      try {
+        await login(
+          {
+            identifier: email,
+            password: password,
+          },
+          router
+        );
+      } catch (err) {
+        console.log(err);
       }
     }
   };
@@ -63,13 +66,17 @@ const Login = () => {
                 aria-label="password"
                 required
               />
-
               <div
                 css={styles.eyeIcon}
                 onClick={() => setShowPassword(!showPassword)}>
                 {!showPassword ? <CloseEyeSlashIcon /> : <OpenEyeIcon />}
               </div>
             </div>
+            {errorLogin && (
+              <span css={styles.errorMsg}>
+                Invalid email or password. Try Again !
+              </span>
+            )}
           </div>
         </div>
 
@@ -89,7 +96,9 @@ const Login = () => {
             </label>
             <span>Remember me</span>
           </div>
-          <div onClick={() => router.push("/auth/resetPassword")}>Forgot Password ?</div>
+          <div onClick={() => router.push("/auth/resetPassword")}>
+            Forgot Password ?
+          </div>
         </div>
 
         <button id="login" type="submit" css={styles.loginBtn}>
@@ -182,6 +191,10 @@ const styles = {
     flex-direction: row;
     position: relative;
     width: 100%;
+  `,
+  errorMsg: css`
+    color: #fb7777;
+    font-weight: 500;
   `,
   eyeIcon: css`
     position: absolute;

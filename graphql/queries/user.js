@@ -116,8 +116,8 @@ export const GET_USER_BY_ID = gql`
 `;
 
 export const GET_USER_BY_ROLE = gql`
-  query ($role: ID!) {
-    usersPermissionsUsers(filters: { role: { id: { eq: $role } } }) {
+  query {
+    usersPermissionsUsers {
       data {
         id
         attributes {

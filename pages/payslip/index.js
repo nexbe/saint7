@@ -7,7 +7,7 @@ import History from "../../components/payslip/history/History";
 const Payslip = () => {
   return (
     <Layout>
-      <HeaderNoti title={"Payslip"} href={"/home"} />
+      <HeaderNoti title={"Payslip"} href={"/HRM"} />
       <History />
     </Layout>
   );
