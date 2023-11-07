@@ -1,6 +1,10 @@
 import { create } from "zustand";
 
-import { GET_USERS, GET_USER_BY_ID } from "../graphql/queries/user";
+import {
+  GET_USERS,
+  GET_USER_BY_ID,
+  GET_USER_BY_ROLE,
+} from "../graphql/queries/user";
 import { sanitizeResults } from "../utils/sanitizer";
 import { GET_ASSIGN_SHIFTS } from "../graphql/queries/assignShift";
 
@@ -33,6 +37,22 @@ const userStore = create((set, get) => ({
     if (data) {
       let userData = data.usersPermissionsUsers.data;
       set({ UserData: userData });
+      return new Promise((resolve) => {
+        resolve(userData);
+      });
+    }
+  },
+
+  getuserByRole: async ({ apolloClient, where }) => {
+    const { data, error, loading } = await apolloClient.query({
+      query: GET_USER_BY_ROLE,
+      variables: where,
+      fetchPolicy: "network-only",
+    });
+
+    if (data) {
+      let userData = data.usersPermissionsUsers.data;
+      set({ roleUserData: userData });
       return new Promise((resolve) => {
         resolve(userData);
       });
@@ -74,12 +94,22 @@ const userStore = create((set, get) => ({
     } catch (error) {}
   },
 
+  getPaySlipData: async (data) => {
+    try {
+      if (data) {
+        set({ payUserId: data });
+      }
+    } catch (error) {}
+  },
+
   fetch: false,
   loading: true,
   UserInfo: [],
   UserData: [],
   AssignUsers: [],
   notiData: {},
+  roleUserData: [],
+  payUserId: null,
 }));
 
 export default userStore;

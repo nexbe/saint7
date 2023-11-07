@@ -5,11 +5,13 @@ import Card from "./Card";
 
 const History = () => {
   return (
-    <div css={styles.wrapper}>
-      <Card data={"August"} />
-      <Card data={"July"} />
-      <Card data={"June"} />
-      <Card data={"May"} />
+    <div style={{ height: 0 }}>
+      <div css={styles.wrapper}>
+        <Card data={"August"} />
+        <Card data={"July"} />
+        <Card data={"June"} />
+        <Card data={"May"} />
+      </div>
     </div>
   );
 };
@@ -21,12 +23,9 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 9px;
-    margin:20px;
-    max-height: 78vh;
+    margin: 20px;
+    max-height: 80 vh;
     overflow-y: scroll;
     color: #000;
-    @media (min-width: 440px) {
-      margin: 30px;
-    }
   `,
 };

@@ -2,25 +2,54 @@
 import React from "react";
 import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
+import userStore from "../../../store/auth";
+import payslipStore from "../../../store/payslip";
 
-const Card = ({ data }) => {
+const Card = ({ data, payData }) => {
   const router = useRouter();
+  const { user } = userStore((state) => state);
+  const { getPayInfo } = payslipStore((state) => state);
+
+  const handleClick = () => {
+    getPayInfo(payData);
+    router.push({
+      pathname:
+        user?.role?.name === "Admin" || user?.role?.name === "Manager"
+          ? `/payslip/Manager/${2}`
+          : `/payslip/${2}`,
+    });
+  };
+
   return (
     <div css={styles.wrapper}>
       <h3 css={styles.title}>{data}</h3>
       <div css={styles.info}>
         <ul>
           <li>
-            <span> Total Earning</span>: <b>$550</b>
+            <span> Basic Salary</span>:{" "}
+            <b>${payData?.attributes?.basicSalary ?? 0}</b>
           </li>
           <li>
-            <span>Total Deduction </span>: <b>$50</b>
+            <span>Total Deduction </span>:{" "}
+            <b>${payData?.attributes?.totalDeduction ?? 0}</b>
+          </li>
+          <li>
+            <span>Allowance</span>:{" "}
+            <b>${payData?.attributes?.allowance ?? 0}</b>
           </li>
           <li style={{ fontWeight: "600", marginTop: "9px" }}>
-            <span>Net Salary</span>: <b>$50</b>
+            <span>Net Salary</span>:{" "}
+            <b>${payData?.attributes?.netSalary ?? 0}</b>
           </li>
         </ul>
-        <button css={styles.viewSlipBtn} onClick={() => router.push(`/payslip/${2}`)}>View Slip</button>
+        <button
+          css={styles.viewSlipBtn}
+          onClick={() => {
+            handleClick();
+          }}
+        >
+          View Slip
+        </button>
       </div>
     </div>
   );
@@ -43,14 +72,14 @@ const styles = {
   info: css`
     display: flex;
     flex-direction: row;
-    justify-content:space-between;
+    justify-content: space-between;
     gap: 20px;
 
     ul {
       display: flex;
       flex-direction: column;
       gap: 9px;
-      padding-left:0rem;
+      padding-left: 0rem;
       margin-top: 5px;
     }
     li {
