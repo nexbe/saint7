@@ -150,7 +150,9 @@ const PayslipDetails = () => {
             </table>
           </div>
           <div>
-            <span>Net Salary: ${calculateTotalEarning() - calculateTotalDeduction()}</span>
+            <span>
+              Net Salary: ${calculateTotalEarning() - calculateTotalDeduction()}
+            </span>
           </div>
         </div>
       </div>
@@ -209,6 +211,7 @@ const styles = {
     li {
       font-weight: 600;
       display: flex;
+      align-items: center;
     }
     b {
       text-align: left;

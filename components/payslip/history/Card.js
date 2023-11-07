@@ -3,7 +3,7 @@ import React from "react";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
 
-const Card = ({ data }) => {
+const Card = ({ data, payData }) => {
   const router = useRouter();
   const calculateTotalEarning = () => {
     let total = 0;
@@ -63,13 +63,14 @@ const Card = ({ data }) => {
         <button
           css={styles.viewSlipBtn}
           onClick={() =>
-            router.push({ 
+            router.push({
               pathname: `/payslip/payslipDetails`,
               query: {
-                id: data.id
-              }
-          })
-          }>
+                id: data.id,
+              },
+            })
+          }
+        >
           View Slip
         </button>
       </div>

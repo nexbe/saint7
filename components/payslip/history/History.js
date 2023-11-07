@@ -31,11 +31,12 @@ const styles = {
     flex-direction: column;
     gap: 9px;
     margin: 20px;
+<<<<<<< HEAD
+    max-height: 80 vh;
+=======
     max-height: 72vh;
+>>>>>>> 636baeef7f1dc12b1f1c82079ab30f367e7e0e24
     overflow-y: scroll;
     color: #000;
-    @media (min-width: 440px) {
-      margin: 30px;
-    }
   `,
 };

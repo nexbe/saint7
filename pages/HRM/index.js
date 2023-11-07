@@ -34,13 +34,6 @@ const Home = () => {
 
   const [userData, setUserData] = useState();
 
-  const {
-    locationData: locationData,
-    getAddressData,
-    getLocationData,
-    addressData,
-  } = attendenceStore((state) => state);
-
   useEffect(() => {
     setUserData(user);
   }, []);
@@ -104,8 +97,11 @@ const Home = () => {
                 <button
                   onClick={() => {
                     router.push({
-                      pathname :  (user?.role?.name === "Admin" || user?.role?.name === "Manager") ? 
-                      "/attendance/Manager" : "/attendance"
+                      pathname:
+                        user?.role?.name === "Admin" ||
+                        user?.role?.name === "Manager"
+                          ? "/attendance/Manager"
+                          : "/attendance",
                     });
                   }}
                 >
@@ -152,7 +148,17 @@ const Home = () => {
                 </div>
               )}
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/payslip")}>
+                <button
+                  onClick={() => {
+                    router.push({
+                      pathname:
+                        user?.role?.name === "Admin" ||
+                        user?.role?.name === "Manager"
+                          ? "/payslip/Manager"
+                          : "/payslip",
+                    });
+                  }}
+                >
                   <PayslipIcon />
                   Payslip
                 </button>

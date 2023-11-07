@@ -63,3 +63,36 @@ export const GET_PAYSLIP_BY_ID = gql`
     }
   }
 `;
+
+export const GET_PAYSLIPS_BY_USER = gql`
+  query ($userId: ID!) {
+    payslips(filters: { user: { id: { eq: $userId } } }) {
+      data {
+        id
+        attributes {
+          month
+          year
+          payDate
+          netSalary
+          allowance
+
+          basicSalary
+          additionalTransactions {
+            id
+            value
+            key
+            options
+          }
+          user {
+            data {
+              id
+              attributes {
+                username
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;

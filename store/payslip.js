@@ -1,10 +1,20 @@
 import { create } from "zustand";
 import client from "../graphql/apolloClient";
-import { GET_PAYSLIP, GET_PAYSLIP_BY_ID } from "../graphql/queries/payslip";
+import {
+  GET_PAYSLIP,
+  GET_PAYSLIP_BY_ID,
+  GET_PAYSLIPS_BY_USER,
+} from "../graphql/queries/payslip";
 
 const payslipStore = create((set, get) => ({
   payslips: [],
-  payslipDetails:[],
+  payslipDetails: [],
+
+  fetch: false,
+  loading: true,
+  PayData: [],
+  payInfo: {},
+
   getPayslip: async () => {
     try {
       const response = await client.query({
@@ -21,12 +31,12 @@ const payslipStore = create((set, get) => ({
       throw error;
     }
   },
-  getPayslipByID : async (data) => {
+  getPayslipByID: async (data) => {
     try {
       const response = await client.query({
         query: GET_PAYSLIP_BY_ID,
         fetchPolicy: "network-only",
-        variables: data
+        variables: data,
       });
       if (!response.error) {
         set((state) => ({
@@ -37,7 +47,31 @@ const payslipStore = create((set, get) => ({
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  getPayslipById: async ({ apolloClient, where }) => {
+    const { data, error, loading } = await apolloClient.query({
+      query: GET_PAYSLIPS_BY_USER,
+      variables: where,
+      fetchPolicy: "network-only",
+    });
+
+    if (data) {
+      let payData = data.payslips.data;
+      set({ PayData: payData });
+      return new Promise((resolve) => {
+        resolve(payData);
+      });
+    }
+  },
+
+  getPayInfo: async (data) => {
+    try {
+      if (data) {
+        set({ payInfo: data });
+      }
+    } catch (error) {}
+  },
 }));
 
 export default payslipStore;
