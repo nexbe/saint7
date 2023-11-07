@@ -172,7 +172,7 @@ export default Announcement;
 
 const styles = {
   wrapper: css`
-    margin: 20px;
+    margin: 10px;
     position: relative;
   `,
   searchBox: css`
@@ -220,7 +220,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    max-height: 63vh;
+    max-height: 64vh;
     overflow-y: scroll;
   `,
   notFound: css`

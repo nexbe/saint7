@@ -35,8 +35,8 @@ const AddAnnouncementModal = ({ modal, setModal, userId }) => {
         query: {
           message: !errorCreateAnnouncement ? "Success!" : "Apologies!",
           belongTo: !errorCreateAnnouncement ? "Announcement" : "error",
-          action: "create",
-          userId: userId,
+          label: data?.title + " has successfully created.",
+          userId: userId
         },
       })
     }
