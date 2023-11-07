@@ -210,8 +210,8 @@ const ApplyLeave = () => {
             color: "#293991",
           }}
         >
-          {displayChips.map((displayChip) => (
-            <label style={{ color: "#293991", width: "80%" }}>
+          {displayChips.map((displayChip, index) => (
+            <label style={{ color: "#293991", width: "80%" }} key={index}>
               {displayChip}
             </label>
           ))}
