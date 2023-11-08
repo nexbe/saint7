@@ -14,11 +14,11 @@ const ConfirmPasswordModal = ({ modal, setModal, password }) => {
   return (
     <Modal isOpen={modal} toggle={() => setModal(!modal)} css={styles.wrapper}>
       <div css={styles.modalStyle}>
-        <div>Remember your password</div>
+        <div>Remember Your Password</div>
         <div>
-          <b>{password}</b>
+          <b style={{fontWeight: "600"}}>{password}</b>
         </div>
-        <p>We want to make sure you can always get back into your account.</p>
+        <div style={{color:"#718096"}}>We want to make sure you can always get back into your account.</div>
         <button onClick={onSubmitHandler}>OK</button>
       </div>
     </Modal>
@@ -34,7 +34,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 9px;
-    font-size: 14px;
+    font-size: 16px;
     color: #2f4858;
     b {
       font-weight: 600;
@@ -45,6 +45,7 @@ const styles = {
       font-size: 18px;
       cursor: pointer;
       border: none;
+      margin-left:auto;
       background: transparent;
       justify-content: end;
     }
