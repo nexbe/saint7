@@ -65,7 +65,9 @@ const QrCode = (props) => {
             style={{
               width: "100%",
             }}
-            facingMode="environment"
+            constraints={{
+              facingMode: "environment",
+            }}
           />
         </>
       </div>
