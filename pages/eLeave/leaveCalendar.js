@@ -1,56 +1,136 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useState } from "react";
-import { useRouter } from "next/router";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useState, useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
+import { BiCalendar } from "react-icons/bi";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import dayjs from "dayjs";
+import { MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icons/md";
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
-import { BiCalendar } from "react-icons/bi";
+import authStore from "../../store/auth";
+import leavestore from "../../store/eLeave";
+import Card from "../../components/eLeave/leaveCalendar/Card";
 
 const LeaveCalendar = () => {
-  const router = useRouter();
-  const [startDate, setStartDate] = useState(null);
+  const apolloClient = useApolloClient();
+  const { user } = authStore((state) => state);
+  const { getAllLeaves, LeaveInfo: leaveInfo } = leavestore((state) => state);
+  const [isFullHeight, setIsFullHeight] = useState(true);
+  const [startDate, setStartDate] = useState(new Date());
+  const [leaveList, setLeaveList] = useState(leaveInfo);
+
+  useEffect(() => {
+    if (!!user?.id) {
+      getAllLeaves({
+        apolloClient,
+        where: { userId: user.id },
+      });
+      setLeaveList(leaveInfo);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!!startDate) {
+      const filteredResults = leaveInfo?.filter(
+        (item) =>
+          (new Date(item.from).getFullYear() ==
+            new Date(startDate).getFullYear() &&
+            new Date(item.from).getMonth() === new Date(startDate).getMonth() &&
+            new Date(item.from).getDate() === new Date(startDate).getDate()) ||
+          (new Date(item.to).getFullYear() ==
+            new Date(startDate).getFullYear() &&
+            new Date(item.to).getMonth() === new Date(startDate).getMonth() &&
+            new Date(item.to).getDate() === new Date(startDate).getDate())
+      );
+      setLeaveList(filteredResults);
+    }
+  }, [startDate]);
+
+  const handleToggleHeight = () => {
+    setIsFullHeight(!isFullHeight);
+  };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
         <HeaderNoti title={"Leave Calendar"} href={"/eLeave"} />
         <div css={styles.bodyContainer}>
-          <div css={styles.caledarContainer}>
-            <div css={styles.calendarCard}>
-              <DatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                dateFormat="dd/MM/yyyy"
-                open
-                formatWeekDay={(nameOfDay) => nameOfDay.substr(0, 3)}
+          <div>
+            <div
+              className="calendar-container"
+              css={styles.calendarContainer}
+              style={{ height: isFullHeight ? "" : "125px" }}
+            >
+              <Calendar
+                onChange={setStartDate}
+                value={startDate}
+                css={styles.calendar}
               />
             </div>
+            <button onClick={handleToggleHeight} css={styles.dropDownBtn}>
+              {isFullHeight ? (
+                <MdOutlineArrowDropDown color="var(--white)" size={30} />
+              ) : (
+                <MdOutlineArrowDropUp color="var(--white)" size={30} />
+              )}
+            </button>
           </div>
+
           <div css={styles.requestCard}>
-            <label className="primary-text">9th October ,2023</label>
-            <div css={styles.eachCard} className="primary-text">
-              <label>
-                Request Leave
-                <span className="requestDate">
-                  <span css={styles.circleStyle}></span>
-                  <span css={styles.lineStyle}></span>{" "}
-                  <BiCalendar color="var(--dark-gray)" size={15} /> Friday 7
-                  October
-                </span>
-                <span className="requestDate" style={{ marginTop: "-18px" }}>
-                  <span
-                    css={styles.circleStyle}
-                    style={{ marginRight: "6px" }}
-                  ></span>
-                  <BiCalendar color="var(--dark-gray)" size={15} />
-                  Friday 7 October
-                </span>
-                <label style={{ fontSize: "14px" }}>1 Day off</label>
-              </label>
-              <span css={styles.expenseStatus}>Pending</span>
-            </div>
+            <label className="primary-text" style={{ marginBottom: "10px" }}>
+              {dayjs(startDate).locale("en-US").format("D MMMM, YYYY")}
+            </label>
+            {leaveList && leaveList.length > 0 && (
+              <>
+                {leaveList.map((eachLeave, index) =>
+                  eachLeave?.status === "Pending" ? (
+                    <div
+                      css={styles.eachCard}
+                      className="primary-text"
+                      key={index}
+                    >
+                      <label>
+                        Request Leave
+                        <span className="requestDate">
+                          <span css={styles.circleStyle}></span>
+                          <span css={styles.lineStyle}></span>{" "}
+                          <BiCalendar color="var(--dark-gray)" size={15} />
+                          {dayjs(eachLeave.from)
+                            .locale("en-US")
+                            .format("ddd D MMMM")}
+                        </span>
+                        <span
+                          className="requestDate"
+                          style={{ marginTop: "-18px" }}
+                        >
+                          <span
+                            css={styles.circleStyle}
+                            style={{ marginRight: "6px" }}
+                          ></span>
+                          <BiCalendar color="var(--dark-gray)" size={15} />
+                          {dayjs(eachLeave.to)
+                            .locale("en-US")
+                            .format("ddd D MMMM")}
+                        </span>
+                        <label style={{ fontSize: "14px" }}>
+                          {eachLeave?.numberOfDays} Day off
+                        </label>
+                      </label>
+                      <span css={styles.expenseStatus}>
+                        {eachLeave?.status}
+                      </span>
+                    </div>
+                  ) : (
+                    <div key={index}>
+                      <Card eachLeave={eachLeave} />
+                    </div>
+                  )
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -73,133 +153,78 @@ const styles = {
     display: flex;
     flex-direction: column;
     flex: 1;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     position: relative;
-    min-height: 200px;
-    ::-webkit-scrollbar {
-      width: 2px;
-      background-color: transparent;
-    }
-    .bodyContainer::-webkit-scrollbar-thumb {
-      border-radius: 2px;
-      background-color: var(--font-gray);
-    }
+    background: #f5f5f5;
   `,
-  caledarContainer: css`
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
+  calendarContainer: css`
+    overflow: hidden;
+    transition: height 0.5s;
   `,
-  calendarCard: css`
-    display: flex;
-    flex-direction: row;
-    line-height: 25px;
-    justify-content: center;
+  dropDownBtn: css`
+    background: rgba(47, 72, 88, 1);
+    border: none;
+    border-radius: 100px;
+    position: absolute;
+    margin-left: 50%;
+    margin-top: -10px;
+    padding: 0;
+    width: 25px;
+    height: 25px;
     align-items: center;
+    display: flex;
+  `,
+  calendar: css`
     width: 100%;
-    .react-datepicker__tab-loop {
-      div {
-        inset: none;
-        transform: none;
-        padding: 0;
-      }
-    }
-    label {
-      display: flex;
-      flex-direction: column;
-    }
-    .react-datepicker-wrapper {
-      input {
-        display: none;
-      }
-    }
-    .react-datepicker__triangle {
-      display: none;
-    }
-    .react-datepicker {
-      border-radius: 0px 0px 16px 16px;
-      background: var(--white);
-      box-shadow: 0px 4px 8px 0px rgba(21, 21, 21, 0.15);
-      border: none;
-      margin-top: -25px;
-      padding-left: 10px;
-      @media (max-width: 450px) {
-        width: 100vw;
-      }
-      @media (min-width: 450px) {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-    .react-datepicker__header {
-      background: var(--white);
-      border: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    border: none;
+    box-shadow: 0px 4px 8px 0px rgba(21, 21, 21, 0.15);
+    border-radius: 0px 0px 16px 16px;
+    .react-calendar__month-view > div > div {
+      flex-grow: 1;
       width: 100%;
-      align-items: center;
-      @media (min-width: 390px) {
-        margin-left: 10px;
-      }
+      margin-bottom: 20px;
     }
-    .react-datepicker__week,
-    .react-datepicker__day-names {
-      white-space: nowrap;
-      display: flex;
-      gap: 20px;
-      text-transform: uppercase;
-      align-items: center;
-      @media (min-width: 390px) {
-        margin-left: 10px;
-      }
+    .react-calendar button,
+    .react-calendar__tile--now {
+      background: none;
+      padding: 0;
+      margin: 0;
+      flex: 0;
     }
-    .react-datepicker__current-month {
-      color: var(--primary);
-      font-family: Inter;
-      font-size: 18px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: normal;
-      margin-top: 15px;
-    }
-    .react-datepicker__navigation-icon--next {
-      top: 11px;
-      left: -10px;
-      font-size: 16px;
-    }
-    .react-datepicker__navigation-icon--previous {
-      top: 11px;
-      left: 5px;
-      font-size: 16px;
-    }
-    .react-datepicker__day {
-      :focus {
-        background: var(--primary);
-        width: 30px;
-        height: 30px;
-        border-radius: 50px;
-        color: var(--white);
-        border: none;
-      }
+    .react-calendar__tile--active:enabled:hover,
+    .react-calendar__tile--active:enabled:focus,
+    .react-calendar__tile--active {
+      background: var(--primary);
+      width: 50px;
+      height: 50px;
+      border-radius: 100%;
+      color: var(--white);
+      border: none;
     }
   `,
   requestCard: css`
     position: relative;
-    margin-top: 17rem;
+    height: 100vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-top: 20px;
     border-radius: 10px;
     background: var(--white);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     padding: 20px;
+    margin-bottom: 5px;
+    ::-webkit-scrollbar {
+      width: 2px;
+      background-color: transparent;
+    }
   `,
   eachCard: css`
     display: flex;
     flex-direction: row;
     line-height: 25px;
     padding: 7px 10px;
+    margin-bottom: 10px;
     justify-content: space-between;
     border-radius: 16px;
     background: rgba(250, 126, 11, 0.2);
