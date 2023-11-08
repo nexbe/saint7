@@ -137,12 +137,21 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
 
   return (
     <>
-      <Modal size="md" isOpen={modal} toggle={toggle} css={styles.modal}>
+      <Modal
+        size="md"
+        isOpen={!openConfirmModal}
+        toggle={toggle}
+        css={styles.modal}
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
           <div css={styles.formContent}>
             <div className="primary-text" css={styles.formHeader}>
               Edit Document{" "}
-              <div onClick={handleEditModalClose}>
+              <div
+                onClick={() => {
+                  setOpenConfirmModal(true);
+                }}
+              >
                 <IoCloseSharp size={20} color="rgba(117, 117, 117, 1)" />
               </div>
             </div>
@@ -169,8 +178,10 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
                   Description <span>*</span>
                 </label>
               </div>
-              <input
-                type={"text"}
+              <textarea
+                type="text"
+                id="description"
+                rows={3}
                 className="secondary-text"
                 required
                 {...register("description", {
@@ -240,7 +251,8 @@ const styles = {
       span {
         color: #ec1c24;
       }
-      input {
+      input,
+      textarea {
         border: none;
         outline: none;
       }

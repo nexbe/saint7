@@ -85,43 +85,44 @@ const Home = () => {
           <div css={styles.mapContainer}>
             <Map />
           </div>
-          <div css={styles.mapLine}>
-            <div css={styles.address}>
-              <MapPineLineIcon />
-              <label>{addressData}</label>
-            </div>
-            <hr
-              style={{
-                borderTop: " 3px solid var(--darker-gray)",
-                margin: "0 -30px 0 -30px",
-              }}
-            />
-            <div css={styles.checkIn}>
-              <div>
-                <CheckInIcon />
-                <label>CheckIn </label>
+          {user?.role?.name.toLowerCase() != "admin" && (
+            <div css={styles.mapLine}>
+              <div css={styles.address}>
+                <MapPineLineIcon />
+                <label>{addressData}</label>
               </div>
-              <span>
-                &#128342; {dayjs(new Date().toISOString()).format("HH:MM")}
-              </span>
-            </div>
-            <div className="d-flex">
-              <span className="lineDash"></span>
-            </div>
-            <div css={styles.taskProgress}>
-              <div className="progressLabel">
-                <ProgressIcon />
-                <label>Task Progress</label>
+              <hr
+                style={{
+                  borderTop: " 3px solid var(--darker-gray)",
+                  margin: "0 -30px 0 -30px",
+                }}
+              />
+              <div css={styles.checkIn}>
+                <div>
+                  <CheckInIcon />
+                  <label>CheckIn </label>
+                </div>
+                <span>
+                  &#128342; {dayjs(new Date().toISOString()).format("HH:MM")}
+                </span>
               </div>
-              <div css={styles.progressContent}>
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: `20%` }}></div>
-                </div>{" "}
-                20%
+              <div className="d-flex">
+                <span className="lineDash"></span>
+              </div>
+              <div css={styles.taskProgress}>
+                <div className="progressLabel">
+                  <ProgressIcon />
+                  <label>Task Progress</label>
+                </div>
+                <div css={styles.progressContent}>
+                  <div className="progress-bar">
+                    <div className="progress" style={{ width: `20%` }}></div>
+                  </div>{" "}
+                  20%
+                </div>
               </div>
             </div>
-          </div>
-
+          )}
           <div css={styles.buttonContainer}>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>

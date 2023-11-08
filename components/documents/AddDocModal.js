@@ -121,9 +121,10 @@ const AddDocModal = ({ modal, setModal, userId }) => {
           <label htmlFor="description">
             Description <span>*</span>
           </label>
-          <input
+          <textarea
             type="text"
             id="description"
+            rows={3}
             {...register("description", {
               required: "Please enter description",
             })}
@@ -198,7 +199,8 @@ const styles = {
       flex-direction: column;
       margin-top: 10px;
     }
-    input {
+    input,
+    textarea {
       border-top: 0px;
       border-left: 0px;
       border-right: 0px;
