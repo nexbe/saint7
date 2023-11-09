@@ -50,7 +50,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
   };
 
   const downloadFile = async ({ fileName, url }) => {
-    console.log("file...", fileName);
     const httpLink = `${process.env.NEXT_PUBLIC_APP_URL}${url}`;
     return await fetch(httpLink)
       .then((res) => res.blob())
@@ -68,7 +67,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
 
   useEffect(() => {
     if (!!selectedDocument?.attachment) {
-      console.log("leng....", selectedDocument?.attachment.length);
       selectedDocument?.attachment.map((eachAttach, index) => {
         initializeFileList({
           fileUrl: selectedDocument?.attachment[index]?.url,
