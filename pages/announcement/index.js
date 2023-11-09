@@ -82,9 +82,8 @@ const Announcement = () => {
         <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox
             message={router.query.message}
-            belongTo={router.query.belongTo}
-            timeout={5000}
-            action={router.query.action}
+            timeout={3000}
+            label={router?.query?.label}
           />
         </div>
         {(user?.role?.name === "Manager" || user?.role?.name === "Admin") && (
@@ -114,15 +113,15 @@ const Announcement = () => {
           </div>
         )}
         <div css={styles.searchBox}>
+          <label css={styles.searchIcon}>
+            <SearchIcon />
+          </label>
           <input
             type="text"
             placeholder="Search fields"
             onChange={(e) => setSearchValue(e.target.value)}
             value={searchValue}
           />
-          <label css={styles.searchIcon}>
-            <SearchIcon />
-          </label>
         </div>
         <div css={styles.cardContainer}>
           {data?.map((announcement) => {
@@ -191,6 +190,7 @@ const styles = {
       height: 30px;
       width: 100%;
       padding: 20px 12px;
+      padding-left:40px;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
@@ -213,8 +213,10 @@ const styles = {
     }
   `,
   searchIcon: css`
-    position: absolute;
-    margin: 10px;
+     position:absolute;
+     top:50%;
+     left:10px;
+     transform:translateY(-50%);
   `,
   cardContainer: css`
     display: flex;
