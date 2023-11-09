@@ -14,14 +14,13 @@ import ELeaveIcon from "/public/icons/eLeaveIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import userUserStore from "userUserStore"; // Use the alias here
-
-import HomeMap from "../../components/Map/homeMap";
 import attendenceStore from "../../store/attendance";
+import { Map, HomeMap, HomeMap2 } from "../../components/Map";
+
 import { useState } from "react";
 import HrmIcon from "../../public/icons/hrmIcon";
 import OperationIcon from "../../public/icons/operationIcon";
 import moment from "moment";
-import HomeMap2 from "../../components/Map/homeMap2";
 import siteStore from "../../store/sites";
 
 const Home = () => {
@@ -139,7 +138,7 @@ const Home = () => {
             </div>
           )}
 
-          {user?.role?.name.toLowerCase() == "guard" && (
+          {user?.role?.name.toLowerCase() == "guard" ? (
             <div css={styles.mapLine}>
               <div css={styles.address}>
                 <MapPineLineIcon />
@@ -181,7 +180,7 @@ const Home = () => {
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
           <div css={styles.buttonContainer}>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>
