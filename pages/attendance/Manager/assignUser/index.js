@@ -219,6 +219,7 @@ const selectBoxStyle = {
   valueContainer: (provided, state) => ({
     ...provided,
     padding: "0px",
+    width:'34vh'
   }),
   control: (base) => ({
     ...base,
@@ -243,7 +244,9 @@ const styles = {
     background: #fff;
     padding: 20px;
     height: 70vh;
+    max-height:60vh;
     margin: 9px;
+    overflow-y:auto;
   `,
   formStyle: css`
     div {
@@ -265,7 +268,6 @@ const styles = {
     .rmdp-container .custom-calendar.ep-arrow::after {
       background-color: #fff;
     }
-
     .rmdp-calendar {
       width: 30vh;
     }
@@ -311,9 +313,13 @@ const styles = {
     border-left:none;
     border-right:none;
     border-top:none;
-    flex-wrap:nowrap;
+    flex-wrap:nowrap !important;
     outline: none !important;
     border-bottom:1px solid rgba(0, 0, 0, 0.1);
+  }
+  .css-t3ipsp-control{
+    flex-wrap:nowrap !important;
+    flex-direction: row;
   }
   .css-1p3m7a8-multiValue{
     border-radius: 9px;
@@ -322,7 +328,6 @@ const styles = {
   .css-1fdsijx-ValueContainer{
     align-items:start;
     justify-content:start !important;
-
   }
   `
 };
