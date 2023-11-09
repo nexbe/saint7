@@ -53,18 +53,21 @@ const LeaveCalendar = () => {
     setIsFullHeight(!isFullHeight);
   };
 
-  const specialDays = leaveInfo.reduce((acc, leave) => {
-    const startDate = new Date(leave.from);
-    const endDate = new Date(leave.to);
-    for (
-      let date = startDate;
-      date <= endDate;
-      date.setDate(date.getDate() + 1)
-    ) {
-      acc.push(new Date(date));
-    }
-    return acc;
-  }, []);
+  const specialDays = leaveInfo?.reduce(
+    (acc, leave) => {
+      const startDate = new Date(leave.from);
+      const endDate = new Date(leave.to);
+      for (
+        let date = startDate;
+        date <= endDate;
+        date.setDate(date.getDate() + 1)
+      ) {
+        acc.push(new Date(date));
+      }
+      return acc;
+    },
+    [leaveInfo]
+  );
 
   function customTileContent({ date, view }) {
     const isSpecialDay = specialDays.some(
