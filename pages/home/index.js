@@ -21,6 +21,8 @@ import { useState } from "react";
 import HrmIcon from "../../public/icons/hrmIcon";
 import OperationIcon from "../../public/icons/operationIcon";
 import moment from "moment";
+import HomeMap2 from "../../components/Map/homeMap2";
+import siteStore from "../../store/sites";
 
 const Home = () => {
   const router = useRouter();
@@ -30,6 +32,8 @@ const Home = () => {
     ProfileInfo: profileInfo,
     loading,
   } = profileStore((state) => state);
+  const { sites, getSites } = siteStore();
+
   const today = new Date(); // Create a new Date object representing today
 
   const { user } = userStore((state) => state);
@@ -42,7 +46,7 @@ const Home = () => {
 
   useEffect(() => {
     setUserData(user);
-    if (user?.role?.name == "guard") {
+    if (user?.role?.name.toLowerCase() == "guard") {
       getAssignUsers({
         apolloClient,
         where: {
@@ -50,6 +54,8 @@ const Home = () => {
           date: moment(new Date()).format("YYYY-MM-DD"),
         },
       });
+    } else {
+      getSites();
     }
   }, []);
 
@@ -61,7 +67,7 @@ const Home = () => {
   }, [user]);
 
   useEffect(() => {
-    if (user?.role?.name == "guard") {
+    if (user?.role?.name.toLowerCase() != "admin") {
       const filteredData =
         AssignUsers[0]?.attributes?.attendances?.data?.filter((item) => {
           const itemDate = item.attributes.date;
@@ -113,20 +119,27 @@ const Home = () => {
           </div>
         </div>
         <div css={styles.bodyContainer}>
-          <div css={styles.mapContainer}>
-            <HomeMap
-              lat={
-                AssignUsers[0]?.attributes?.site?.data?.attributes?.location
-                  ?.Lat
-              }
-              lng={
-                AssignUsers[0]?.attributes?.site?.data?.attributes?.location
-                  ?.Lng
-              }
-              AssignUsers={AssignUsers}
-            />
-          </div>
-          {user?.role?.name.toLowerCase() != "admin" && (
+          {user?.role?.name.toLowerCase() == "guard" ? (
+            <div css={styles.mapContainer}>
+              <HomeMap
+                lat={
+                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
+                    ?.Lat
+                }
+                lng={
+                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
+                    ?.Lng
+                }
+                AssignUsers={AssignUsers}
+              />
+            </div>
+          ) : (
+            <div css={styles.mapContainer2}>
+              <HomeMap2 siteData={sites} />
+            </div>
+          )}
+
+          {user?.role?.name.toLowerCase() == "guard" && (
             <div css={styles.mapLine}>
               <div css={styles.address}>
                 <MapPineLineIcon />
@@ -277,6 +290,17 @@ const styles = {
     }
     .leaflet-touch .leaflet-bar {
       margin-top: 85px;
+    }
+  `,
+  mapContainer2: css`
+    display: flex;
+    flex-direction: column;
+
+    .leaflet-bottom {
+      display: none;
+    }
+    .leaflet-touch .leaflet-bar {
+      margin-top: 20px;
     }
   `,
   mapIcon: css`

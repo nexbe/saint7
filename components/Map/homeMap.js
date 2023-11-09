@@ -28,11 +28,6 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
     // }
   }, [AssignUsers]);
 
-  console.log(
-    assignUserData[0]?.attributes?.users_permissions_user?.data?.attributes
-      ?.facialScanImage?.data?.attributes?.url
-  );
-
   const customIcon = new L.Icon({
     iconUrl: "/images/mapIcon2.png", // Path to your custom icon image
     iconSize: [50, 50], // Size of the icon
@@ -58,7 +53,10 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
           <div>
             {assignUserData?.length &&
               assignUserData.map((data, index) => (
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center" }}
+                  key={index}
+                >
                   <img
                     src={
                       data?.attributes?.users_permissions_user?.data?.attributes

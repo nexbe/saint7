@@ -129,3 +129,10 @@
   height: 35px;
   border-radius: 50%;
 }
+
+.popup p {
+  font-family: " Open Sans";
+  font-size: 14px;
+  color: "#2F4858";
+  font-weight: 400;
+}
