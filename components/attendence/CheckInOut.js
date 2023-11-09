@@ -6,7 +6,7 @@ import CalendarIcon from "../../public/icons/calendarIcon";
 import LocationIcon from "../../public/icons/locationIcon";
 import ScanIcon from "../../public/icons/scanIcon";
 import { css } from "@emotion/react";
-import Map from "../../components/Map";
+import { Map } from "../../components/Map";
 import moment from "moment";
 import userStore from "../../store/user";
 import dayjs from "dayjs";

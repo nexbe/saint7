@@ -10,11 +10,9 @@ import NotiIcon from "/public/icons/notiIcon";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
 import CheckInIcon from "/public/icons/checkInIcon";
 import ProgressIcon from "/public/icons/progressIcon";
-import ELeaveIcon from "/public/icons/eLeaveIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import userUserStore from "userUserStore"; // Use the alias here
-import attendenceStore from "../../store/attendance";
 import { Map, HomeMap, HomeMap2 } from "../../components/Map";
 
 import { useState } from "react";
