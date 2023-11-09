@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
-import { useMutation, useApolloClient } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import _ from "lodash";
@@ -28,11 +28,9 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
   });
 
   const router = useRouter();
-  const apolloClient = useApolloClient();
-  const { getAllDocuments, updateDocument } = documentStore((state) => state);
+  const { updateDocument } = documentStore((state) => state);
   const [updateDocumentAction, errEditDocument] = useMutation(UPDATE_DOCUMENT);
 
-  const [documentData, setDocumentData] = useState();
   const [saveAction, setSaveAction] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [fileList, setFileList] = useState([]);
@@ -51,14 +49,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
     setFileList({ ...fileList, ...uploadedFiles });
   };
 
-  const fetchExistingDataByID = async (id) => {
-    const attachmentInfo = await getAllDocuments({
-      apolloClient,
-      where: {},
-    });
-    setDocumentData(attachmentInfo[0]);
-  };
-
   const downloadFile = async ({ fileName, url }) => {
     const httpLink = `${process.env.NEXT_PUBLIC_APP_URL}${url}`;
     return await fetch(httpLink)
@@ -74,26 +64,24 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
     fileList[id] = file;
     setFileList({ ...fileList });
   };
-  useMemo(() => {
-    selectedDocument?.attachment.map((eachAttach, index) => {
-      initializeFileList({
-        fileUrl: selectedDocument?.attachment[index]?.url,
-        fileName: selectedDocument?.attachment[index]?.name,
-        index: selectedDocument?.attachment[index]?.id,
-      });
-    });
-
-    fileListArr = _.entries(fileList);
-  }, [documentData]);
 
   useEffect(() => {
-    if (!!selectedDocument) {
-      fetchExistingDataByID(selectedDocument?.users_permissions_users[0]?.id);
+    if (!!selectedDocument?.attachment) {
+      selectedDocument?.attachment.map((eachAttach, index) => {
+        initializeFileList({
+          fileUrl: selectedDocument?.attachment[index]?.url,
+          fileName: selectedDocument?.attachment[index]?.name,
+          index: selectedDocument?.attachment[index]?.id,
+        });
+      });
+
+      fileListArr = _.entries(fileList);
     }
   }, [selectedDocument]);
-  let filesArrToSend = [];
+
   const onSubmit = async (data) => {
     if (!!saveAction) {
+      let filesArrToSend = [];
       for (let file of fileListArr) {
         const formData = new FormData();
         formData.append("files", file[1]);
@@ -117,7 +105,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
         updatedAt: new Date().toISOString(),
       });
       setModal(false);
-      setDocumentData(null);
       router.push({
         pathname: `/documents`,
         query: {
@@ -128,11 +115,6 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
         },
       });
     }
-  };
-
-  const handleEditModalClose = () => {
-    setModal(false);
-    setOpenConfirmModal(true);
   };
 
   return (
