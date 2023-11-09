@@ -37,7 +37,7 @@ const ViewModal = ({ modal, setModal, data, time }) => {
             }
           </span>
         </div>
-        <span>{time}</span>
+        <span style={{marginTop:'6px'}}>{time}</span>
       </div>
     </Modal>
   );

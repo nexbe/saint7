@@ -81,7 +81,7 @@ const Card = ({
             }
           </span>
         </div>
-        <span>{calculateTime(data.attributes?.createdAt)}</span>
+        <span style={{marginTop:'5.5px'}}>{calculateTime(data.attributes?.createdAt)}</span>
       </div>
       <ViewModal
         modal={modal}
