@@ -5,6 +5,7 @@ import {
   GET_PAYSLIP_BY_ID,
   GET_PAYSLIPS_BY_USER,
 } from "../graphql/queries/payslip";
+import axios from "axios";
 
 const payslipStore = create((set, get) => ({
   payslips: [],
@@ -72,6 +73,14 @@ const payslipStore = create((set, get) => ({
       }
     } catch (error) {}
   },
+  getPayslipByEmail: async (id) => {
+    try{
+      const response = await axios.get(`https://saint7-office.singaporetestlab.com/api/payslip-mail/${id}`)
+      return response.data;
+    }catch(error){
+      throw error;
+    }
+  } 
 }));
 
 export default payslipStore;
