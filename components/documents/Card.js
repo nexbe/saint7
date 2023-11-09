@@ -178,9 +178,6 @@ const styles = {
     .fileIconContainer {
       display: flex;
     }
-    img {
-     opacity: 0.6;
-    }
     .fileIconContainer svg, img {
       margin-top: 10px;
       width: 56px;
