@@ -115,6 +115,23 @@ const Home = () => {
                   e-Leave
                 </button>
               </div>
+
+              {user?.role?.name.toLowerCase() != "guard" && (
+                <div css={styles.formFlexChildDiv}>
+                  <button onClick={() => router.push("/team")}>
+                    <HRMuserIcon />
+                    Team
+                  </button>
+                </div>
+              )}
+            </div>
+            <div css={styles.formFlexDiv}>
+              <div css={styles.formFlexChildDiv}>
+                <button onClick={() => router.push("/documents")}>
+                  <DocumentIcon />
+                  Documents
+                </button>
+              </div>
               <div css={styles.formFlexChildDiv}>
                 <button
                   onClick={() =>
@@ -131,22 +148,6 @@ const Home = () => {
                   Claims
                 </button>
               </div>
-            </div>
-            <div css={styles.formFlexDiv}>
-              <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/documents")}>
-                  <DocumentIcon />
-                  Documents
-                </button>
-              </div>
-              {user?.role?.name.toLowerCase() != "guard" && (
-                <div css={styles.formFlexChildDiv}>
-                  <button onClick={() => router.push("/team")}>
-                    <HRMuserIcon />
-                    Team
-                  </button>
-                </div>
-              )}
               <div css={styles.formFlexChildDiv}>
                 <button
                   onClick={() => {

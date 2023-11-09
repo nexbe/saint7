@@ -29,10 +29,44 @@ export const GET_ASSIGN_SHIFTS = gql`
               attributes {
                 name
                 address
+                location {
+                  Lat
+                  Lng
+                }
                 checkpoints {
                   UUID
                   Name
                 }
+                assignee_shifts {
+                  data {
+                    attributes {
+                      dutyDate
+                      users_permissions_user {
+                        data {
+                          attributes {
+                            username
+                            facialScanImage {
+                              data {
+                                attributes {
+                                  url
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          attendances {
+            data {
+              attributes {
+                checkInTime
+                checkOutTIme
+                status
               }
             }
           }

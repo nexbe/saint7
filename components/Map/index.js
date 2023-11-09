@@ -4,4 +4,12 @@ const Map = dynamic(() => import("./Map"), {
   ssr: false,
 });
 
-export default Map;
+const HomeMap = dynamic(() => import("./homeMap"), {
+  ssr: false,
+});
+
+const HomeMap2 = dynamic(() => import("./homeMap2"), {
+  ssr: false,
+});
+
+export { Map, HomeMap, HomeMap2 };

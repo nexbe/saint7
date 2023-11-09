@@ -10,14 +10,16 @@ import NotiIcon from "/public/icons/notiIcon";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
 import CheckInIcon from "/public/icons/checkInIcon";
 import ProgressIcon from "/public/icons/progressIcon";
-import ELeaveIcon from "/public/icons/eLeaveIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
-import Map from "../../components/Map";
-import attendenceStore from "../../store/attendance";
+import userUserStore from "userUserStore"; // Use the alias here
+import { Map, HomeMap, HomeMap2 } from "../../components/Map";
+
 import { useState } from "react";
 import HrmIcon from "../../public/icons/hrmIcon";
 import OperationIcon from "../../public/icons/operationIcon";
+import moment from "moment";
+import siteStore from "../../store/sites";
 
 const Home = () => {
   const router = useRouter();
@@ -27,20 +29,31 @@ const Home = () => {
     ProfileInfo: profileInfo,
     loading,
   } = profileStore((state) => state);
+  const { sites, getSites } = siteStore();
+
+  const today = new Date(); // Create a new Date object representing today
 
   const { user } = userStore((state) => state);
+  const { getAssignUsers, AssignUsers, notiData } = userUserStore(
+    (state) => state
+  );
 
   const [userData, setUserData] = useState();
-
-  const {
-    locationData: locationData,
-    getAddressData,
-    getLocationData,
-    addressData,
-  } = attendenceStore((state) => state);
+  const [attendanceData, setAttendanceData] = useState([]);
 
   useEffect(() => {
     setUserData(user);
+    if (user?.role?.name.toLowerCase() == "guard") {
+      getAssignUsers({
+        apolloClient,
+        where: {
+          userId: user.id,
+          date: moment(new Date()).format("YYYY-MM-DD"),
+        },
+      });
+    } else {
+      getSites();
+    }
   }, []);
 
   useEffect(() => {
@@ -50,6 +63,27 @@ const Home = () => {
     });
   }, [user]);
 
+  useEffect(() => {
+    if (user?.role?.name.toLowerCase() != "admin") {
+      const filteredData =
+        AssignUsers[0]?.attributes?.attendances?.data?.filter((item) => {
+          const itemDate = item.attributes.date;
+
+          return itemDate === moment().format("YYYY-MM-DD");
+        });
+      setAttendanceData(filteredData);
+    }
+  }, [AssignUsers]);
+
+  const formatTime = (timeString) => {
+    const timeParts = timeString?.split(":"); // Split the string by colon
+
+    // Extract hours and minutes
+    const hours = timeParts[0];
+    const minutes = timeParts[1];
+    const formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
+  };
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -82,14 +116,33 @@ const Home = () => {
           </div>
         </div>
         <div css={styles.bodyContainer}>
-          <div css={styles.mapContainer}>
-            <Map />
-          </div>
-          {user?.role?.name.toLowerCase() != "admin" && (
+          {user?.role?.name.toLowerCase() == "guard" ? (
+            <div css={styles.mapContainer}>
+              <HomeMap
+                lat={
+                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
+                    ?.Lat
+                }
+                lng={
+                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
+                    ?.Lng
+                }
+                AssignUsers={AssignUsers}
+              />
+            </div>
+          ) : (
+            <div css={styles.mapContainer2}>
+              <HomeMap2 siteData={sites} />
+            </div>
+          )}
+
+          {user?.role?.name.toLowerCase() == "guard" ? (
             <div css={styles.mapLine}>
               <div css={styles.address}>
                 <MapPineLineIcon />
-                <label>{addressData}</label>
+                <label>
+                  {AssignUsers[0]?.attributes?.site?.data?.attributes?.address}
+                </label>
               </div>
               <hr
                 style={{
@@ -103,7 +156,10 @@ const Home = () => {
                   <label>CheckIn </label>
                 </div>
                 <span>
-                  &#128342; {dayjs(new Date().toISOString()).format("HH:MM")}
+                  &#128342;
+                  {attendanceData?.length
+                    ? formatTime(attendanceData[0]?.attributes?.checkInTime)
+                    : "00:00"}
                 </span>
               </div>
               <div className="d-flex">
@@ -122,7 +178,7 @@ const Home = () => {
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
           <div css={styles.buttonContainer}>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>
@@ -230,7 +286,18 @@ const styles = {
       display: none;
     }
     .leaflet-touch .leaflet-bar {
-      margin-top: 50px;
+      margin-top: 85px;
+    }
+  `,
+  mapContainer2: css`
+    display: flex;
+    flex-direction: column;
+
+    .leaflet-bottom {
+      display: none;
+    }
+    .leaflet-touch .leaflet-bar {
+      margin-top: 20px;
     }
   `,
   mapIcon: css`
@@ -270,6 +337,7 @@ const styles = {
     color: var(--font-gray);
     font-size: 16px;
     font-weight: 600;
+    align-items: center;
     label {
       margin-top: -3px;
       line-height: normal;

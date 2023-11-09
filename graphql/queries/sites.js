@@ -38,6 +38,27 @@ export const GET_SITES = gql`
               }
             }
           }
+          assignee_shifts {
+            data {
+              attributes {
+                dutyDate
+                users_permissions_user {
+                  data {
+                    attributes {
+                      username
+                      facialScanImage {
+                        data {
+                          attributes {
+                            url
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
