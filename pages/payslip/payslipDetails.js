@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 const PayslipDetails = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { getPayslipByID, payslipDetails } = payslipStore();
+  const { getPayslipByID, payslipDetails, getPayslipByEmail } = payslipStore();
   useEffect(() => {
     if (id) {
       getPayslipByID({
@@ -62,7 +62,9 @@ const PayslipDetails = () => {
 
     return totalDeduction;
   };
-
+  const handleMail = () => {
+    getPayslipByEmail(payslipDetails.id)
+  }
   return (
     <Layout>
       <HeaderNoti title={"Payslip"} href={"/payslip"} />
@@ -74,7 +76,9 @@ const PayslipDetails = () => {
           </h3>
           <ul css={styles.info}>
             <li>
-              <span>Payment ID </span>: <b>AUG22-FT-0001</b>
+              <span>Payment ID </span>: <b>{dayjs(payslipDetails?.attributes?.payDate, {
+                  format: "YYYY-MM-DD",
+                }).format("MMMDD")}-FT-{payslipDetails.id?.padStart(4,0)}</b>
             </li>
             <li>
               <span>Date of Payment </span>:{" "}
@@ -86,7 +90,7 @@ const PayslipDetails = () => {
             </li>
           </ul>
         </div>
-        <div css={styles.emailContainer}>
+        <div css={styles.emailContainer} onClick={handleMail}>
           <EmailIcon />
           <span>Sent Payslip To My Mail</span>
         </div>
