@@ -53,6 +53,31 @@ const LeaveCalendar = () => {
     setIsFullHeight(!isFullHeight);
   };
 
+  function customTileContent({ date }) {
+    const specialDays = leaveInfo?.reduce((acc, leave) => {
+      const startDate = new Date(leave.from);
+      const endDate = new Date(leave.to);
+      for (
+        let date = startDate;
+        date <= endDate;
+        date.setDate(date.getDate() + 1)
+      ) {
+        acc.push(new Date(date));
+      }
+      return acc;
+    }, []);
+    const isSpecialDay = specialDays?.some(
+      (specialDate) =>
+        date.getDate() === specialDate.getDate() &&
+        date.getMonth() === specialDate.getMonth() &&
+        date.getFullYear() === specialDate.getFullYear()
+    );
+    if (isSpecialDay) {
+      return <div className="dot-style"></div>;
+    }
+    return null;
+  }
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -62,12 +87,13 @@ const LeaveCalendar = () => {
             <div
               className="calendar-container"
               css={styles.calendarContainer}
-              style={{ height: isFullHeight ? "" : "125px" }}
+              style={{ height: isFullHeight ? "" : "140px" }}
             >
               <Calendar
                 onChange={setStartDate}
                 value={startDate}
                 css={styles.calendar}
+                tileContent={customTileContent}
               />
             </div>
             <button onClick={handleToggleHeight} css={styles.dropDownBtn}>
@@ -157,6 +183,15 @@ const styles = {
     overflow-x: hidden;
     position: relative;
     background: #f5f5f5;
+    .dot-style {
+      width: 5px;
+      height: 5px;
+      background: #5fa452;
+      border-radius: 50%;
+      margin: 0 auto;
+      position: relative;
+      top: 3px;
+    }
   `,
   calendarContainer: css`
     overflow: hidden;
@@ -168,10 +203,10 @@ const styles = {
     border-radius: 100px;
     position: absolute;
     margin-left: 50%;
-    margin-top: -10px;
+    margin-top: -15px;
     padding: 0;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     align-items: center;
     display: flex;
   `,
@@ -183,7 +218,7 @@ const styles = {
     .react-calendar__month-view > div > div {
       flex-grow: 1;
       width: 100%;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
     .react-calendar button,
     .react-calendar__tile--now {

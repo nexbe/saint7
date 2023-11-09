@@ -1,13 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { Modal } from "reactstrap";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { css } from "@emotion/react";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
-import { useMutation, useApolloClient } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { IoCloseSharp } from "react-icons/io5";
+
 import ConfirmModal from "../Modal/ConfirmModal";
 import { UploadedFiles } from "../upload/uploadFiles";
 import { Upload } from "../upload/uploadFile";
@@ -31,17 +32,13 @@ const EditCertificateModal = ({
     },
   });
   const router = useRouter();
-  const apolloClient = useApolloClient();
-  const { getAllCertificates, updateCertificate } = certificateStore(
-    (state) => state
-  );
+  const { updateCertificate } = certificateStore((state) => state);
   const [updateCertificateAction, errEditCertificate] =
     useMutation(UPDATE_CERTIFICATE);
   const [selectedDate, setSelectedDate] = useState(
     new Date(selectedCertificate.expiryDate)
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [certificateData, setCertificateData] = useState();
   const [saveAction, setSaveAction] = useState(false);
 
   const [fileList, setFileList] = useState([]);
@@ -64,14 +61,6 @@ const EditCertificateModal = ({
     setFileList({ ...fileList, ...uploadedFiles });
   };
 
-  const fetchExistingDataByID = async (id) => {
-    const attachmentInfo = await getAllCertificates({
-      apolloClient,
-      where: { userId: id },
-    });
-    setCertificateData(attachmentInfo[0]);
-  };
-
   const downloadFile = async ({ fileName, url }) => {
     const httpLink = `${process.env.NEXT_PUBLIC_APP_URL}${url}`;
     return await fetch(httpLink)
@@ -87,22 +76,17 @@ const EditCertificateModal = ({
     fileList[id] = file;
     setFileList({ ...fileList });
   };
-  useMemo(() => {
-    if (!!certificateData?.attachement) {
-      certificateData?.attachement.map((eachAttach, index) => {
+
+  useEffect(() => {
+    if (!!selectedCertificate?.attachement) {
+      selectedCertificate?.attachement.map((eachAttach, index) => {
         initializeFileList({
-          fileUrl: certificateData?.attachement[index]?.url,
-          fileName: certificateData?.attachement[index]?.name,
-          index: certificateData?.attachement[index]?.id,
+          fileUrl: selectedCertificate?.attachement[index]?.url,
+          fileName: selectedCertificate?.attachement[index]?.name,
+          index: selectedCertificate?.attachement[index]?.id,
         });
       });
       fileListArr = _.entries(fileList);
-    }
-  }, [certificateData]);
-
-  useEffect(() => {
-    if (!!selectedCertificate) {
-      fetchExistingDataByID(selectedCertificate?.users_permissions_user?.id);
     }
   }, [selectedCertificate]);
 
