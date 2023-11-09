@@ -132,19 +132,18 @@ const styles = {
     gap: 9px;
     margin: 20px;
     max-height: 80vh;
-    overflow-y: scroll;
+    // overflow-y: scroll;
     color: #000;
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     ::-webkit-scrollbar {
-      height: 5px;
+      width: 2px;
       background-color: transparent;
     }
-    ::-webkit-scrollbar-thumb {
-      height: 5px;
-      border-radius: 10px;
-      background-color: var(--lighter-gray);
+    .bodyContainer::-webkit-scrollbar-thumb {
+      border-radius: 2px;
+      background-color: var(--font-gray);
     }
   `,
 
