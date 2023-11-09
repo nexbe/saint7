@@ -70,7 +70,7 @@ const LeaveCalendar = () => {
   );
 
   function customTileContent({ date, view }) {
-    const isSpecialDay = specialDays.some(
+    const isSpecialDay = specialDays?.some(
       (specialDate) =>
         date.getDate() === specialDate.getDate() &&
         date.getMonth() === specialDate.getMonth() &&
