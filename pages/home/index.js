@@ -13,11 +13,14 @@ import ProgressIcon from "/public/icons/progressIcon";
 import ELeaveIcon from "/public/icons/eLeaveIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
-import Map from "../../components/Map";
+import userUserStore from "userUserStore"; // Use the alias here
+
+import HomeMap from "../../components/Map/homeMap";
 import attendenceStore from "../../store/attendance";
 import { useState } from "react";
 import HrmIcon from "../../public/icons/hrmIcon";
 import OperationIcon from "../../public/icons/operationIcon";
+import moment from "moment";
 
 const Home = () => {
   const router = useRouter();
@@ -27,20 +30,27 @@ const Home = () => {
     ProfileInfo: profileInfo,
     loading,
   } = profileStore((state) => state);
+  const today = new Date(); // Create a new Date object representing today
 
   const { user } = userStore((state) => state);
+  const { getAssignUsers, AssignUsers, notiData } = userUserStore(
+    (state) => state
+  );
 
   const [userData, setUserData] = useState();
-
-  const {
-    locationData: locationData,
-    getAddressData,
-    getLocationData,
-    addressData,
-  } = attendenceStore((state) => state);
+  const [attendanceData, setAttendanceData] = useState([]);
 
   useEffect(() => {
     setUserData(user);
+    if (user?.role?.name == "guard") {
+      getAssignUsers({
+        apolloClient,
+        where: {
+          userId: user.id,
+          date: moment(new Date()).format("YYYY-MM-DD"),
+        },
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -50,6 +60,27 @@ const Home = () => {
     });
   }, [user]);
 
+  useEffect(() => {
+    if (user?.role?.name == "guard") {
+      const filteredData =
+        AssignUsers[0]?.attributes?.attendances?.data?.filter((item) => {
+          const itemDate = item.attributes.date;
+
+          return itemDate === moment().format("YYYY-MM-DD");
+        });
+      setAttendanceData(filteredData);
+    }
+  }, [AssignUsers]);
+
+  const formatTime = (timeString) => {
+    const timeParts = timeString?.split(":"); // Split the string by colon
+
+    // Extract hours and minutes
+    const hours = timeParts[0];
+    const minutes = timeParts[1];
+    const formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
+  };
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -83,13 +114,25 @@ const Home = () => {
         </div>
         <div css={styles.bodyContainer}>
           <div css={styles.mapContainer}>
-            <Map />
+            <HomeMap
+              lat={
+                AssignUsers[0]?.attributes?.site?.data?.attributes?.location
+                  ?.Lat
+              }
+              lng={
+                AssignUsers[0]?.attributes?.site?.data?.attributes?.location
+                  ?.Lng
+              }
+              AssignUsers={AssignUsers}
+            />
           </div>
           {user?.role?.name.toLowerCase() != "admin" && (
             <div css={styles.mapLine}>
               <div css={styles.address}>
                 <MapPineLineIcon />
-                <label>{addressData}</label>
+                <label>
+                  {AssignUsers[0]?.attributes?.site?.data?.attributes?.address}
+                </label>
               </div>
               <hr
                 style={{
@@ -103,7 +146,10 @@ const Home = () => {
                   <label>CheckIn </label>
                 </div>
                 <span>
-                  &#128342; {dayjs(new Date().toISOString()).format("HH:MM")}
+                  &#128342;
+                  {attendanceData?.length
+                    ? formatTime(attendanceData[0]?.attributes?.checkInTime)
+                    : "00:00"}
                 </span>
               </div>
               <div className="d-flex">
@@ -230,7 +276,7 @@ const styles = {
       display: none;
     }
     .leaflet-touch .leaflet-bar {
-      margin-top: 50px;
+      margin-top: 85px;
     }
   `,
   mapIcon: css`
@@ -270,6 +316,7 @@ const styles = {
     color: var(--font-gray);
     font-size: 16px;
     font-weight: 600;
+    align-items: center;
     label {
       margin-top: -3px;
       line-height: normal;

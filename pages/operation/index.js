@@ -35,13 +35,6 @@ const Home = () => {
   const [sopHandle, setSopHandle] = useState(false);
   const [eHandle, setEHandle] = useState(false);
 
-  const {
-    locationData: locationData,
-    getAddressData,
-    getLocationData,
-    addressData,
-  } = attendenceStore((state) => state);
-
   useEffect(() => {
     setUserData(user);
   }, []);
