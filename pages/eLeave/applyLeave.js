@@ -25,35 +25,11 @@ const ApplyLeave = () => {
     { value: "Firsthalf", label: "First Half (AM)" },
     { value: "Secondhalf", label: "Second Half (PM)" },
   ];
-  const leaveTypeOptions = [
-    { value: "Annual_Leave", label: "Annual Leave (Vacation Leave)" },
-    { value: "Sick_Leave", label: "Sick Leave" },
-    { value: "Maternity_Leave", label: "Maternity Leave" },
-    { value: "Paternity_Leave", label: "Paternity Leave" },
-    { value: "Parental_Leave", label: "Parental Leave" },
-    { value: "Bereavement_Leave", label: "Bereavement Leave" },
-    {
-      value: "Compensatory_Time_Off",
-      label: "Compensatory Time Off (Comp Time)",
-    },
-    { value: "Unpaid_Leave", label: "Unpaid Leave" },
-    { value: "Educational_Leave", label: "Educational Leave" },
-    { value: "Jury_Duty_Leave", label: "Jury Duty Leave" },
-    { value: "Military_Leave", label: "Military Leave" },
-    { value: "Sabbatical_Leave", label: "Sabbatical Leave" },
-    { value: "Emergency_Leave", label: "Emergency Leave" },
-    {
-      value: "Leave_Act_FMLA_Leave",
-      label: "Family and Medical Leave Act (FMLA) Leave",
-    },
-  ];
   const router = useRouter();
   const apolloClient = useApolloClient();
   const {
     register,
-    reset,
     handleSubmit,
-
     formState: { errors },
   } = useForm();
   const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
@@ -65,7 +41,6 @@ const ApplyLeave = () => {
   const [selectedHalfDayOption, setSelectedHalfDayOption] = useState(
     haldDayOptions[0]
   );
-  const [selectedLeaveTypeOption, setSelectedLeaveTypeOption] = useState();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [refetch, setRefetch] = useState(1);
@@ -236,9 +211,6 @@ const ApplyLeave = () => {
   const handleSelectHalfDayChange = (selectedOption) => {
     setSelectedHalfDayOption(selectedOption);
   };
-  const handleSelectLeaveTypeChange = (selectedOption) => {
-    setSelectedLeaveTypeOption(selectedOption);
-  };
 
   const DropdownIndicator = (props) => {
     return (
@@ -261,7 +233,6 @@ const ApplyLeave = () => {
           reason: data.reason,
           numberOfDays: chosenType === "Halfday" ? 0.5 : numOfDay,
           leaveDuration: chosenType,
-          leaveType: selectedLeaveTypeOption?.value,
           halfdayOptions: selectedHalfDayOption?.value,
           users_permissions_user: user?.id,
           requestedTos: selectedRequestTosOptions?.map((eachRequest) => {
@@ -421,43 +392,13 @@ const ApplyLeave = () => {
               </div>
               <div className="formFlex">
                 <div className="d-flex">
-                  <label className="secondary-text">Leave Types</label>
-                </div>
-
-                <Select
-                  minMenuHeight={10}
-                  value={selectedLeaveTypeOption}
-                  onChange={handleSelectLeaveTypeChange}
-                  options={leaveTypeOptions}
-                  placeholder="Select leave type"
-                  styles={selectBoxStyle}
-                  components={{
-                    DropdownIndicator: () => null,
-                    IndicatorSeparator: () => null,
-                    DropdownIndicator,
-                  }}
-                  isClearable={false}
-                />
-              </div>
-              {/* <div className="formFlex">
-                <div className="d-flex">
-                  <label className="secondary-text">Remaining Leaves</label>
-                </div>
-                <label>
-                  <input
-                    type={"number"}
-                    className="secondary-text"
-                    placeholder=""
-                  />
-                </label>
-              </div> */}
-              <div className="formFlex">
-                <div className="d-flex">
                   <label className="secondary-text">Leave Reason</label>
                 </div>
-                <input
-                  type={"text"}
+                <textarea
+                  type="text"
+                  id="description"
                   className="secondary-text"
+                  rows={2}
                   {...register("reason", {
                     required: false,
                   })}
@@ -623,7 +564,8 @@ const styles = {
       span {
         color: #ec1c24;
       }
-      input {
+      input,
+      textarea {
         border: none;
         outline: none;
       }

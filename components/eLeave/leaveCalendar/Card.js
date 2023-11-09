@@ -9,57 +9,68 @@ const LeaveHistoryCard = ({ eachLeave }) => {
     <div css={styles.cardContainer}>
       <div css={styles.eachCard} className="primary-text">
         <label>
-          <div className="d-flex" style={{ gap: "30px" }}>
-            Request Leave{" "}
-            {eachLeave?.numberOfDays >= 1 ? (
+          <div className="d-flex">
+            <img
+              src={
+                eachLeave?.users_permissions_user?.profile?.photo?.url
+                  ? `${process.env.NEXT_PUBLIC_APP_URL}${eachLeave?.users_permissions_user?.profile?.photo.url}`
+                  : "../../images/defaultImage.jpg"
+              }
+            />
+            <label
+              style={{
+                marginLeft: "10px",
+              }}
+            >
+              {eachLeave?.users_permissions_user?.username}
+              <label
+                style={{
+                  textTransform: "capitalize",
+                  color: "#8898AA",
+                  fontSize: "13px",
+                }}
+              >
+                {eachLeave?.users_permissions_user?.role?.name}
+              </label>
+            </label>
+            <div
+              className="leaveStatus"
+              style={{
+                background:
+                  eachLeave?.status === "Approved"
+                    ? "rgba(95, 164, 82, 0.20)"
+                    : "rgba(236, 28, 36, 0.20)",
+                color: eachLeave?.status === "Approved" ? "#5FA452" : "#EC1C24",
+              }}
+            >
+              {eachLeave?.status}
+            </div>
+          </div>
+          <div css={styles.leaveDetails}>
+            <div>
+              <span>Request Leave</span>
+              <span>Reason</span>
+              <span>
+                {eachLeave?.status == "Approved" ? "Approved" : "Rejected"} by
+              </span>
+            </div>
+            <div>
+              <span>:</span>
+              <span>:</span>
+              <span>:</span>
+            </div>
+            <div>
               <span style={{ fontSize: "14px" }}>
                 {eachLeave?.numberOfDays}{" "}
                 <span style={{ fontWeight: "400", fontSize: "14px" }}>
                   Days
                 </span>
               </span>
-            ) : (
-              <span style={{ fontSize: "14px" }}>
-                {eachLeave?.halfdayOptions === "Firsthalf"
-                  ? "First Half (AM)"
-                  : "Second Half (PM)"}
-              </span>
-            )}
-          </div>
-          <div css={styles.leaveDetails}>
-            <div>
-              <span>Request To</span>
-              <span>Reason</span>
-              {eachLeave?.status != "Pending" && (
-                <span>
-                  {eachLeave?.status == "Approved" ? "Approved" : "Rejected"} by
-                </span>
-              )}
-            </div>
-            <div>
-              <span>:</span>
-              <span>:</span>
-              {eachLeave?.status != "Pending" && <span>:</span>}
-            </div>
-            <div>
-              <span style={{ width: "100%" }}>
-                {eachLeave?.requestedTos?.map((eachRequest) => {
-                  return (
-                    eachRequest?.username +
-                    " (" +
-                    eachRequest?.role?.name +
-                    ")  "
-                  );
-                })}
-              </span>
-
               <span>{eachLeave?.reason}</span>
-              {eachLeave?.status != "Pending" && (
-                <span>
-                  {eachLeave?.actionBy?.username} (
-                  {eachLeave?.actionBy?.role?.name})
-                </span>
-              )}
+              <span>
+                {eachLeave?.actionBy?.username} (
+                {eachLeave?.actionBy?.role?.name})
+              </span>
             </div>
           </div>
           <span className="leaveDate">
@@ -82,6 +93,9 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    background: none;
+    border: none;
+    margin-bottom: 10px;
     .detailWrapper {
       margin-top: -6px;
       .primary-text:last-child {
@@ -113,6 +127,19 @@ const styles = {
       justify-content: flex-start;
       align-items: center;
       margin-left: 5px;
+    }
+    img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50px;
+      border: 1px solid var(--light-gray);
+    }
+    .leaveStatus {
+      display: flex;
+      height: 35px;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 10px;
     }
   `,
   leaveDetails: css`
