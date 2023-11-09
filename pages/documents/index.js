@@ -143,13 +143,20 @@ const Documents = () => {
           </div>
           {isDelete && (
             <div css={styles.actionButton}>
-              <button css={styles.cancelBtn} onClick={() => setIsDelete(false)}>
+              <button
+                css={styles.cancelBtn}
+                onClick={() => {
+                  setIsDelete(false);
+                  setSelectedDeletedData([]);
+                }}
+              >
                 Cancel
               </button>
               <button
                 css={styles.deleteBtn}
                 onClick={() => {
                   setDeleteModal(!deleteModal);
+                  setIsDelete(false);
                 }}
               >
                 Delete

@@ -11,6 +11,7 @@ import {
 
 import EditPencil from "../../public/icons/editPencil";
 import PdfIcon from "../../public/icons/pdfIcon";
+import InvoiceImageModal from "../../components/claims/InvoiceImageModal";
 
 const Card = ({
   icon,
@@ -23,6 +24,11 @@ const Card = ({
   eachDocument,
 }) => {
   const [open, setOpen] = useState("");
+  const [openImageModal, setOpenImageModal] = useState(false);
+
+  const imageModal = () => {
+    setOpenImageModal(!openImageModal);
+  };
 
   const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif"];
   const isImage = eachDocument?.attachment?.map((eachAttach) => {
@@ -30,6 +36,10 @@ const Card = ({
       eachAttach.name?.endsWith(extension)
     );
   });
+
+  const imageList = eachDocument?.attachment?.filter(
+    (eachDoc, index) => isImage[index]
+  );
 
   const toggle = (id) => {
     if (open === id) {
@@ -40,6 +50,26 @@ const Card = ({
   };
 
   useEffect(() => {}, [isChecked]);
+
+  const onButtonClick = (eachAttach) => {
+    if (!!eachAttach) {
+      let attachUrl = eachAttach.url;
+      let attachName = eachAttach.name;
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}${attachUrl}`, {
+        method: "GET",
+      })
+        .then((response) => {
+          response.blob().then((blob) => {
+            const fileURL = window.URL.createObjectURL(blob);
+            let alink = document.createElement("a");
+            alink.href = fileURL;
+            alink.download = attachName;
+            alink.click();
+          });
+        })
+        .catch((error) => {});
+    }
+  };
 
   return (
     <>
@@ -82,13 +112,29 @@ const Card = ({
               {eachDocument?.attachment &&
                 eachDocument?.attachment.map((eachAttach, index) => {
                   return isImage[index] ? (
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_APP_URL}${eachAttach?.url}`}
-                    />
+                    ""
                   ) : (
-                    <PdfIcon />
+                    <div onClick={() => onButtonClick(eachAttach)}>
+                      <PdfIcon />
+                    </div>
                   );
                 })}
+              <div onClick={imageModal} style={{ cursor: "pointer" }}>
+                <img
+                  style={{ opacity: imageList?.length > 1 ? "0.5" : "1" }}
+                  src={`${process.env.NEXT_PUBLIC_APP_URL}${imageList[0]?.url}`}
+                />
+                {imageList?.length > 1 && (
+                  <span css={styles.imageCount}>+{imageList?.length}</span>
+                )}
+                {openImageModal && (
+                  <InvoiceImageModal
+                    attachment={imageList}
+                    isOpen={openImageModal}
+                    close={() => setOpenImageModal(!openImageModal)}
+                  />
+                )}
+              </div>
             </div>
           </AccordionBody>
         </AccordionItem>
@@ -129,11 +175,29 @@ const styles = {
       font-weight: 400;
       line-height: normal;
     }
+    .fileIconContainer {
+      display: flex;
+    }
+    img {
+     opacity: 0.6;
+    }
     .fileIconContainer svg, img {
       margin-top: 10px;
       width: 56px;
       height: 56px;
       margin-right: 10px;
     }
+  `,
+  imageCount: css`
+    position: relative;
+    margin-top: -35px;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
   `,
 };
