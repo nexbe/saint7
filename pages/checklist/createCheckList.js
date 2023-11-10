@@ -47,11 +47,11 @@ const CreateCheckList = () => {
   const router = useRouter();
   let equipListArr = _.values(equipFileList);
   let fileListArr = _.values(fileList);
-  const { createCheckList,errorCreateCheckList } = siteCheckListStore();
+  const { createCheckList, errorCreateCheckList } = siteCheckListStore();
   const [formData, setFormData] = useState({
     title: "",
     location: "",
-    dateVisited: '',
+    dateVisited: "",
     timeVisited: "",
     visitedBy: "",
     sop: "",
@@ -73,21 +73,21 @@ const CreateCheckList = () => {
     const updatedSopTypes = [...selectedSopType];
     updatedSopTypes[index] = selected;
     setSelectedSopTypes(updatedSopTypes);
-  }
+  };
 
   const formatDate = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
-  }
-  
+  };
+
   const formatTime = (date) => {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
-  }
+  };
 
   const DropdownIndicator = (props) => {
     return (
@@ -96,6 +96,20 @@ const CreateCheckList = () => {
           <MdOutlineKeyboardArrowDown color={"#2F4858"} size={25} />
         </components.DropdownIndicator>
       )
+    );
+  };
+
+  const SelectMenuButton = (props) => {
+    return (
+      <components.MenuList {...props}>
+        {props.children}
+        <button css={styles.createSopBtn}>
+          <span css={styles.actionBtn}>
+            <FaPlus color={"#293991"} size={15} />
+          </span>
+          Add New Sop Type
+        </button>
+      </components.MenuList>
     );
   };
 
@@ -174,25 +188,24 @@ const CreateCheckList = () => {
 
   const handleSopChange = (index, event) => {
     let data = [...sopData];
-    data[index][event?.target?.name ] =
-      event?.target?.value || event.value;
-      
+    data[index][event?.target?.name] = event?.target?.value || event.value;
+
     const attachments = fileList[index] || [];
     data[index].Attachments = attachments;
 
     const sopType = selectedSopType[index]?.value || null;
 
     const updatedSop = data.map((sop, i) => {
-    if (i === index) {
-      return {
-        Attachments: attachments,
-        Name: sop.Name,
-        id: sop.id,
-        sop_type: sopType,
-      };
-    }
-    return sop;
-  });
+      if (i === index) {
+        return {
+          Attachments: attachments,
+          Name: sop.Name,
+          id: sop.id,
+          sop_type: sopType,
+        };
+      }
+      return sop;
+    });
 
     setFormData({
       ...formData,
@@ -203,40 +216,41 @@ const CreateCheckList = () => {
   const handleEquipChange = (index, event) => {
     let data = [...equipmentData];
     data[index][event?.target?.name || event.label] =
-    event?.target?.value || event.value
+      event?.target?.value || event.value;
 
     const attachments = equipFileList[index] || [];
     data[index].Attachments = attachments;
-    
+
     setFormData({
       ...formData,
-      equipment: [
-        ...data,
-      ],
+      equipment: [...data],
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData) {
-      createCheckList({
-        "data" : { 
-      "actionTakenForProperUniform": formData?.actionTakenForProperUniform,
-      "actionTakenForWelfare": formData?.actionTakenForWelfare,
-      "createdUser": user?.id,
-      "dateVisited": formData?.dateVisited,
-      "equipment": [],
-      "guardOnDuty": formData?.guardOnDuty,
-      "location": formData?.location,
-      "reasonForProperUniform": formData?.reasonForProperUniform,
-      "remarks": formData?.remarks,
-      "sop": [ ...formData?.sop],
-      "suggestions": formData?.suggestions,
-      "timeVisited": formData?.timeVisited,
-      "title": formData?.title,
-      "visitedBy": formData?.visitedBy
-      }
-      }, user?.jwt);
+      createCheckList(
+        {
+          data: {
+            actionTakenForProperUniform: formData?.actionTakenForProperUniform,
+            actionTakenForWelfare: formData?.actionTakenForWelfare,
+            createdUser: user?.id,
+            dateVisited: formData?.dateVisited,
+            equipment: [],
+            guardOnDuty: formData?.guardOnDuty,
+            location: formData?.location,
+            reasonForProperUniform: formData?.reasonForProperUniform,
+            remarks: formData?.remarks,
+            sop: [...formData?.sop],
+            suggestions: formData?.suggestions,
+            timeVisited: formData?.timeVisited,
+            title: formData?.title,
+            visitedBy: formData?.visitedBy,
+          },
+        },
+        user?.jwt
+      );
       router.push({
         pathname: `/checklist`,
         query: {
@@ -245,7 +259,7 @@ const CreateCheckList = () => {
           action: "create",
           userId: user?.id,
         },
-      })
+      });
     }
   };
   return (
@@ -289,7 +303,11 @@ const CreateCheckList = () => {
                   <DatePicker
                     name="dateVisited"
                     id="dateVisited"
-                    selected={ formData?.dateVisited ? new Date(formData?.dateVisited) : new Date()  }
+                    selected={
+                      formData?.dateVisited
+                        ? new Date(formData?.dateVisited)
+                        : new Date()
+                    }
                     onChange={(date) => {
                       const formattedDate = formatDate(date);
                       handleDateChange(formattedDate);
@@ -303,7 +321,11 @@ const CreateCheckList = () => {
                 <label className="d-flex">
                   <ClockIcon size={20} />
                   <DatePicker
-                    selected={formData.timeVisited ? new Date(`2000-01-01T${formData.timeVisited}`) : null}
+                    selected={
+                      formData.timeVisited
+                        ? new Date(`2000-01-01T${formData.timeVisited}`)
+                        : null
+                    }
                     onChange={(time) => {
                       const formattedDate = formatTime(time);
                       handleTimeChange(formattedDate);
@@ -392,6 +414,7 @@ const CreateCheckList = () => {
                           DropdownIndicator: () => null,
                           IndicatorSeparator: () => null,
                           DropdownIndicator,
+                          MenuList: SelectMenuButton,
                         }}
                         isClearable={false}
                       />
@@ -481,7 +504,10 @@ const CreateCheckList = () => {
                       />
                     ) : (
                       <div>
-                        <Upload onChange={(e) => onEquipChange(e, index)} belongTo={"checklist"} />
+                        <Upload
+                          onChange={(e) => onEquipChange(e, index)}
+                          belongTo={"checklist"}
+                        />
                       </div>
                     )}
                     {equipmentData && equipmentData.length > 1 && <hr />}
@@ -721,12 +747,16 @@ const styles = {
       align-items: center;
       cursor: pointer;
       border-radius: 8px;
-      background: var(--white);
+      background: #fff;
       border: 1px solid #718096;
-      padding: 3px 10px;
+      padding: 20px 10px;
       gap: 7px;
       height: 50px;
       width: 167px;
+    }
+    .react-datepicker__input-container {
+      width: 80%;
+      background: transparent !important;
     }
   `,
   box: css`
@@ -756,6 +786,7 @@ const styles = {
     background: #e3f3ff;
     cursor: pointer;
     padding: 5px;
+    margin-top:3px;
     border: none;
     font-weight: 700;
   `,
@@ -789,5 +820,22 @@ const styles = {
     border: none;
     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
       0px 4px 6px 0px rgba(50, 50, 93, 0.11);
+  `,
+  createSopBtn: css`
+    border: none;
+    display: flex;
+    background: #fff;
+    width: 100%;
+    padding: 5px;
+    margin: auto;
+    flex-direction: row;
+    box-shadow: 1px -4px 8px 0px rgba(0, 0, 0, 0.08);
+    border-radius: 0px 0px 10px 10px;
+    justify-content: center;
+    gap: 9px;
+    text-align: center;
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 600;
   `,
 };
