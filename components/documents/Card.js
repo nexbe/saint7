@@ -96,7 +96,7 @@ const Card = ({
             </div>
             {isEdit && (
               <div
-                style={{ marginLeft: "aut77o", cursor: "pointer" }}
+                style={{ marginLeft: "auto", cursor: "pointer" }}
                 onClick={() => {
                   setSelectedDocument(eachDocument);
                   setEditModal(true);
