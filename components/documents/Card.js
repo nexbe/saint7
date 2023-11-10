@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import {
   Accordion,
@@ -111,30 +111,32 @@ const Card = ({
             <div className="fileIconContainer">
               {eachDocument?.attachment &&
                 eachDocument?.attachment.map((eachAttach, index) => {
-                  return isImage[index] ? (
-                    ""
-                  ) : (
-                    <div onClick={() => onButtonClick(eachAttach)}>
-                      <PdfIcon />
-                    </div>
+                  return (
+                    isImage[index] == false && (
+                      <div onClick={() => onButtonClick(eachAttach)}>
+                        <PdfIcon />
+                      </div>
+                    )
                   );
                 })}
-              <div onClick={imageModal} style={{ cursor: "pointer" }}>
-                <img
-                  style={{ opacity: imageList?.length > 1 ? "0.5" : "1" }}
-                  src={`${process.env.NEXT_PUBLIC_APP_URL}${imageList[0]?.url}`}
-                />
-                {imageList?.length > 1 && (
-                  <span css={styles.imageCount}>+{imageList?.length}</span>
-                )}
-                {openImageModal && (
-                  <InvoiceImageModal
-                    attachment={imageList}
-                    isOpen={openImageModal}
-                    close={() => setOpenImageModal(!openImageModal)}
+              {imageList.length > 0 && (
+                <div onClick={imageModal} style={{ cursor: "pointer" }}>
+                  <img
+                    style={{ opacity: imageList?.length > 1 ? "0.7" : "1" }}
+                    src={`${process.env.NEXT_PUBLIC_APP_URL}${imageList[0]?.url}`}
                   />
-                )}
-              </div>
+                  {imageList?.length > 1 && (
+                    <span css={styles.imageCount}>+{imageList?.length}</span>
+                  )}
+                  {openImageModal && (
+                    <InvoiceImageModal
+                      attachment={imageList}
+                      isOpen={openImageModal}
+                      close={() => setOpenImageModal(!openImageModal)}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           </AccordionBody>
         </AccordionItem>
