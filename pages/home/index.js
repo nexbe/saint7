@@ -13,7 +13,9 @@ import ProgressIcon from "/public/icons/progressIcon";
 import profileStore from "../../store/profile";
 import userStore from "../../store/auth";
 import userUserStore from "userUserStore"; // Use the alias here
-import { Map, HomeMap, HomeMap2 } from "../../components/Map";
+// import {HomeMap2 } from "../../components/Map/index";
+import HomeMap from "../../components/Map/homeMapIndex";
+import HomeMap2 from "../../components/Map/homeMap2Index";
 
 import { useState } from "react";
 import HrmIcon from "../../public/icons/hrmIcon";
@@ -31,8 +33,6 @@ const Home = () => {
   } = profileStore((state) => state);
   const { sites, getSites } = siteStore();
 
-  const today = new Date(); // Create a new Date object representing today
-
   const { user } = userStore((state) => state);
   const { getAssignUsers, AssignUsers, notiData } = userUserStore(
     (state) => state
@@ -40,6 +40,33 @@ const Home = () => {
 
   const [userData, setUserData] = useState();
   const [attendanceData, setAttendanceData] = useState([]);
+  const [progress, setProgress] = useState();
+
+  const today = moment().format("YYYY-MM-DD");
+
+  useEffect(() => {
+    const currentTime = moment().format("hh:mm:ss.SSS");
+
+    const startDateTime = new Date(
+      `${today} ${AssignUsers[0]?.attributes?.shift?.data?.attributes?.timeRange?.StartTime}`
+    );
+    const endDateTime = new Date(
+      `${today} ${AssignUsers[0]?.attributes?.shift?.data?.attributes?.timeRange?.EndTime}`
+    );
+    const checkinDateTime = new Date(
+      `${today} ${attendanceData[0]?.attributes?.checkInTime ?? "00:00:00.000"}`
+    );
+    const currentDateTime = new Date(`${today} ${currentTime}`);
+    // Calculate the total duration
+    const totalDuration = endDateTime - startDateTime;
+    // Calculate the elapsed time
+    const elapsedDuration = currentDateTime - checkinDateTime;
+    // Calculate the progress percentage
+    const progressPercentage = attendanceData[0]?.attributes?.checkInTime
+      ? (elapsedDuration / totalDuration) * 100
+      : 0;
+    setProgress(progressPercentage.toFixed(2));
+  }, [AssignUsers, attendanceData]);
 
   useEffect(() => {
     setUserData(user);
@@ -172,9 +199,12 @@ const Home = () => {
                 </div>
                 <div css={styles.progressContent}>
                   <div className="progress-bar">
-                    <div className="progress" style={{ width: `20%` }}></div>
+                    <div
+                      className="progress"
+                      style={{ width: `${progress}%` }}
+                    ></div>
                   </div>{" "}
-                  20%
+                  {progress}
                 </div>
               </div>
             </div>
