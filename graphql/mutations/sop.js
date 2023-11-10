@@ -13,3 +13,13 @@ export const GET_SOP_TYPES = gql`
     }
   }
 `;
+
+export const CREATE_SOP_TYPE = gql`
+  mutation ($data: SopTypeInput!) {
+    createSopType(data: $data) {
+      data {
+        id
+      }
+    }
+  }
+`;

@@ -28,7 +28,7 @@ const Card = ({ isEdit, isDelete, isChecked, handleSelect, data }) => {
           pathname: '/checklist/editCheckList',
           query: { id: data.id }
         })}
-          style={{ margin:'auto' }}>
+          >
           <EditPencil />
         </div>
       )}
@@ -47,6 +47,7 @@ const styles = {
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: row;
+    justify-content:space-between;
     align-items:center;
   `,
 };

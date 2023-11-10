@@ -46,7 +46,12 @@ const EditCheckList = () => {
   const checklistId = router.query.id;
   let equipListArr = _.values(equipFileList);
   let fileListArr = _.values(fileList);
-  const { updateCheckLists,errorUpdateCheckLists, filterCheckList, fetchFilteredCheckList } = siteCheckListStore();
+  const {
+    updateCheckLists,
+    errorUpdateCheckLists,
+    filterCheckList,
+    fetchFilteredCheckList,
+  } = siteCheckListStore();
   const [formData, setFormData] = useState({
     title: filterCheckList?.[0]?.attributes?.title,
     location: filterCheckList?.[0]?.attributes?.location,
@@ -58,39 +63,45 @@ const EditCheckList = () => {
     suggestions: filterCheckList?.[0]?.attributes?.suggestions,
     guardOnDuty: filterCheckList?.[0]?.attributes?.guardOnDuty,
     remarks: filterCheckList?.[0]?.attributes?.remarks,
-    reasonForProperUniform: filterCheckList?.[0]?.attributes?.reasonForProperUniform,
-    actionTakenForProperUniform: filterCheckList?.[0]?.attributes?.actionTakenForProperUniform,
-    actionTakenForWelfare:filterCheckList?.[0]?.attributes?.actionTakenForWelfare,
+    reasonForProperUniform:
+      filterCheckList?.[0]?.attributes?.reasonForProperUniform,
+    actionTakenForProperUniform:
+      filterCheckList?.[0]?.attributes?.actionTakenForProperUniform,
+    actionTakenForWelfare:
+      filterCheckList?.[0]?.attributes?.actionTakenForWelfare,
     createdUser: user?.id,
   });
   useEffect(() => {
     fetchSopTypes(user?.jwt);
-    fetchFilteredCheckList({
-      "input": {
-        "eq": checklistId
-      }
-    }, user?.jwt)
+    fetchFilteredCheckList(
+      {
+        input: {
+          eq: checklistId,
+        },
+      },
+      user?.jwt
+    );
   }, []);
-  console.log(filterCheckList)
+  console.log(filterCheckList);
   const handleSOPTypeChange = (selected, index) => {
     const updatedSopTypes = [...selectedSopType];
     updatedSopTypes[index] = selected;
     setSelectedSopTypes(updatedSopTypes);
-  }
+  };
 
   const formatDate = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
-  }
-  
+  };
+
   const formatTime = (date) => {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
-  }
+  };
 
   const DropdownIndicator = (props) => {
     return (
@@ -99,6 +110,20 @@ const EditCheckList = () => {
           <MdOutlineKeyboardArrowDown color={"#2F4858"} size={25} />
         </components.DropdownIndicator>
       )
+    );
+  };
+
+  const SelectMenuButton = (props) => {
+    return (
+      <components.MenuList {...props}>
+        {props.children}
+        <button css={styles.createSopBtn}>
+          <span css={styles.actionBtn}>
+            <FaPlus color={"#293991"} size={15} />
+          </span>
+          Add New Sop Type
+        </button>
+      </components.MenuList>
     );
   };
 
@@ -175,25 +200,24 @@ const EditCheckList = () => {
 
   const handleSopChange = (index, event) => {
     let data = [...sopData];
-    data[index][event?.target?.name ] =
-      event?.target?.value || event.value;
-      
+    data[index][event?.target?.name] = event?.target?.value || event.value;
+
     const attachments = fileList[index] || [];
     data[index].Attachments = attachments;
 
     const sopType = selectedSopType[index]?.value || null;
 
     const updatedSop = data.map((sop, i) => {
-    if (i === index) {
-      return {
-        Attachments: attachments,
-        Name: sop.Name,
-        id: sop.id,
-        sop_type: sopType,
-      };
-    }
-    return sop;
-  });
+      if (i === index) {
+        return {
+          Attachments: attachments,
+          Name: sop.Name,
+          id: sop.id,
+          sop_type: sopType,
+        };
+      }
+      return sop;
+    });
 
     setFormData({
       ...formData,
@@ -204,41 +228,42 @@ const EditCheckList = () => {
   const handleEquipChange = (index, event) => {
     let data = [...equipmentData];
     data[index][event?.target?.name || event.label] =
-    event?.target?.value || event.value
+      event?.target?.value || event.value;
 
     const attachments = equipFileList[index] || [];
     data[index].Attachments = attachments;
-    
+
     setFormData({
       ...formData,
-      equipment: [
-        ...data,
-      ],
+      equipment: [...data],
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData) {
-      updateCheckLists( {
-        "data" : { 
-      "actionTakenForProperUniform": formData.actionTakenForProperUniform,
-      "actionTakenForWelfare": formData.actionTakenForWelfare,
-      "createdUser": user?.id,
-      "dateVisited": formData?.dateVisited,
-      "equipment": formData?.equipment,
-      "guardOnDuty": formData?.guardOnDuty,
-      "location": formData?.location,
-      "reasonForProperUniform": formData?.reasonForProperUniform,
-      "remarks": formData?.remarks,
-      "sop": formData?.sop,
-      "suggestions": formData?.suggestions,
-      "timeVisited": formData?.timeVisited,
-      "title": formData?.title,
-      "visitedBy": formData?.visitedBy
+      updateCheckLists(
+        {
+          data: {
+            actionTakenForProperUniform: formData.actionTakenForProperUniform,
+            actionTakenForWelfare: formData.actionTakenForWelfare,
+            createdUser: user?.id,
+            dateVisited: formData?.dateVisited,
+            equipment: formData?.equipment,
+            guardOnDuty: formData?.guardOnDuty,
+            location: formData?.location,
+            reasonForProperUniform: formData?.reasonForProperUniform,
+            remarks: formData?.remarks,
+            sop: formData?.sop,
+            suggestions: formData?.suggestions,
+            timeVisited: formData?.timeVisited,
+            title: formData?.title,
+            visitedBy: formData?.visitedBy,
+          },
+          id: filterCheckList?.[0]?.id,
         },
-        "id": filterCheckList?.[0]?.id
-      }, user?.jwt);
+        user?.jwt
+      );
       router.push({
         pathname: `/checklist`,
         query: {
@@ -247,7 +272,7 @@ const EditCheckList = () => {
           action: "update",
           userId: user?.id,
         },
-      })
+      });
     }
   };
   return (
@@ -291,7 +316,11 @@ const EditCheckList = () => {
                   <DatePicker
                     name="dateVisited"
                     id="dateVisited"
-                    selected={ formData?.dateVisited ? new Date(formData?.dateVisited) : new Date()  }
+                    selected={
+                      formData?.dateVisited
+                        ? new Date(formData?.dateVisited)
+                        : new Date()
+                    }
                     onChange={(date) => {
                       const formattedDate = formatDate(date);
                       handleDateChange(formattedDate);
@@ -305,7 +334,11 @@ const EditCheckList = () => {
                 <label className="d-flex">
                   <ClockIcon size={20} />
                   <DatePicker
-                    selected={formData.timeVisited ? new Date(`2000-01-01T${formData.timeVisited}`) : null}
+                    selected={
+                      formData.timeVisited
+                        ? new Date(`2000-01-01T${formData.timeVisited}`)
+                        : null
+                    }
                     onChange={(time) => {
                       const formattedDate = formatTime(time);
                       handleTimeChange(formattedDate);
@@ -346,7 +379,9 @@ const EditCheckList = () => {
                   <div key={data.id}>
                     {sopData && sopData.length > 1 && (
                       <div css={styles.boxHeader}>
-                        <h6 style={{ margin: 0, flex: 1 }}>SOP - {index + 1 }</h6>
+                        <h6 style={{ margin: 0, flex: 1 }}>
+                          SOP - {index + 1}
+                        </h6>
                         <div onClick={() => handleSOPDeleteClick(index)}>
                           <MdRemoveCircleOutline color="#EB0F0A" size={23} />
                         </div>
@@ -394,6 +429,7 @@ const EditCheckList = () => {
                           DropdownIndicator: () => null,
                           IndicatorSeparator: () => null,
                           DropdownIndicator,
+                          MenuList: SelectMenuButton,
                         }}
                         isClearable={false}
                       />
@@ -431,7 +467,7 @@ const EditCheckList = () => {
                     {equipmentData && equipmentData.length > 1 && (
                       <div css={styles.boxHeader}>
                         <h6 style={{ margin: 0, flex: 1 }}>
-                          Equipment -  {index + 1 }
+                          Equipment - {index + 1}
                         </h6>
                         <div onClick={() => handleEquipDeleteClick(index)}>
                           <MdRemoveCircleOutline color="#EB0F0A" size={23} />
@@ -483,7 +519,10 @@ const EditCheckList = () => {
                       />
                     ) : (
                       <div>
-                        <Upload onChange={(e) => onEquipChange(e, index)} belongTo={"checklist"} />
+                        <Upload
+                          onChange={(e) => onEquipChange(e, index)}
+                          belongTo={"checklist"}
+                        />
                       </div>
                     )}
                     {equipmentData && equipmentData.length > 1 && <hr />}
@@ -730,6 +769,10 @@ const styles = {
       height: 50px;
       width: 167px;
     }
+    .react-datepicker__input-container {
+      width: 80%;
+      background: transparent !important;
+    }
   `,
   box: css`
     border-radius: 5px;
@@ -755,6 +798,7 @@ const styles = {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 5px;
     background: #e3f3ff;
     cursor: pointer;
     padding: 5px;
@@ -791,5 +835,22 @@ const styles = {
     border: none;
     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
       0px 4px 6px 0px rgba(50, 50, 93, 0.11);
+  `,
+  createSopBtn: css`
+    border: none;
+    display: flex;
+    background: #fff;
+    width: 100%;
+    padding: 5px;
+    margin: auto;
+    flex-direction: row;
+    box-shadow: 1px -4px 8px 0px rgba(0, 0, 0, 0.08);
+    border-radius: 0px 0px 10px 10px;
+    justify-content: center;
+    gap: 9px;
+    text-align: center;
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 600;
   `,
 };
