@@ -4,7 +4,11 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useApolloClient, useMutation } from "@apollo/client";
 import { FaPlus, FaStar } from "react-icons/fa";
-import { PiPencilSimpleLineLight, PiPencilSimpleLight } from "react-icons/pi";
+import {
+  PiPencilSimpleLineLight,
+  PiPencilSimpleLight,
+  PiPencilSimpleLineFill,
+} from "react-icons/pi";
 import { RiDeleteBinLine } from "react-icons/ri";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
@@ -28,10 +32,15 @@ import profileStore from "../../store/profile";
 import userStore from "../../store/user";
 import authStore from "../../store/auth";
 import certificateStore from "../../store/certificate";
-import { UPDATE_PROFILE } from "../../graphql/mutations/profile";
+import {
+  UPDATE_PROFILE,
+  CREATE_PROFILE,
+} from "../../graphql/mutations/profile";
 import { UPDATE_USER } from "../../graphql/mutations/user";
 import { uploadFile } from "../../components/upload/upload";
 import { DELETE_CERTIFICATE } from "../../graphql/mutations/certificate";
+import EditPencil from "../../public/icons/editPencil";
+import EditIcon from "../../public/icons/editIcon";
 
 const Profile = () => {
   const router = useRouter();
@@ -42,11 +51,13 @@ const Profile = () => {
     getAllProfiles,
     ProfileInfo: profileInfo,
     updateProfile,
+    createProfile,
   } = profileStore((state) => state);
   const { updateUser } = userStore((state) => state);
   const [updateProfileAction, { errUploadProfile }] =
     useMutation(UPDATE_PROFILE);
-  const [updateUserAction, { errUploadUser }] = useMutation(UPDATE_USER);
+  const [createProfileAction] = useMutation(CREATE_PROFILE);
+  const [updateUserAction] = useMutation(UPDATE_USER);
   const [deleteCertificateAction, { errDeleteCertificate }] =
     useMutation(DELETE_CERTIFICATE);
   const { user } = authStore((state) => state);
@@ -96,6 +107,7 @@ const Profile = () => {
       });
     }
   }, [user, router]);
+
   const {
     handleSubmit,
     register,
@@ -128,7 +140,7 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    if (!!profileInfo[0]?.photo.url)
+    if (profileInfo?.length > 0 && !!profileInfo[0]?.photo.url)
       setImage(
         `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
       );
@@ -151,14 +163,29 @@ const Profile = () => {
     const response = await uploadFile(formData);
     let json = await response.json();
     let imageId = json[0].id;
-    await updateProfileAction({
-      variables: {
-        id: profileInfo[0]?.id,
-        data: {
-          photo: imageId,
+
+    if (!!profileInfo[0]?.id) {
+      await updateProfileAction({
+        variables: {
+          id: profileInfo[0]?.id,
+          data: {
+            photo: imageId,
+          },
+          updatedAt: new Date().toISOString(),
         },
-      },
-    });
+      });
+    } else {
+      await createProfileAction({
+        variables: {
+          data: {
+            photo: imageId,
+            user: user?.id,
+            publishedAt: new Date().toISOString(),
+          },
+        },
+      });
+    }
+
     router.push({
       pathname: `/profile`,
       query: {
@@ -172,37 +199,63 @@ const Profile = () => {
 
   const onSubmit = async (data) => {
     if (!!editConfirm) {
-      await updateProfile({
-        updateProfileAction,
-        id: profileInfo[0]?.id,
-        profileData: {
-          contactNumber: data.contactNumber,
-          position: data.position,
-          joinDate: new Date(startDate).toISOString(),
-        },
-        updatedAt: new Date().toISOString(),
-      });
-      await updateUser({
-        updateUserAction,
-        id: profileInfo[0]?.user?.id,
-        userData: {
-          email: data.email,
-        },
-      });
+      if (profileInfo.length > 0 && !!profileInfo[0].id) {
+        await updateProfileAction({
+          variables: {
+            id: profileInfo[0]?.id,
+            data: {
+              contactNumber: data.contactNumber,
+              position: data.position,
+              joinDate: new Date(startDate).toISOString(),
+            },
+            updatedAt: new Date().toISOString(),
+          },
+        });
+        await updateUser({
+          updateUserAction,
+          id: profileInfo[0]?.user?.id,
+          userData: {
+            email: data.email,
+          },
+        });
+      } else {
+        await createProfileAction({
+          variables: {
+            data: {
+              contactNumber: data?.contactNumber,
+              position: data?.position,
+              joinDate: new Date(startDate)?.toISOString(),
+              user: router?.query ? router?.query?.userId : user?.id,
+              publishedAt: new Date().toISOString(),
+            },
+          },
+        });
+        await updateUser({
+          updateUserAction,
+          id: router?.query ? router?.query?.userId : user?.id,
+          userData: {
+            email: data.email,
+          },
+        });
+        getAllProfiles({
+          apolloClient,
+          where: { userId: router?.query ? router?.query?.userId : user?.id },
+        });
+      }
+
       router.push({
         pathname: `/profile`,
         query: {
-          message: !errUploadProfile ? "Success!" : "Apologies!",
-          belongTo: !errUploadProfile ? "Personal" : "error",
+          message: "Success!",
           userId: router?.query ? router?.query?.userId : user?.id,
           label: "Your Personal Information has successfully updated.",
         },
       });
     } else {
-      setValue("email", selectedProfile[0]?.user?.email);
-      setValue("contactNumber", selectedProfile[0]?.contactNumber);
-      setValue("position", selectedProfile[0]?.position);
-      setStartDate(new Date(selectedProfile[0]?.joinDate));
+      setValue("email", selectedProfile[0]?.user?.email ?? "");
+      setValue("contactNumber", selectedProfile[0]?.contactNumber ?? "");
+      setValue("position", selectedProfile[0]?.position ?? "");
+      setStartDate(new Date(selectedProfile[0]?.joinDate ?? ""));
     }
   };
 
@@ -224,7 +277,7 @@ const Profile = () => {
   const onFavouriteChange = async (addFavourite) => {
     if (!!addFavourite) {
       await updateProfile({
-        updateUserAction,
+        updateProfileAction,
         id: profileInfo[0]?.id,
         profileData: {
           favoriteUsers: [...favLists, user?.id],
@@ -250,15 +303,15 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (!!profileInfo) {
+    if (!!profileInfo && profileInfo?.length > 0) {
       const selectedProfile = !!router.query.userId
         ? profileInfo.filter((item) => {
             if (item?.user?.id === router.query.userId) return item;
           })
         : profileInfo;
-      setValue("email", selectedProfile[0]?.user?.email);
-      setValue("contactNumber", selectedProfile[0]?.contactNumber);
-      setValue("position", selectedProfile[0]?.position);
+      setValue("email", selectedProfile[0]?.user?.email ?? "");
+      setValue("contactNumber", selectedProfile[0]?.contactNumber ?? "");
+      setValue("position", selectedProfile[0]?.position ?? "");
     }
   }, [profileInfo, router?.query?.userId]);
 
@@ -326,7 +379,7 @@ const Profile = () => {
             </p>
             <div
               css={styles.editIcon}
-              onClick={() => setProfileEdit(true)}
+              onClick={() => setProfileEdit(!profileEdit)}
               style={{
                 display:
                   router.query.team === "Team" ||
@@ -335,7 +388,14 @@ const Profile = () => {
                     : "none",
               }}
             >
-              <PiPencilSimpleLineLight color="rgba(47, 72, 88, 1)" size={20} />
+              {profileEdit ? (
+                <PiPencilSimpleLineFill color="var(--primary)" size={20} />
+              ) : (
+                <PiPencilSimpleLineLight
+                  color="rgba(47, 72, 88, 1)"
+                  size={20}
+                />
+              )}
             </div>
             <div
               style={{
@@ -368,14 +428,18 @@ const Profile = () => {
                     display: profileEdit ? "block" : "none",
                   }}
                   onClick={() => {
-                    setPersonalEdit(true);
+                    setPersonalEdit(!personalEdit);
                     setShowProfileDetail(true);
                   }}
                 >
-                  <PiPencilSimpleLineLight
-                    color="rgba(47, 72, 88, 1)"
-                    size={20}
-                  />
+                  {personalEdit ? (
+                    <PiPencilSimpleLineFill color="var(--primary)" size={20} />
+                  ) : (
+                    <PiPencilSimpleLineLight
+                      color="rgba(47, 72, 88, 1)"
+                      size={20}
+                    />
+                  )}
                 </div>
                 <div
                   onClick={() => setShowProfileDetail(!showProfileDetail)}
@@ -397,9 +461,8 @@ const Profile = () => {
                       type="email"
                       className="primary-text"
                       disabled={!personalEdit}
-                      required
                       {...register("email", {
-                        required: true,
+                        required: false,
                       })}
                     />
                   </div>
@@ -476,14 +539,18 @@ const Profile = () => {
                     display: profileEdit ? "block" : "none",
                   }}
                   onClick={() => {
-                    setCertificateEdit(true);
+                    setCertificateEdit(!certificateEdit);
                     setShowAchievementDetail(true);
                   }}
                 >
-                  <PiPencilSimpleLineLight
-                    color="rgba(47, 72, 88, 1)"
-                    size={20}
-                  />
+                  {certificateEdit ? (
+                    <PiPencilSimpleLineFill color="var(--primary)" size={20} />
+                  ) : (
+                    <PiPencilSimpleLineLight
+                      color="rgba(47, 72, 88, 1)"
+                      size={20}
+                    />
+                  )}
                 </div>
                 <div
                   style={{ marginLeft: "auto" }}
