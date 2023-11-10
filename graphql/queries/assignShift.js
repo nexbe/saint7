@@ -67,6 +67,7 @@ export const GET_ASSIGN_SHIFTS = gql`
                 checkInTime
                 checkOutTIme
                 status
+                date
               }
             }
           }
