@@ -27,6 +27,7 @@ const CreateCheckList = () => {
   const [equipFileList, setEquipFileList] = useState([]);
   const { fetchSopTypes, sopTypes } = sopStore();
   const [selectedSopType, setSelectedSopTypes] = useState([]);
+  const [typedValue, setTypedValue] = useState('');
   const [sopData, setSopData] = useState([
     {
       id: 1,
@@ -47,7 +48,8 @@ const CreateCheckList = () => {
   const router = useRouter();
   let equipListArr = _.values(equipFileList);
   let fileListArr = _.values(fileList);
-  const { createCheckList, errorCreateCheckList } = siteCheckListStore();
+  const { createCheckList, errorCreateCheckList} = siteCheckListStore();
+  const { createSopType } = sopStore();
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -65,9 +67,20 @@ const CreateCheckList = () => {
     createdUser: user?.id,
   });
 
+  const createNewSopType = (e) => {
+    e.preventDefault();
+    if(typedValue){
+      createSopType({
+        data:{
+          name:typedValue
+        }
+      },user?.jwt)
+    }
+  } 
+
   useEffect(() => {
     fetchSopTypes(user?.jwt);
-  }, []);
+  }, [createNewSopType]);
 
   const handleSOPTypeChange = (selected, index) => {
     const updatedSopTypes = [...selectedSopType];
@@ -81,6 +94,10 @@ const CreateCheckList = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
+  const handleSopInputChange = (inputValue) => {
+    setTypedValue(inputValue);
+  }
 
   const formatTime = (date) => {
     const hours = String(date.getHours()).padStart(2, "0");
@@ -103,7 +120,7 @@ const CreateCheckList = () => {
     return (
       <components.MenuList {...props}>
         {props.children}
-        <button css={styles.createSopBtn}>
+        <button css={styles.createSopBtn} onClick={createNewSopType}>
           <span css={styles.actionBtn}>
             <FaPlus color={"#293991"} size={15} />
           </span>
@@ -402,6 +419,7 @@ const CreateCheckList = () => {
                         name="sop_type"
                         value={selectedSopType}
                         onChange={(e) => handleSOPTypeChange(e, index)}
+                        onInputChange={handleSopInputChange}
                         options={sopTypes?.map((data) => {
                           return {
                             value: data.id,
