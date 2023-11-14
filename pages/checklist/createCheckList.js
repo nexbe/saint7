@@ -712,7 +712,6 @@ const styles = {
     overflow-x: hidden;
     gap: 12px;
     max-height: 78vh;
-    overflow-y: scroll;
   `,
   formContent: css`
     display: flex;
