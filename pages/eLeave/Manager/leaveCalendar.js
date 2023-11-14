@@ -13,21 +13,20 @@ import { RiArrowDownSFill } from "react-icons/ri";
 import dayjs from "dayjs";
 import { MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icons/md";
 
-import Layout from "../../components/layout/Layout";
-import HeaderNoti from "../../components/layout/HeaderNoti";
-import authStore from "../../store/auth";
-import leavestore from "../../store/eLeave";
-import Card from "../../components/eLeave/leaveCalendar/Card";
-import { UPDATE_LEAVE } from "../../graphql/mutations/eLeave";
-import NotificationBox from "../../components/notification/NotiBox";
+import Layout from "../../../components/layout/Layout";
+import HeaderNoti from "../../../components/layout/HeaderNoti";
+import authStore from "../../../store/auth";
+import leavestore from "../../../store/eLeave";
+import Card from "../../../components/eLeave/leaveCalendar/Card";
+import { UPDATE_LEAVE } from "../../../graphql/mutations/eLeave";
+import NotificationBox from "../../../components/notification/NotiBox";
 
 const LeaveCalendar = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
   const { user } = authStore((state) => state);
   const {
-    getAllLeaves,
-    getLeaves,
+    getLeavesByChosenFields,
     LeaveInfo: leaveInfo,
     updateLeave,
   } = leavestore((state) => state);
@@ -46,17 +45,11 @@ const LeaveCalendar = () => {
 
   useEffect(() => {
     if (!!user?.id) {
-      if (user?.role?.name?.toLowerCase() === "admin") {
-        getLeaves({
-          apolloClient,
-          where: { userId: user.id },
-        });
-      } else {
-        getAllLeaves({
-          apolloClient,
-          where: { userId: user.id },
-        });
-      }
+      getLeavesByChosenFields({
+        apolloClient,
+        where: { userId: user.id },
+      });
+
       setLeaveList(leaveInfo);
     }
   }, [user]);
@@ -129,12 +122,12 @@ const LeaveCalendar = () => {
         updatedAt: new Date().toISOString(),
       });
     }
-    getLeaves({
+    getLeavesByChosenFields({
       apolloClient,
       where: { userId: user.id },
     });
     router.push({
-      pathname: "/eLeave/leaveCalendar",
+      pathname: "/eLeave/Manager/leaveCalendar",
       query: {
         message: "Success!",
         label: "Leave request successfully " + status?.toLowerCase() + ".",
@@ -184,7 +177,7 @@ const LeaveCalendar = () => {
               <>
                 {leaveList.map((eachLeave, index) =>
                   eachLeave?.status === "Pending" ? (
-                    user?.role?.name?.toLowerCase() === "admin" ? (
+                    user?.id != eachLeave?.users_permissions_user?.id ? (
                       <div
                         css={styles.eachApprovalCard}
                         className="secondary-text"
@@ -277,7 +270,7 @@ const LeaveCalendar = () => {
                         key={index}
                       >
                         <label>
-                          Request Leave
+                          Request Leave by you
                           <div>
                             <div css={styles.requestLeave}>
                               <span css={styles.circleStyle}></span>

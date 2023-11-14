@@ -2,9 +2,8 @@
 import { css } from "@emotion/react";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
-import { useApolloClient } from "@apollo/client";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
 import dayjs from "dayjs";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
@@ -32,9 +31,13 @@ const ApplyLeave = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const {
+    getAllLeaves,
+    LeaveInfo: leaveInfo,
+    createLeave,
+  } = leavestore((state) => state);
   const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
   const { user } = authStore((state) => state);
-  const { createLeave } = leavestore((state) => state);
   const [createLeaveAction, errCreateLeave] = useMutation(CREATE_LEAVE);
   const [chosenType, setChosenType] = useState("Fullday");
   const [checkHalfDay, setCheckHalfDay] = useState(false);
@@ -279,6 +282,7 @@ const ApplyLeave = () => {
                       />
                     </label>
                   </div>
+
                   <span>
                     <BsArrowRight color="black" />
                   </span>
@@ -427,6 +431,7 @@ const ApplyLeave = () => {
                   value={selectedRequestTosOptions}
                   onChange={handleRequestTosSelect}
                   styles={selectBoxStyle}
+                  required
                 />
               </div>
             </div>

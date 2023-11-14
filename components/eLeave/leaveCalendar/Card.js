@@ -4,10 +4,10 @@ import { BiCalendarAlt } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
 import dayjs from "dayjs";
 
-const LeaveHistoryCard = ({ eachLeave }) => {
+const LeaveHistoryCard = ({ eachLeave, belongTo }) => {
   return (
     <div css={styles.cardContainer}>
-      <div css={styles.eachCard} className="primary-text">
+      <div css={styles.eachCard} className="secondary-text">
         <label>
           <div className="d-flex">
             <img
@@ -33,18 +33,21 @@ const LeaveHistoryCard = ({ eachLeave }) => {
                 {eachLeave?.users_permissions_user?.role?.name}
               </label>
             </label>
-            <div
-              className="leaveStatus"
-              style={{
-                background:
-                  eachLeave?.status === "Approved"
-                    ? "rgba(95, 164, 82, 0.20)"
-                    : "rgba(236, 28, 36, 0.20)",
-                color: eachLeave?.status === "Approved" ? "#5FA452" : "#EC1C24",
-              }}
-            >
-              {eachLeave?.status}
-            </div>
+            {belongTo != "leaveApproval" && (
+              <div
+                className="leaveStatus"
+                style={{
+                  background:
+                    eachLeave?.status === "Approved"
+                      ? "rgba(95, 164, 82, 0.20)"
+                      : "rgba(236, 28, 36, 0.20)",
+                  color:
+                    eachLeave?.status === "Approved" ? "#5FA452" : "#EC1C24",
+                }}
+              >
+                {eachLeave?.status}
+              </div>
+            )}
           </div>
           <div css={styles.leaveDetails}>
             <div>
@@ -60,12 +63,20 @@ const LeaveHistoryCard = ({ eachLeave }) => {
               <span>:</span>
             </div>
             <div>
-              <span style={{ fontSize: "14px" }}>
-                {eachLeave?.numberOfDays}{" "}
-                <span style={{ fontWeight: "400", fontSize: "14px" }}>
-                  Days
+              {eachLeave?.numberOfDays >= 1 ? (
+                <span>
+                  {eachLeave?.numberOfDays}{" "}
+                  <span style={{ fontWeight: "400", fontSize: "14px" }}>
+                    Days
+                  </span>
                 </span>
-              </span>
+              ) : (
+                <span>
+                  {eachLeave?.halfdayOptions === "Firsthalf"
+                    ? "First Half (AM)"
+                    : "Second Half (PM)"}
+                </span>
+              )}
               <span>{eachLeave?.reason}</span>
               <span>
                 {eachLeave?.actionBy?.username} (
@@ -96,6 +107,7 @@ const styles = {
     background: none;
     border: none;
     margin-bottom: 10px;
+    color: #2f4858;
     .detailWrapper {
       margin-top: -6px;
       .primary-text:last-child {
@@ -111,7 +123,7 @@ const styles = {
     justify-content: space-between;
     border-radius: 10px;
     background: var(--white);
-    box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
+    box-shadow: -1px 1px 20px 0px rgba(0, 0, 0, 0.14);
     label {
       display: flex;
       flex-direction: column;
