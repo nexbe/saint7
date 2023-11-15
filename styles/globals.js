@@ -20,6 +20,7 @@ export default function NavStyle({ children }) {
             --light-gray: #7b7b7b;
             --lighter-gray: #576b77;
             --blue: #386fff;
+            --light-gray2: #d9d9d9;
 
             /* media breakpoints */
             --device-sm: 576px;
