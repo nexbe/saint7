@@ -27,6 +27,8 @@ const EditCheckList = () => {
   const [equipFileList, setEquipFileList] = useState([]);
   const { fetchSopTypes, sopTypes } = sopStore();
   const [selectedSopType, setSelectedSopTypes] = useState([]);
+  const [typedValue, setTypedValue] = useState('');
+  const { createSopType } = sopStore();
   const [sopData, setSopData] = useState([
     {
       Name: "",
@@ -71,6 +73,22 @@ const EditCheckList = () => {
       filterCheckList?.[0]?.attributes?.actionTakenForWelfare,
     createdUser: user?.id,
   });
+
+  const handleSopInputChange = (inputValue) => {
+    setTypedValue(inputValue);
+  }
+
+  const createNewSopType = (e) => {
+    e.preventDefault();
+    if(typedValue){
+      createSopType({
+        data:{
+          name:typedValue
+        }
+      },user?.jwt)
+    }
+  } 
+
   useEffect(() => {
     fetchSopTypes(user?.jwt);
     fetchFilteredCheckList(
@@ -81,8 +99,7 @@ const EditCheckList = () => {
       },
       user?.jwt
     );
-  }, []);
-  console.log(filterCheckList);
+  }, [createNewSopType]);
   const handleSOPTypeChange = (selected, index) => {
     const updatedSopTypes = [...selectedSopType];
     updatedSopTypes[index] = selected;
@@ -117,7 +134,7 @@ const EditCheckList = () => {
     return (
       <components.MenuList {...props}>
         {props.children}
-        <button css={styles.createSopBtn}>
+        <button css={styles.createSopBtn} onClick={createNewSopType}>
           <span css={styles.actionBtn}>
             <FaPlus color={"#293991"} size={15} />
           </span>
@@ -416,6 +433,7 @@ const EditCheckList = () => {
                         id="sop_type"
                         name="sop_type"
                         value={selectedSopType}
+                        onInputChange={handleSopInputChange}
                         onChange={(e) => handleSOPTypeChange(e, index)}
                         options={sopTypes?.map((data) => {
                           return {

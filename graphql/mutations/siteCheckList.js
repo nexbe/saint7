@@ -47,11 +47,17 @@ export const FILTER_CHECKLIST = gql`
             Attachments {
               data {
                 id
+                attributes{
+                  url
+                }
               }
             }
             sop_type {
               data {
                 id
+                attributes{
+                  name
+                }
               }
             }
           }
@@ -62,6 +68,9 @@ export const FILTER_CHECKLIST = gql`
             Attachments {
               data {
                 id
+                attributes{
+                  url
+                }
               }
             }
           }
