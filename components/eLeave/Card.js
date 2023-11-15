@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 const LeaveHistoryCard = ({ eachLeave }) => {
   return (
     <div css={styles.cardContainer}>
-      <div css={styles.eachCard} className="primary-text">
+      <div css={styles.eachCard} className="secondary-text">
         <label>
           <div className="d-flex" style={{ gap: "30px" }}>
             Request Leave{" "}
@@ -82,6 +82,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    color: #2f4858;
     .detailWrapper {
       margin-top: -6px;
       .primary-text:last-child {

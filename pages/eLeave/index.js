@@ -32,7 +32,13 @@ const ELeave = () => {
           )}
           <div
             className="header-text"
-            onClick={() => router.push("/eLeave/leaveCalendar")}
+            onClick={() =>
+              router.push(
+                user?.role?.name?.toLowerCase() === "manager"
+                  ? "/eLeave/Manager/leaveCalendar"
+                  : "/eLeave/leaveCalendar"
+              )
+            }
           >
             Leave Calendar
           </div>
