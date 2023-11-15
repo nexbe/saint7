@@ -2,9 +2,8 @@
 import { css } from "@emotion/react";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
-import { useApolloClient } from "@apollo/client";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
 import dayjs from "dayjs";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
@@ -12,6 +11,7 @@ import Select, { components } from "react-select";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { BiCalendarAlt } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
+let isBetween = require("dayjs/plugin/isBetween");
 
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
@@ -21,6 +21,7 @@ import leavestore from "../../store/eLeave";
 import { CREATE_LEAVE } from "../../graphql/mutations/eLeave";
 
 const ApplyLeave = () => {
+  dayjs.extend(isBetween);
   const haldDayOptions = [
     { value: "Firsthalf", label: "First Half (AM)" },
     { value: "Secondhalf", label: "Second Half (PM)" },
@@ -32,9 +33,13 @@ const ApplyLeave = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const {
+    getAllLeaves,
+    LeaveInfo: leaveInfo,
+    createLeave,
+  } = leavestore((state) => state);
   const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
   const { user } = authStore((state) => state);
-  const { createLeave } = leavestore((state) => state);
   const [createLeaveAction, errCreateLeave] = useMutation(CREATE_LEAVE);
   const [chosenType, setChosenType] = useState("Fullday");
   const [checkHalfDay, setCheckHalfDay] = useState(false);
@@ -48,11 +53,17 @@ const ApplyLeave = () => {
   const [selectedRequestTosOptions, setSelectedRequestTosOptions] = useState();
   const [numOfDay, setNumOfDay] = useState(1);
   const [saveAction, setSaveAction] = useState(false);
+  const [startTaken, setStartTaken] = useState(false);
+  const [endTaken, setEndTaken] = useState(false);
 
   useEffect(() => {
     getAllUsers({
       apolloClient,
       where: {},
+    });
+    getAllLeaves({
+      apolloClient,
+      where: { userId: user.id },
     });
   }, [user]);
 
@@ -223,7 +234,7 @@ const ApplyLeave = () => {
   };
 
   const onSubmit = async (data) => {
-    if (!!saveAction) {
+    if (!!saveAction && !startTaken && !endTaken) {
       await createLeave({
         createLeaveAction,
         data: {
@@ -252,6 +263,58 @@ const ApplyLeave = () => {
     }
   };
 
+  const isValidDay = async (dayInput, flag) => {
+    let isAlreadyTaken = 0;
+    leaveInfo?.map((userLeave) => {
+      if (
+        dayjs(dayInput).isBetween(
+          dayjs(userLeave.from),
+          dayjs(userLeave.to),
+          "day",
+          "[]"
+        ) == true ||
+        dayjs(userLeave.from).isBetween(
+          dayjs(startDate),
+          dayjs(endDate),
+          "day",
+          "[]"
+        ) == true ||
+        dayjs(userLeave.to).isBetween(
+          dayjs(startDate),
+          dayjs(endDate),
+          "day",
+          "[]"
+        ) == true
+      ) {
+        isAlreadyTaken += 1;
+      }
+    });
+
+    if (flag === "start") {
+      if (isAlreadyTaken > 0) {
+        setStartTaken(true);
+      } else {
+        setStartTaken(false);
+      }
+    } else {
+      if (isAlreadyTaken > 0) {
+        setEndTaken(true);
+      } else {
+        setEndTaken(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!startDate && !endDate && !!leaveInfo) {
+      setStartTaken(false);
+      setEndTaken(false);
+    } else {
+      isValidDay(startDate, "start");
+      isValidDay(endDate, "end");
+    }
+  }, [startDate, endDate, leaveInfo]);
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -278,8 +341,13 @@ const ApplyLeave = () => {
                         dateFormat="MMM / dd / yy"
                       />
                     </label>
+                    {startTaken && (
+                      <div className="takenText">Already taken</div>
+                    )}
                   </div>
-                  <span>
+                  <span
+                    style={{ marginTop: (startTaken || endTaken) && "-10px" }}
+                  >
                     <BsArrowRight color="black" />
                   </span>
                   <div className="secondary-text">
@@ -298,6 +366,7 @@ const ApplyLeave = () => {
                         dateFormat="MMM / dd / yy"
                       />
                     </label>
+                    {endTaken && <div className="takenText">Already taken</div>}
                   </div>
                 </div>
               </div>
@@ -398,7 +467,7 @@ const ApplyLeave = () => {
                   type="text"
                   id="description"
                   className="secondary-text"
-                  rows={2}
+                  rows={3}
                   {...register("reason", {
                     required: false,
                   })}
@@ -407,7 +476,7 @@ const ApplyLeave = () => {
               <div className="formFlex">
                 <div className="d-flex">
                   <label className="secondary-text">
-                    Send Request To (For Approval)
+                    Send Request To (For Approval) <span>*</span>
                   </label>
                 </div>
                 <Select
@@ -427,6 +496,7 @@ const ApplyLeave = () => {
                   value={selectedRequestTosOptions}
                   onChange={handleRequestTosSelect}
                   styles={selectBoxStyle}
+                  required
                 />
               </div>
             </div>
@@ -568,6 +638,7 @@ const styles = {
       textarea {
         border: none;
         outline: none;
+        padding: 7px 0;
       }
     }
   `,
@@ -586,6 +657,15 @@ const styles = {
     justify-content: center;
       align-items: center;
       margin-top: 30px;
+    }
+    .takenText {
+      display: flex;
+      color: red;
+      font-size: 13px;
+      align-items: center;
+      justify-content: center;
+      padding-top: 7px;
+     margin-bottom: -15px;
     }
     label {
       justify-content: center;

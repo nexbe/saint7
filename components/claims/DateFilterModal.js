@@ -11,9 +11,12 @@ const DateFilterModal = ({
   isOpen = false,
   close = () => {},
   handleDateChange = () => {},
+  belongTo,
 }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [fullDayChecked, setFullDayChecked] = useState(false);
+  const [halfDayChecked, setHalfDayChecked] = useState(false);
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -55,6 +58,28 @@ const DateFilterModal = ({
           </label>
         </div>
       </div>
+      {belongTo === "leaveApproval" && (
+        <div css={styles.dayContent}>
+          <label>
+            <input
+              type={"checkbox"}
+              className="checkbox"
+              checked={halfDayChecked}
+              onChange={() => setHalfDayChecked(!halfDayChecked)}
+            />
+            Half Day
+          </label>
+          <label>
+            <input
+              type={"checkbox"}
+              className="checkbox"
+              checked={fullDayChecked}
+              onChange={() => setFullDayChecked(!fullDayChecked)}
+            />
+            Full Day
+          </label>
+        </div>
+      )}
       <div css={styles.actionButton}>
         <button css={styles.cancelBtn} onClick={() => close()}>
           Cancel
@@ -62,7 +87,12 @@ const DateFilterModal = ({
         <button
           css={styles.addBtn}
           onClick={() => {
-            handleDateChange(startDate, endDate);
+            handleDateChange(
+              startDate,
+              endDate,
+              halfDayChecked,
+              fullDayChecked
+            );
             close();
           }}
         >
@@ -112,13 +142,12 @@ const styles = {
   `,
   dateContent: css`
     display: flex;
-     justify-content: space-between;
-    padding; 10px;
+    justify-content: space-between;
     gap: 3px;
     @media (max-width: 345px) {
-        background: red;
-        flex-direction: column;
-      }
+      background: red;
+      flex-direction: column;
+    }
     .arrow {
       display: flex;
       justify-content: center;
@@ -126,38 +155,37 @@ const styles = {
       margin-top: 30px;
     }
     .react-datepicker__current-month {
-       color: #000;
-       font-weiht: 700;
+      color: #000;
+      font-weiht: 700;
       font-size: 16px;
     }
     .react-datepicker {
-        span {
-          color: #000;
-          font-weiht: 700;
-          font-size: 16px;
-        }
-      }
-      .react-datepicker__triangle {
-        display: none;
-      }
-      .react-datepicker__navigation-icon--next {
-        top: 11px;
-        left: -10px;
-        font-size: 16px;
+      span {
         color: #000;
-      }
-      .react-datepicker__navigation-icon--previous {
-        top: 11px;
-        left: 5px;
+        font-weiht: 700;
         font-size: 16px;
-        border-color: #000;
       }
-      .react-datepicker__year-read-view--down-arrow {
-        top: 7px;
-        font-size: 16px;
-        border-color: #000;
-        
-      }
+    }
+    .react-datepicker__triangle {
+      display: none;
+    }
+    .react-datepicker__navigation-icon--next {
+      top: 11px;
+      left: -10px;
+      font-size: 16px;
+      color: #000;
+    }
+    .react-datepicker__navigation-icon--previous {
+      top: 11px;
+      left: 5px;
+      font-size: 16px;
+      border-color: #000;
+    }
+    .react-datepicker__year-read-view--down-arrow {
+      top: 7px;
+      font-size: 16px;
+      border-color: #000;
+    }
     label {
       justify-content: center;
       align-items: center;
@@ -168,7 +196,6 @@ const styles = {
       padding: 5px 10px;
       gap: 7px;
       width: 100%;
-      
     }
     div {
       color: #37474f;
@@ -191,6 +218,26 @@ const styles = {
         font-weight: 400;
         line-height: normal;
       }
+    }
+  `,
+  dayContent: css`
+    padding: 30px 50px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    label {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #37474f;
+      font-weight: 400;
+      gap: 10px;
+    }
+    input {
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      border: 1px solid #718096;
     }
   `,
 };
