@@ -85,18 +85,6 @@ const Home = () => {
                 <button
                   onClick={() => {
                     router.push({
-                      pathname: "/announcement",
-                    });
-                  }}
-                >
-                  <AnnouncementIcon />
-                  Annoucement
-                </button>
-              </div>
-              <div css={styles.formFlexChildDiv}>
-                <button
-                  onClick={() => {
-                    router.push({
                       pathname:
                         user?.role?.name === "Admin" ||
                         user?.role?.name === "Manager"
@@ -109,10 +97,27 @@ const Home = () => {
                   Attendance
                 </button>
               </div>
+
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/eLeave")}>
-                  <ELeaveIcon />
-                  e-Leave
+                <button
+                  onClick={() => {
+                    router.push({
+                      pathname:
+                        user?.role?.name === "Admin" ||
+                        user?.role?.name === "Manager"
+                          ? "/payslip/Manager"
+                          : "/payslip",
+                    });
+                  }}
+                >
+                  <PayslipIcon />
+                  Payslip
+                </button>
+              </div>
+              <div css={styles.formFlexChildDiv}>
+                <button onClick={() => router.push("/documents")}>
+                  <DocumentIcon />
+                  Documents
                 </button>
               </div>
 
@@ -127,9 +132,9 @@ const Home = () => {
             </div>
             <div css={styles.formFlexDiv}>
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/documents")}>
-                  <DocumentIcon />
-                  Documents
+                <button onClick={() => router.push("/eLeave")}>
+                  <ELeaveIcon />
+                  e-Leave
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
@@ -152,16 +157,12 @@ const Home = () => {
                 <button
                   onClick={() => {
                     router.push({
-                      pathname:
-                        user?.role?.name === "Admin" ||
-                        user?.role?.name === "Manager"
-                          ? "/payslip/Manager"
-                          : "/payslip",
+                      pathname: "/announcement",
                     });
                   }}
                 >
-                  <PayslipIcon />
-                  Payslip
+                  <AnnouncementIcon />
+                  Annoucement
                 </button>
               </div>
             </div>
