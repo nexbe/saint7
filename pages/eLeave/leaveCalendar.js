@@ -517,6 +517,7 @@ const styles = {
     border-radius: 10px;
     background: var(--white);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
+    margin-bottom: 10px;
     label {
       display: flex;
       flex-direction: column;

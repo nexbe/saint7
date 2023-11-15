@@ -221,7 +221,7 @@ const styles = {
     }
   `,
   dayContent: css`
-    padding-top: 30px;
+    padding: 30px 50px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
