@@ -8,15 +8,18 @@ import SearchIcon from "../../public/icons/searchIcon";
 import RefreshIcon from "/public/icons/refreshIcon";
 import CalendarIcon from "/public/icons/calendarIcon";
 import DateFilterModal from "../../components/claims/DateFilterModal";
+import useAuth from "../../store/auth";
 
 const PayUser = () => {
   const apolloClient = useApolloClient();
   const [dateModalOpen, setDateModalOpen] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
   const [payData, setPayData] = useState([]);
+  const { user } = useAuth((state) => state);
   const { getuserByRole, roleUserData, getPaySlipData } = userStore(
     (state) => state
   );
+  console.log(user)
   useEffect(() => {
     getuserByRole({
       apolloClient,
@@ -54,12 +57,13 @@ const PayUser = () => {
 
   const handleClick = (userData) => {
     getPaySlipData(userData?.id);
-    router.push(`/payslip/Manager/history`);
+    user.role.name === "Admin" ? router.push(`/payslip/Admin/history`) : router.push(`/payslip/Manager/history`);
+    
   };
 
   const router = useRouter();
   return (
-    <div style={{ height: 0 }}>
+    <div>
       <div css={styles.filterContainer}>
         <input
           type="text"
@@ -132,7 +136,7 @@ const styles = {
     gap: 9px;
     margin: 20px;
     max-height: 80vh;
-    // overflow-y: scroll;
+    overflow-y: scroll;
     color: #000;
     background-color: #fff;
     padding: 20px;
