@@ -90,7 +90,10 @@ const SiteCheckList = () => {
             siteCheckLists.length > 0 &&
             siteCheckLists.map((checklist) => {
               return (
-                <div key={checklist.id} onClick={() => router.push('/checklist/viewCheckList')}>
+                <div key={checklist.id}  onClick={() => router.push({
+                  pathname: '/checklist/viewCheckList',
+                  query: { id: checklist.id }
+                })}>
                   <Card
                     isEdit={isEdit}
                     isDelete={isDelete}

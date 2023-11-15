@@ -17,11 +17,17 @@ export const GET_SITE_CHECKLIST = gql`
             Attachments {
               data {
                 id
+                attributes{
+                  url
+                }
               }
             }
             sop_type {
               data {
                 id
+                attributes{
+                  name
+                }
               }
             }
           }

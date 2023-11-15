@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../components/layout/Layout";
 import HeaderNoti from "../../components/layout/HeaderNoti";
 import { css } from "@emotion/react";
@@ -7,20 +7,50 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import ViewSopModal from "../../components/checklist/ViewSopModal";
 import CheckListImageModal from "../../components/checklist/CheckListImageModal";
 import ViewEquipModal from "../../components/checklist/ViewEquipModal";
+import siteCheckListStore from "../../store/siteCheckList";
+import useAuth from "../../store/auth";
+import { useRouter } from "next/router";
+import dayjs from "dayjs";
 
 const ViewCheckList = () => {
   const [viewSopModal, setViewSopModal] = useState(false);
   const [viewEquipModal, setViewEquipModal] = useState(false);
   const [openImageModal, setOpenImageModal] = useState(false);
+  const [selectedSopData, setSelectedSopData] = useState([]);
+  const [selectedEquipData, setSelectedEquipData] = useState([]);
+  const router = useRouter();
+  const checklistId = router.query.id;
+  const { fetchFilteredCheckList, filterCheckList } = siteCheckListStore();
+  const { user } = useAuth();
+
+  const handleViewSop = (data) => {
+    setSelectedSopData(data)
+    setViewSopModal(true)
+  }
+  const handleViewEquip = (data) => {
+    setSelectedEquipData(data)
+    setViewEquipModal(true)
+  }
   const imageModal = () => {
     setOpenImageModal(!openImageModal);
-    setViewSopModal(false)
+    setViewSopModal(false);
   };
+  useEffect(() => {
+    fetchFilteredCheckList(
+      {
+        input: {
+          eq: checklistId,
+        },
+      },
+      user?.jwt
+    );
+  }, []);
   const attachment = [
     { id: "2", src: "" },
     { id: "3", src: "" },
     { id: "4", src: "" },
   ];
+  // console.log(filterCheckList)
   return (
     <Layout>
       <HeaderNoti title={"Site Checklist"} href={"/checklist"} />
@@ -29,19 +59,23 @@ const ViewCheckList = () => {
           <h3>Initiate evacuation procedures</h3>
           <div>
             <span>Time Visited </span>
-            <b>Severe </b>
+            <b>{filterCheckList?.[0].attributes?.timeVisited}</b>
           </div>
           <div>
             <span>Date Visited </span>
-            <b>4 August 2022 </b>
+            <b>
+              {dayjs(filterCheckList?.[0].attributes?.dateVisited)?.format(
+                "D MMM YYYY"
+              )}
+            </b>
           </div>
           <div>
             <span>Visited By </span>
-            <b>John Doe</b>
+            <b>{filterCheckList?.[0].attributes?.visitedBy}</b>
           </div>
           <div>
             <span>Location</span>
-            <b>Building XYZ Tower B Zone C Level B1 </b>
+            <b>{filterCheckList?.[0].attributes?.location}</b>
           </div>
         </div>
         <div
@@ -49,93 +83,94 @@ const ViewCheckList = () => {
             borderBottom: "0.9px solid lightgrey",
             paddingBottom: "20px",
           }}>
-          <div css={styles.box} onClick={() => setViewSopModal(true)}>
-            <span>SOP 2</span>
-            <MdKeyboardArrowRight size={28} />
+          {filterCheckList?.[0].attributes?.sop &&
+            filterCheckList?.[0].attributes?.sop.length > 0 &&
+            filterCheckList?.[0].attributes?.sop?.map((sop) => {
+              return (
+                <div
+                  css={styles.box}
+                  onClick={() => handleViewSop(sop)}
+                  key={sop.id}>
+                  <span>{sop?.Name}</span>
+                  <MdKeyboardArrowRight size={28} />
+                </div>
+              );
+            })}
+          {filterCheckList?.[0].attributes?.equipment &&
+            filterCheckList?.[0].attributes?.equipment.length > 0 &&
+            filterCheckList?.[0].attributes?.equipment?.map((equip) => {
+              return (
+                <div
+                  css={styles.box}
+                  onClick={() => handleViewEquip(equip)}
+                  key={equip.id}>
+                  <span>{equip?.Name}</span>
+                  <MdKeyboardArrowRight size={28} />
+                </div>
+              );
+            })}
+        </div>
+        {filterCheckList?.[0].attributes?.reasonForProperUniform ||
+          (filterCheckList?.[0].attributes?.actionTakenForProperUniform && (
+            <div css={styles.paragraphContainer}>
+              <h4>All Officers Are in Proper Uniforms.</h4>
+              {filterCheckList?.[0].attributes?.reasonForProperUniform && (
+                <p>
+                  <b>Reason :</b>{" "}
+                  {filterCheckList?.[0].attributes?.reasonForProperUniform}
+                </p>
+              )}
+              {filterCheckList?.[0].attributes?.actionTakenForProperUniform && (
+                <p>
+                  <b>Action Taken :</b>{" "}
+                  {filterCheckList?.[0].attributes?.actionTakenForProperUniform}
+                </p>
+              )}
+            </div>
+          ))}
+        {filterCheckList?.[0].attributes?.actionTakenForWelfare && (
+          <div css={styles.paragraphContainer}>
+            <h4>Presence of Welfare at site. (eg. Kettle, fan etc.)</h4>
+            <p>
+              <b>Action Taken :</b>{" "}
+              {filterCheckList?.[0].attributes?.actionTakenForWelfare}
+            </p>
           </div>
-          <div css={styles.box} onClick={() => setViewSopModal(true)}>
-            <span>SOP 3</span>
-            <MdKeyboardArrowRight size={28} />
+        )}
+        {filterCheckList?.[0].attributes?.suggestions && (
+          <div css={styles.paragraphContainer}>
+            <h4>Comments on Improvement/Suggestions</h4>
+            <p>{filterCheckList?.[0].attributes?.suggestions}</p>
           </div>
-          <div css={styles.box} onClick={() => setViewEquipModal(true)}>
-            <span>Equipment 2</span>
-            <MdKeyboardArrowRight size={28} />
+        )}
+        {filterCheckList?.[0].attributes?.guardOnDuty && (
+          <div css={styles.paragraphContainer}>
+            <h4>Guards on Duty at Site</h4>
+            <p>{filterCheckList?.[0].attributes?.guardOnDuty}</p>
           </div>
-          <div css={styles.box} onClick={() => setViewEquipModal(true)}>
-            <span>Equipment 4</span>
-            <MdKeyboardArrowRight size={28} />
+        )}
+        {filterCheckList?.[0].attributes?.remarks && (
+          <div css={styles.paragraphContainer}>
+            <h4>Remarks</h4>
+            <p>{filterCheckList?.[0].attributes?.remarks}</p>
           </div>
-        </div>
-        <div css={styles.paragraphContainer}>
-          <h4>All Officers Are in Proper Uniforms.</h4>
-          <p>
-            <b>Reason :</b> Neque porro quisquam est qui dolorem ipsum quia
-            dolor sit amet consectetur adipisci velit sed qu
-          </p>
-          <p>
-            <b>Action Taken :</b> Neque porro quisquam est qui dolorem ipsum
-            quia dolor sit amet consectetur adipisci velit sed qu
-          </p>
-        </div>
-        <div css={styles.paragraphContainer}>
-          <h4>Presence of Welfare at site. (eg. Kettle, fan etc.)</h4>
-          <p>
-            <b>Action Taken :</b> Action Taken : Neque porro quisquam est qui
-            dolorem ipsum quia dolor sit amet consectetur adipisci velit sed
-            quporro quisquam est qui dolorem ipsum quia dolor sit amet
-            consectetur adipisci velit sed quporro quisquam est qui dolorem
-            ipsum quia dolor sit amet consectetur adipisci velit sed quporro
-            quisquam est qui dolorem ipsum quia dolor sit amet consectetur
-            adipisci velit sed qu
-          </p>
-        </div>
-        <div css={styles.paragraphContainer}>
-          <h4>Comments on Improvement/Suggestions</h4>
-          <p>
-            Neque porro quisquam est qui dolorem ipsum quia dolor sit amet
-            consectetur adipisci velit sed quporro quisquam est qui dolorem
-            ipsum quia dolor sit amet consectetur adipisci velit sed quporro
-            quisquam est qui dolorem ipsum quia dolor sit amet consectetur
-            adipisci velit sed quporro quisquam est qui dolorem ipsum quia dolor
-            sit amet consectetur adipisci velit sed qu
-          </p>
-        </div>
-        <div css={styles.paragraphContainer}>
-          <h4>Guards on Duty at Site</h4>
-          <p>
-            Neque porro quisquam est qui dolorem ipsum quia dolor sit amet
-            consectetur adipisci velit sed quporro quisquam est qui dolorem
-            ipsum quia dolor sit amet consectetur adipisci velit sed quporro
-            quisquam est qui dolorem ipsum quia dolor sit amet consectetur
-            adipisci velit sed quporro quisquam est qui dolorem ipsum quia dolor
-            sit amet consectetur adipisci velit sed qu
-          </p>
-        </div>
-        <div css={styles.paragraphContainer}>
-          <h4>Remarks</h4>
-          <p>
-            Neque porro quisquam est qui dolorem ipsum quia dolor sit amet
-            consectetur adipisci velit sed quporro quisquam est qui dolorem
-            ipsum quia dolor sit amet consectetur adipisci velit sed quporro
-            quisquam est qui dolorem ipsum quia dolor sit amet consectetur
-            adipisci velit sed quporro quisquam est qui dolorem ipsum quia dolor
-            sit amet consectetur adipisci velit sed qu
-          </p>
-        </div>
+        )}
       </div>
       <ViewSopModal
         isOpen={viewSopModal}
         setModal={setViewSopModal}
         imageModal={imageModal}
+        selectedSopData={selectedSopData}
       />
-      <ViewEquipModal 
-         isOpen={viewEquipModal}
-         setModal={setViewEquipModal}
-         imageModal={imageModal}
+      <ViewEquipModal
+        isOpen={viewEquipModal}
+        setModal={setViewEquipModal}
+        imageModal={imageModal}
+        selectedEquipData={selectedEquipData}
       />
       {openImageModal && (
         <CheckListImageModal
-          attachment={attachment}
+          attachment={selectedSopData?.Attachments || selectedEquipData?.Attachments}
           isOpen={openImageModal}
           close={() => setOpenImageModal(!openImageModal)}
         />
@@ -152,6 +187,7 @@ const styles = {
     border-radius: 10px;
     margin: 20px;
     padding: 20px;
+    min-height: 70vh;
     max-height: 75vh;
     overflow-y: auto;
     h4 {

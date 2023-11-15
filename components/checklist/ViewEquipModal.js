@@ -3,12 +3,20 @@ import React from "react";
 import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
 import { css } from "@emotion/react";
-import PdfIcon from "../../public/icons/pdfIcon";
 
-const ViewEquipModal = ({ isOpen, setModal, imageModal }) => {
+const ViewEquipModal = ({ isOpen, setModal, imageModal, selectedEquipData }) => {
   const toggle = () => {
     setModal(!isOpen);
   };
+  const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif",".svg"];
+  const isImage = selectedEquipData?.Attachments?.data?.map((eachAttach) => {
+    return FILE_EXTENSIONS.some((extension) =>
+      eachAttach.attributes?.url?.endsWith(extension)
+    );
+  });
+  const attachmentLists = selectedEquipData?.Attachments?.data?.filter(
+    (eachDoc, index) => isImage[index]
+  );
   return (
     <Modal isOpen={isOpen} toggle={toggle} css={styles.wrapper}>
       <div css={styles.closeBtn} onClick={() => setModal(false)}>
@@ -16,28 +24,29 @@ const ViewEquipModal = ({ isOpen, setModal, imageModal }) => {
       </div>
       <div css={styles.displayDataStyle}>
         <div>Name</div>
-        <span>Presence of Standard Operations Procedures</span>
+        <span>{selectedEquipData?.Name}</span>
       </div>
       <div css={styles.displayDataStyle}>
         <div>Remarks</div>
         <span>
-          Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,
-          consectetur adipisci velit sed qu ue porro quisquam est qui dolorem
-          ipsum quia dolor sit amet consectetur adipisci velit sed quue porro
-          quisquam est qui dolorem ipsum quia dolor sit amet consectetur
-          adipisci velit sed qu
+        {selectedEquipData?.Remarks || "-"}
         </span>
       </div>
       <div>
-        <div>Attach Documents</div>
-        <div onClick={imageModal} css={styles.attachmentBox}>
-          <PdfIcon />
-          {/* <img
-          style={{ opacity: imageList?.length > 1 ? "0.7" : "1" }}
-          src={`${process.env.NEXT_PUBLIC_APP_URL}${imageList[0]?.url}`}
-          />
-          <span css={styles.imageCount}>+3</span> */}
-        </div>
+        {attachmentLists && attachmentLists?.length > 0 && (
+          <>
+           <div>Attach Documents</div>
+          <div onClick={imageModal} css={styles.attachmentBox}>
+            <img
+              style={{ opacity: attachmentLists?.length > 1 ? "0.7" : "1", height:"90px" }}
+              src={`${process.env.NEXT_PUBLIC_APP_URL}${attachmentLists[0]?.attributes.url}`}
+            />
+            {attachmentLists?.length > 1 && (
+              <span css={styles.imageCount}>+{attachmentLists?.length}</span>
+            )}
+          </div>
+          </>
+        )}
       </div>
     </Modal>
   );

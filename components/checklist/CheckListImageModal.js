@@ -20,13 +20,13 @@ const CheckListImageModal = ({
   close = () => {},
   attachment,
 }) => {
-  const items = attachment?.map((eachAttach, index) => {
+  const items = attachment?.data?.map((eachAttach) => {
     return {
-      src: eachAttach,
-      key: index + 1,
+      src: eachAttach.attributes?.url,
+      key: eachAttach?.id,
     };
   });
-
+     
   const [activeIndex, setActiveIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
 
@@ -54,7 +54,10 @@ const CheckListImageModal = ({
         onExited={() => setAnimating(false)}
         key={item?.key}>
         <div className="image">
-          <PdfIcon />
+          <img
+            src={`${process.env.NEXT_PUBLIC_APP_URL}${item?.src}`}
+            alt={item.altText}
+          />
         </div>
       </CarouselItem>
     );
@@ -117,7 +120,6 @@ const styles = {
       border-radius: 10px;
       margin-top: 7rem;
       width: 100%;
-      height:40vh;
       background: #f5f5f5;
       padding: 10px 20px;
     }
@@ -147,7 +149,7 @@ const styles = {
       align-items: center;
       img {
       width: 100%;
-      height: 350px;
+      height: 100%;
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;

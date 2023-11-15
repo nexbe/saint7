@@ -3,12 +3,21 @@ import React from "react";
 import { Modal } from "reactstrap";
 import CloseIcon from "../../public/icons/closeIcon";
 import { css } from "@emotion/react";
-import PdfIcon from "../../public/icons/pdfIcon";
 
-const ViewSopModal = ({ isOpen, setModal, imageModal }) => {
+const ViewSopModal = ({ isOpen, setModal, imageModal, selectedSopData }) => {
   const toggle = () => {
     setModal(!isOpen);
   };
+  const FILE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".jfif",".svg"];
+  const isImage = selectedSopData?.Attachments?.data?.map((eachAttach) => {
+    return FILE_EXTENSIONS.some((extension) =>
+      eachAttach.attributes?.url?.endsWith(extension)
+    );
+  });
+
+  const attachmentLists = selectedSopData?.Attachments?.data?.filter(
+    (eachDoc, index) => isImage[index]
+  );
   return (
     <Modal isOpen={isOpen} toggle={toggle} css={styles.wrapper}>
       <div css={styles.closeBtn} onClick={() => setModal(false)}>
@@ -16,22 +25,30 @@ const ViewSopModal = ({ isOpen, setModal, imageModal }) => {
       </div>
       <div css={styles.displayDataStyle}>
         <div>Name</div>
-        <span>Presence of Standard Operations Procedures</span>
+        <span>{selectedSopData?.Name}</span>
       </div>
       <div css={styles.displayDataStyle}>
         <div>Type</div>
-        <span>Standard</span>
+        <span>{selectedSopData?.sop_type?.data?.attributes.name || "-"} </span>
       </div>
-      <div >
-        <div>Attach Documents</div>
-        <div onClick={imageModal} css={styles.attachmentBox}>
-          <PdfIcon />
-          {/* <img
-          style={{ opacity: imageList?.length > 1 ? "0.7" : "1" }}
-          src={`${process.env.NEXT_PUBLIC_APP_URL}${imageList[0]?.url}`}
-          />
-          <span css={styles.imageCount}>+3</span> */}
-        </div>
+      <div>
+        {attachmentLists && attachmentLists?.length > 0 && (
+          <>
+            <div>Attach Documents</div>
+            <div onClick={imageModal} css={styles.attachmentBox}>
+              <img
+                style={{
+                  opacity: attachmentLists?.length > 1 ? "0.7" : "1",
+                  height: "90px",
+                }}
+                src={`${process.env.NEXT_PUBLIC_APP_URL}${attachmentLists[0]?.attributes.url}`}
+              />
+              {attachmentLists?.length > 1 && (
+                <span css={styles.imageCount}>+{attachmentLists?.length}</span>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </Modal>
   );
@@ -62,7 +79,7 @@ const styles = {
   `,
   displayDataStyle: css`
     padding: 9px;
-    margin-bottom:15px;
+    margin-bottom: 15px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     font-weight: 600;
   `,
@@ -78,10 +95,10 @@ const styles = {
     font-style: normal;
     font-weight: 600;
   `,
-  attachmentBox:css`
-  border-radius: 4px;
-  border: 1px dashed #D6E2EA;
-  padding:20px;
-  background: #FFF;
-  `
+  attachmentBox: css`
+    border-radius: 4px;
+    border: 1px dashed #d6e2ea;
+    padding: 20px;
+    background: #fff;
+  `,
 };
