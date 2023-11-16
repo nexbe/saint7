@@ -4,6 +4,7 @@ import Layout from "../../../components/layout/Layout";
 import HeaderNoti from "../../../components/layout/HeaderNoti";
 import PayUser from "../../../components/payslip/payUser";
 import { css } from "@emotion/react";
+import CreatePayslip from "../../../components/payslip/CreatePayslip";
 
 const Payslip = () => {
   const [activeComponent, setActiveComponent] = useState("view");
@@ -23,7 +24,7 @@ const Payslip = () => {
         </div>
       </div>
       <div css={styles.container}>
-        {activeComponent === "view" ? <PayUser /> : <></>}
+        {activeComponent === "view" ? <PayUser /> : <CreatePayslip />}
       </div>
     </Layout>
   );
