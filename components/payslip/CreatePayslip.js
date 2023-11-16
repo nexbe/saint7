@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
@@ -10,17 +10,27 @@ import {
   MdRemoveCircleOutline,
 } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
+import { useApolloClient } from "@apollo/client";
+import userStore from "../../store/user";
 
 const CreatePayslip = () => {
+  const apolloClient = useApolloClient();
   const [month, setMonth] = useState(new Date());
   const [year, setYear] = useState(new Date());
   const [assignedUsers, setAssignedUsers] = useState();
   const [morePayslipData, setMorePayslipData] = useState([]);
   const [selectedAmountType, setSelectedAmountType] = useState([]);
+  const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
   const options = [
     { value: "Detract", label: "Detract" },
     { value: "Add", label: "Add" },
-  ];
+  ]; 
+  useEffect(() => { 
+    getAllUsers({
+      apolloClient,
+      where: {},
+    })
+  },[])
   const handleMonthChange = (date) => {
     setMonth(date);
   };
@@ -50,8 +60,6 @@ const CreatePayslip = () => {
     updatedTypes[index] = selected;
     setSelectedAmountType(updatedTypes);
   };
-
-  const userInfo = [];
   const userOptions = userInfo?.map((eachOption) => ({
     value: eachOption?.id,
     label: eachOption?.username,
