@@ -19,7 +19,6 @@ const PayUser = () => {
   const { getuserByRole, roleUserData, getPaySlipData } = userStore(
     (state) => state
   );
-  console.log(user)
   useEffect(() => {
     getuserByRole({
       apolloClient,

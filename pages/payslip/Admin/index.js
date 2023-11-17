@@ -5,12 +5,22 @@ import HeaderNoti from "../../../components/layout/HeaderNoti";
 import PayUser from "../../../components/payslip/payUser";
 import { css } from "@emotion/react";
 import CreatePayslip from "../../../components/payslip/CreatePayslip";
+import NotificationBox from "../../../components/notification/NotiBox";
+import { useRouter } from "next/router";
 
 const Payslip = () => {
+  const router = useRouter();
   const [activeComponent, setActiveComponent] = useState("view");
   return (
     <Layout>
       <HeaderNoti title={"Payslip"} href={"/home"} />
+      <div style={{ position: "relative", margin: "2px 10px" }}>
+        <NotificationBox
+          message={router.query.message}
+          timeout={3000}
+          label={router?.query?.label}
+        />
+      </div>
       <div css={styles.tabComponent}>
         <div
           css={activeComponent === "view" ? styles.activeTab : styles.tabpane}

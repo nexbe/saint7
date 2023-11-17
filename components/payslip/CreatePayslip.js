@@ -12,25 +12,33 @@ import {
 import { FaPlus } from "react-icons/fa";
 import { useApolloClient } from "@apollo/client";
 import userStore from "../../store/user";
+import dayjs from "dayjs";
+import { useRouter } from "next/router";
+import payslipStore from "../../store/payslip";
+import useAuth from "../../store/auth";
 
 const CreatePayslip = () => {
+  const router = useRouter();
+  const { createPayslip, createPayslipError } = payslipStore();
+  const { user } = useAuth();
   const apolloClient = useApolloClient();
   const [month, setMonth] = useState(new Date());
   const [year, setYear] = useState(new Date());
   const [assignedUsers, setAssignedUsers] = useState();
+  const [basicSalary, setBasicSalary] = useState();
+  const [allowance, setAllowance] = useState();
   const [morePayslipData, setMorePayslipData] = useState([]);
-  const [selectedAmountType, setSelectedAmountType] = useState([]);
   const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
   const options = [
-    { value: "Detract", label: "Detract" },
-    { value: "Add", label: "Add" },
-  ]; 
-  useEffect(() => { 
+    { value: "deduct", label: "Deduct" },
+    { value: "add", label: "Add" },
+  ];
+  useEffect(() => {
     getAllUsers({
       apolloClient,
       where: {},
-    })
-  },[])
+    });
+  }, []);
   const handleMonthChange = (date) => {
     setMonth(date);
   };
@@ -41,30 +49,58 @@ const CreatePayslip = () => {
   const handleUsersChange = (selectedOption) => {
     setAssignedUsers(selectedOption);
   };
-
   // add more handler
   const handleAddMoreClick = () => {
     let newRow = {
-      title: "",
-      amount: "",
+      key: "",
+      value: "",
     };
     setMorePayslipData((prevBoxes) => [...prevBoxes, newRow]);
   };
+
   const handleAddMoreDeleteClick = (index) => {
     let data = [...morePayslipData];
     data.splice(index, 1);
     setMorePayslipData(data);
   };
-  const handleAmountTypeChange = (selected, index) => {
-    const updatedTypes = [...selectedAmountType];
-    updatedTypes[index] = selected;
-    setSelectedAmountType(updatedTypes);
-  };
+
   const userOptions = userInfo?.map((eachOption) => ({
     value: eachOption?.id,
     label: eachOption?.username,
   }));
 
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    const users = assignedUsers?.map((user) => user.value);
+    createPayslip(
+      {
+        data: {
+          users: users,
+          month: dayjs(month).format("MMMM"),
+          year: dayjs(year).year(),
+          basicSalary: basicSalary,
+          allowance: allowance,
+          transactions: morePayslipData,
+        },
+      },
+      user.jwt
+    );
+    router.push({
+      pathname: `/payslip/Admin`,
+      query: {
+        message: !createPayslipError ? "Success!" : "Apologies!",
+        belongTo: !createPayslipError ? "Payslip" : "error",
+        label: dayjs(month).format("MMMM") + " has successfully created.",
+      },
+    });
+    setMonth('');
+    setYear('');
+    setAssignedUsers('');
+    setBasicSalary('');
+    setAllowance('');
+    setMorePayslipData('');
+  };
+  console.log(createPayslipError)
   const DropdownIndicator = (props) => {
     return (
       components.DropdownIndicator && (
@@ -74,9 +110,20 @@ const CreatePayslip = () => {
       )
     );
   };
+  const handleAddMoreChange = (event, index) => {
+    let data = [...morePayslipData];
+    if (event === "deduct" || event === "add") {
+      data[index]["options"] = event;
+    } else {
+      const { name, value } = event.target;
+      if (name !== undefined && value !== undefined) {
+        data[index][name] = value;
+      }
+    }
+  };
 
   return (
-    <form css={styles.wrapper}>
+    <form css={styles.wrapper} onSubmit={onSubmitHandler}>
       <div css={styles.container}>
         <div css={styles.dateContent}>
           <div>
@@ -126,6 +173,8 @@ const CreatePayslip = () => {
           <div>
             <b>SGD</b>
             <input
+              value={basicSalary}
+              onChange={(e) => setBasicSalary(e.target.value)}
               placeholder="0.00"
               type="text"
               id="basic_salary"
@@ -139,6 +188,7 @@ const CreatePayslip = () => {
           <div>
             <b>SGD</b>
             <input
+              onChange={(e) => setAllowance(e.target.value)}
               placeholder="0.00"
               type="text"
               id="Allowance"
@@ -154,28 +204,32 @@ const CreatePayslip = () => {
                 {morePayslipData && morePayslipData.length > 0 && (
                   <div
                     onClick={() => handleAddMoreDeleteClick(index)}
+                    key={index}
                     css={styles.boxHeader}>
                     <MdRemoveCircleOutline color="#EB0F0A" size={23} />
                   </div>
                 )}
                 <div>
-                  <label htmlFor="Title">Title</label>
+                  <label htmlFor="key">Title</label>
                   <input
                     type="text"
-                    id="Title"
-                    name="Title"
+                    id="key"
+                    name="key"
+                    onChange={(e) => handleAddMoreChange(e, index)}
                     placeholder="Enter Title"
                     css={styles.inputBox}
                   />
                 </div>
                 <div style={{ position: "relative" }}>
-                  <label htmlFor="Amount">Amount</label>
+                  <label htmlFor="options">Amount</label>
                   <div css={styles.inputStyle}>
                     <Select
-                      id="amount_type"
-                      name="amount_type"
-                      value={selectedAmountType}
-                      onChange={(e) => handleAmountTypeChange(e, index)}
+                      id="options"
+                      name="options"
+                      value={morePayslipData[index]["options"]}
+                      onChange={(selected) =>
+                        handleAddMoreChange(selected.value, index)
+                      }
                       options={options}
                       styles={selectBoxStyle}
                       components={{
@@ -187,10 +241,10 @@ const CreatePayslip = () => {
                     />
                     <input
                       type="text"
-                      id="Amount"
-                      name="Amount"
+                      id="value"
+                      name="value"
                       placeholder="0.00"
-                      required
+                      onChange={(e) => handleAddMoreChange(e, index)}
                       style={{
                         marginTop: "-35px",
                         marginLeft: "100px",
@@ -210,7 +264,10 @@ const CreatePayslip = () => {
         </div>
       </div>
       <div css={styles.btnContainer}>
-        <button css={styles.cancelBtn} onClick={() => {}}>
+        <button
+          css={styles.cancelBtn}
+          type="button"
+          onClick={() => router.push("/payslip/Admin")}>
           Cancel
         </button>
         <button css={styles.createBtn} type="submit">
