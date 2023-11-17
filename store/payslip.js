@@ -10,7 +10,7 @@ import axios from "axios";
 const payslipStore = create((set, get) => ({
   payslips: [],
   payslipDetails: [],
-
+  createPayslipError:null,
   fetch: false,
   loading: true,
   PayData: [],
@@ -79,6 +79,21 @@ const payslipStore = create((set, get) => ({
       return response.data;
     }catch(error){
       throw error;
+    }
+  },
+  createPayslip : async (data,bearerToken) => {
+    try{
+      const response = await axios.post(`https://saint7-office.singaporetestlab.com/api/payslip-create`,data,{
+        headers:{
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      return response.data;
+    }catch(error){
+       set({
+        createPayslipError : error
+       })
+       console.log(error)
     }
   } 
 }));

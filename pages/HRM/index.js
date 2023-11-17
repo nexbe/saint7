@@ -103,10 +103,11 @@ const Home = () => {
                   onClick={() => {
                     router.push({
                       pathname:
-                        user?.role?.name === "Admin" ||
-                        user?.role?.name === "Manager"
-                          ? "/payslip/Manager"
-                          : "/payslip",
+                      user?.role?.name === "Admin"
+                      ? "/payslip/Admin"
+                      : user?.role?.name === "Manager"
+                        ? "/payslip/Manager"
+                        : "/payslip"           
                     });
                   }}
                 >
