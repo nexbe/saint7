@@ -41,10 +41,20 @@ const Documents = () => {
   const [selectedDeletedData, setSelectedDeletedData] = useState([]);
 
   useEffect(() => {
-    getAllDocuments({
-      apolloClient,
-      where: {},
-    });
+    if (
+      !!router?.query?.visibleFor &&
+      router?.query?.visibleFor === "manager"
+    ) {
+      getAllDocuments({
+        apolloClient,
+        where: { isGuard: false },
+      });
+    } else {
+      getAllDocuments({
+        apolloClient,
+        where: { isGuard: true },
+      });
+    }
   }, [user, router.query]);
 
   const handleCheck = (selectedId) => {
@@ -170,6 +180,7 @@ const Documents = () => {
           modal={addModal}
           setModal={setAddModal}
           userId={user?.id}
+          visibleFor={router?.query?.visibleFor}
         />
       )}
       {editModal && (
