@@ -103,11 +103,11 @@ const Home = () => {
                   onClick={() => {
                     router.push({
                       pathname:
-                      user?.role?.name === "Admin"
-                      ? "/payslip/Admin"
-                      : user?.role?.name === "Manager"
-                        ? "/payslip/Manager"
-                        : "/payslip"           
+                        user?.role?.name === "Admin"
+                          ? "/payslip/Admin"
+                          : user?.role?.name === "Manager"
+                          ? "/payslip/Manager"
+                          : "/payslip",
                     });
                   }}
                 >
@@ -116,7 +116,15 @@ const Home = () => {
                 </button>
               </div>
               <div css={styles.formFlexChildDiv}>
-                <button onClick={() => router.push("/documents")}>
+                <button
+                  onClick={() =>
+                    router.push(
+                      user?.role?.name.toLowerCase() != "guard"
+                        ? "/documents/Manager"
+                        : "/documents"
+                    )
+                  }
+                >
                   <DocumentIcon />
                   Documents
                 </button>
