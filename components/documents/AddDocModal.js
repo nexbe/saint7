@@ -14,7 +14,7 @@ import { UploadedFiles } from "../upload/uploadFiles";
 import { Upload } from "../upload/uploadFile";
 import { uploadFile } from "../upload/upload";
 
-const AddDocModal = ({ modal, setModal, userId }) => {
+const AddDocModal = ({ modal, setModal, userId, visibleFor }) => {
   const {
     handleSubmit,
     register,
@@ -57,6 +57,7 @@ const AddDocModal = ({ modal, setModal, userId }) => {
         data: {
           title: data.title,
           description: data.description,
+          isGuard: visibleFor === "guard" ? true : false,
           users_permissions_users: userId,
           attachment: filesArrToSend?.map((eachFile) => {
             return +eachFile?.id;
@@ -78,6 +79,7 @@ const AddDocModal = ({ modal, setModal, userId }) => {
           message: errCreateDocument ? "Success!" : "Apologies!",
           belongTo: errCreateDocument ? "Document" : "error",
           label: data?.title + " has successfully created.",
+          visibleFor: visibleFor,
         },
       });
     }
