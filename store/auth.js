@@ -48,7 +48,7 @@ const useAuth = create((set, get) => ({
       console.log(error);
     }
   },
-  login: async (data, router) => {
+  login: async (data) => {
     try {
       const response = await client.mutate({
         mutation: GET_USER,
@@ -88,7 +88,6 @@ const useAuth = create((set, get) => ({
           path: "/",
         })
       }
-      router.push("/home");
     } catch (err) {
       set((state) => ({
         ...state,

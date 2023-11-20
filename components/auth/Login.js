@@ -6,6 +6,8 @@ import LoginLogo from "../../public/icons/LoginLogo";
 import CloseEyeSlashIcon from "../../public/icons/CloseEyeSlashIcon";
 import OpenEyeIcon from "../../public/icons/OpenEyeIcon";
 import useAuth from "../../store/auth";
+import TermsAndConditions from "./TermsAndCondition";
+import LoginSuccessModal from "./LoginSuccessModal";
 
 const Login = () => {
   const router = useRouter();
@@ -14,6 +16,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -23,9 +27,9 @@ const Login = () => {
           {
             identifier: email,
             password: password,
-          },
-          router
+          }
         );
+        setModal(true)
       } catch (err) {
         console.log(err);
       }
@@ -105,6 +109,8 @@ const Login = () => {
           Login
         </button>
       </form>
+      <TermsAndConditions modal={modal} setModal={setModal} setSuccessModal={setSuccessModal}/>
+      <LoginSuccessModal modal={successModal} setModal={setSuccessModal}/>
     </div>
   );
 };
