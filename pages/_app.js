@@ -5,6 +5,7 @@ import GlobalStyle from "../styles/globals";
 import { ApolloProvider } from "@apollo/client";
 import client from "../graphql/apolloClient";
 import attendenceStore from "../store/attendance";
+import { setCookie, parseCookies } from "nookies";
 
 function MyApp({ Component, pageProps }) {
   const {
@@ -34,6 +35,15 @@ function MyApp({ Component, pageProps }) {
       console.log("here");
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
+        // const location = { lat: latitude, lng: longitude };
+        setCookie(null, "latitude", latitude, {
+          maxAge: 30 * 24 * 60 * 60,
+          path: "/",
+        });
+        setCookie(null, "longitude", longitude, {
+          maxAge: 30 * 24 * 60 * 60,
+          path: "/",
+        });
         getLocationData({ lat: latitude, lng: longitude });
         geocodeLocation({ lat: latitude, lng: longitude });
       });

@@ -7,10 +7,13 @@ import attendenceStore from "../../store/attendance";
 import moment from "moment";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
 import BuildingIcon from "../../public/icons/buildingIcon";
+import { parseCookies } from "nookies";
 const HomeMap2 = ({ siteData }) => {
-  const { locationData: locationData, addressData } = attendenceStore(
-    (state) => state
-  );
+  const cookies = parseCookies();
+
+  const latitude = cookies.latitude ? JSON.parse(cookies.latitude) : null;
+  const longitude = cookies.longitude ? JSON.parse(cookies.longitude) : null;
+
   const customIcon = new L.Icon({
     iconUrl: "/images/mapIcon.png", // Path to your custom icon image
     iconSize: [50, 50], // Size of the icon
@@ -28,8 +31,8 @@ const HomeMap2 = ({ siteData }) => {
     <MapContainer
       className={styles.map2}
       center={[
-        siteInfo[1]?.attributes?.location?.Lat ?? locationData?.lat,
-        siteInfo[1]?.attributes?.location?.Lng ?? locationData?.lng,
+        siteInfo[1]?.attributes?.location?.Lat ?? latitude,
+        siteInfo[1]?.attributes?.location?.Lng ?? longitude,
       ]}
       zoom={17}
     >
@@ -50,8 +53,8 @@ const HomeMap2 = ({ siteData }) => {
         return (
           <Marker
             position={[
-              site?.attributes?.location?.Lat,
-              site?.attributes?.location?.Lng,
+              site?.attributes?.location?.Lat ?? latitude,
+              site?.attributes?.location?.Lng ?? longitude,
             ]}
             icon={customIcon}
             key={index}
