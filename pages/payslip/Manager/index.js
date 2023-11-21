@@ -8,7 +8,6 @@ const Payslip = () => {
   return (
     <Layout>
       <HeaderNoti title={"Payslip"} href={"/home"} />
-
       <PayUser />
     </Layout>
   );

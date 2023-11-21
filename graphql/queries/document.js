@@ -1,13 +1,17 @@
 import { gql } from "@apollo/client";
 export const GET_DOCUMENTS = gql`
-  query {
-    documents(sort: ["createdAt:desc"]) {
+  query ($isGuard: Boolean!) {
+    documents(
+      filters: { isGuard: { eq: $isGuard } }
+      sort: ["createdAt:desc"]
+    ) {
       data {
         id
         attributes {
           title
           description
           createdAt
+          isGuard
           attachment {
             data {
               id
