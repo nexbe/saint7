@@ -16,7 +16,7 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
 
   const [assignUserData, setAssignUsers] = useState([]);
 
-  console.log("lat", lat);
+  console.log("lat", locationData);
   console.log("lng", lng);
 
   useEffect(() => {
