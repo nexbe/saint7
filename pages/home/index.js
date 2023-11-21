@@ -22,10 +22,14 @@ import HrmIcon from "../../public/icons/hrmIcon";
 import OperationIcon from "../../public/icons/operationIcon";
 import moment from "moment";
 import siteStore from "../../store/sites";
+import { parseCookies } from "nookies";
+import attendenceStore from "../../store/attendance";
 
 const Home = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
+  const cookies = parseCookies();
+
   const {
     getAllProfiles,
     ProfileInfo: profileInfo,
@@ -34,17 +38,35 @@ const Home = () => {
   const { sites, getSites } = siteStore();
 
   const { user } = userStore((state) => state);
+  const userData = cookies.user ? JSON.parse(cookies.user) : null;
+  const latitude = cookies.latitude ? JSON.parse(cookies.latitude) : null;
+  const longitude = cookies.longitude ? JSON.parse(cookies.longitude) : null;
+
   const { getAssignUsers, AssignUsers, notiData } = userUserStore(
     (state) => state
   );
 
-  const [userData, setUserData] = useState();
+  const [userInfo, setUsesrInfo] = useState();
+  const [locationInfo, setLocationInfo] = useState();
+
   const [attendanceData, setAttendanceData] = useState([]);
   const [progress, setProgress] = useState(0);
 
   const today = moment().format("YYYY-MM-DD");
 
   useEffect(() => {
+    if (AssignUsers[0]?.attributes?.site?.data?.attributes?.location?.Lat) {
+      setLocationInfo({
+        lat: AssignUsers[0]?.attributes?.site?.data?.attributes?.location?.Lat,
+        lng: AssignUsers[0]?.attributes?.site?.data?.attributes?.location?.Lng,
+      });
+    } else {
+      setLocationInfo({
+        lat: latitude,
+        lng: longitude,
+      });
+    }
+
     if (attendanceData?.length) {
       const currentTime = moment().format("hh:mm:ss.SSS");
 
@@ -73,12 +95,13 @@ const Home = () => {
   }, [AssignUsers, attendanceData]);
 
   useEffect(() => {
-    setUserData(user);
-    if (user?.role?.name.toLowerCase() == "guard") {
+    setUsesrInfo(userData);
+
+    if (userData?.role?.name.toLowerCase() == "guard") {
       getAssignUsers({
         apolloClient,
         where: {
-          userId: user.id,
+          userId: userData.id,
           date: moment(new Date()).format("YYYY-MM-DD"),
         },
       });
@@ -115,24 +138,23 @@ const Home = () => {
     const formattedTime = `${hours}:${minutes}`;
     return formattedTime;
   };
+
   return (
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
           <div>
             <div className="d-flex" css={styles.profileInfo}>
-              <label>
-                <img
-                  src={
-                    profileInfo[0]?.photo?.url
-                      ? `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
-                      : "images/defaultImage.jpg"
-                  }
-                />
-              </label>
+              <img
+                src={
+                  profileInfo[0]?.photo?.url
+                    ? `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
+                    : "images/defaultImage.jpg"
+                }
+              />
               <div className="d-flex" style={{ flexDirection: "column" }}>
                 <span css={styles.welcomeText}>Welcome !</span>
-                <span className="header-text">{userData?.username}</span>
+                <span className="header-text">{userInfo?.username}</span>
               </div>
             </div>
             <div css={styles.timeText}>
@@ -150,14 +172,8 @@ const Home = () => {
           {user?.role?.name.toLowerCase() == "guard" ? (
             <div css={styles.mapContainer}>
               <HomeMap
-                lat={
-                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
-                    ?.Lat
-                }
-                lng={
-                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
-                    ?.Lng
-                }
+                lat={locationInfo?.lat}
+                lng={locationInfo?.lng}
                 AssignUsers={AssignUsers}
               />
             </div>
@@ -167,7 +183,7 @@ const Home = () => {
             </div>
           )}
 
-          {user?.role?.name.toLowerCase() == "guard" ? (
+          {userInfo?.role?.name.toLowerCase() == "guard" ? (
             <div css={styles.mapLine}>
               <div css={styles.address}>
                 <MapPineLineIcon />
@@ -207,8 +223,8 @@ const Home = () => {
                       className="progress"
                       style={{ width: `${progress}%` }}
                     ></div>
-                  </div>{" "}
-                  {progress}
+                  </div>
+                  <p>{progress}</p>
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import styles from "../../styles/Home.module.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -7,21 +7,32 @@ import attendenceStore from "../../store/attendance";
 import moment from "moment";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
 import BuildingIcon from "../../public/icons/buildingIcon";
+import { parseCookies } from "nookies";
 const HomeMap2 = ({ siteData }) => {
-  const { locationData: locationData, addressData } = attendenceStore(
-    (state) => state
-  );
+  const cookies = parseCookies();
+
+  const latitude = cookies.latitude ? JSON.parse(cookies.latitude) : null;
+  const longitude = cookies.longitude ? JSON.parse(cookies.longitude) : null;
+
   const customIcon = new L.Icon({
     iconUrl: "/images/mapIcon.png", // Path to your custom icon image
     iconSize: [50, 50], // Size of the icon
   });
 
+  const [siteInfo, setSiteInfo] = useState([]);
+
+  useEffect(() => {
+    if (siteData.length) {
+      setSiteInfo(siteData);
+    }
+  }, [siteData]);
+
   return (
     <MapContainer
       className={styles.map2}
       center={[
-        siteData[1]?.attributes?.location?.Lat ?? locationData?.lat,
-        siteData[1]?.attributes?.location?.Lng ?? locationData?.lng,
+        siteInfo[1]?.attributes?.location?.Lat ?? latitude,
+        siteInfo[1]?.attributes?.location?.Lng ?? longitude,
       ]}
       zoom={17}
     >
@@ -31,7 +42,7 @@ const HomeMap2 = ({ siteData }) => {
         maxZoom={30}
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
-      {siteData?.map((site, index) => {
+      {siteInfo?.map((site, index) => {
         const filteredData = site?.attributes?.assignee_shifts?.data?.filter(
           (item) => {
             const itemDate = item.attributes.dutyDate;
@@ -42,42 +53,12 @@ const HomeMap2 = ({ siteData }) => {
         return (
           <Marker
             position={[
-              site?.attributes?.location?.Lat,
-              site?.attributes?.location?.Lng,
+              site?.attributes?.location?.Lat ?? latitude,
+              site?.attributes?.location?.Lng ?? longitude,
             ]}
             icon={customIcon}
             key={index}
           >
-            {/* <Popup className={styles.popup}>
-              <div>
-                {filteredData?.length ? (
-                  filteredData.map((data, index) => (
-                    <div
-                      style={{ display: "flex", alignItems: "center" }}
-                      key={index}
-                    >
-                      <img
-                        src={
-                          data?.attributes?.users_permissions_user?.data
-                            ?.attributes?.facialScanImage?.data?.attributes?.url
-                            ? `${process.env.NEXT_PUBLIC_APP_URL}${data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
-                            : "images/defaultImage.jpg"
-                        }
-                        className={styles.profile}
-                      />
-                      <p style={{ marginLeft: 10 }}>
-                        {
-                          data?.attributes?.users_permissions_user?.data
-                            ?.attributes?.username
-                        }
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <p>No assign Users</p>
-                )}
-              </div>
-            </Popup> */}
             <Popup className={styles.popup}>
               <div>
                 <div
