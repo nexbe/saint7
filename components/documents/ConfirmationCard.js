@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import {
   Accordion,
@@ -8,9 +8,55 @@ import {
   AccordionItem,
 } from "reactstrap";
 import ClickBoardText from "../../public/icons/clickboardText";
+import historyStore from "../../store/history";
+import useAuth from "../../store/auth";
+import dayjs from "dayjs";
 
 const ConfirmationCard = () => {
   const [open, setOpen] = useState("");
+  const [allHistory, setAllHistory] = useState([]);
+  const { getAllUsersHistory } = historyStore();
+  const { user } = useAuth();
+
+  const getOrdinalSuffix = (day) => {
+    if (day >= 11 && day <= 13) {
+      return 'th';
+    }
+    const lastDigit = day % 10;
+    switch (lastDigit) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  }
+
+  const formatDateString = (dateString) => {
+    const day = dayjs(dateString).format('DD');
+    const date = dayjs(dateString, { timeZone: 'UTC' }).format('MMM YYYY');
+    const time = dayjs(dateString).format('hh:mm A'); 
+    return `${day}${getOrdinalSuffix(day)} ${date} at ${time}`;
+    
+  }
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user.jwt) {
+        try {
+          const historyData = await getAllUsersHistory(user.jwt);
+          setAllHistory(historyData);
+        } catch (error) {
+          console.error("Error fetching history:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [user.jwt]);
 
   const toggle = (id) => {
     if (open === id) {
@@ -27,19 +73,31 @@ const ConfirmationCard = () => {
           <AccordionHeader targetId="acceptance" css={styles.item}>
             <div style={{ width: "80%", gap: "5px" }} className="d-flex">
               {" "}
-                <ClickBoardText />
-                Acceptance Confirmation
+              <ClickBoardText />
+              Acceptance Confirmation
             </div>
           </AccordionHeader>
           <AccordionBody accordionId="acceptance">
-             <div css={styles.card}>
-               <span>Email : <b>tim.jennings@example.com </b></span>
-               <span>Login Date : <b> 12th Feb 2022 at 09:05 AM </b></span>
-             </div>
-             <div css={styles.card}>
-               <span>Email : <b>willie.jennings@example.com</b></span>
-               <span>Logout Date : <b>12th Feb 2022 at 09:05 AM</b></span>
-             </div>
+            {allHistory?.map((history) => {
+              return (
+                <div css={styles.card} key={history.id}>
+                  <span>
+                    Email :{" "}
+                    <b>{history?.attributes?.user?.data?.attributes?.email}</b>
+                  </span>
+                  {history?.attributes?.loginAt && (
+                    <span>
+                      Login Date : <b> {formatDateString(history?.attributes?.loginAt)} </b>
+                    </span>
+                  )}
+                  {history?.attributes?.logoutAt && (
+                    <span>
+                      Logout Date : <b> {formatDateString(history?.attributes?.logoutAt)} </b>
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </AccordionBody>
         </AccordionItem>
       </Accordion>
@@ -77,16 +135,16 @@ const styles = {
       line-height: normal;
     }
   `,
-  card:css`
-   display:flex;
-   flex-direction:column;
-   padding-bottom:15px;
-   padding-top:15px;
-   font-size: 15px;
-   gap:10px;
-   border-bottom:1px solid #E0E0E0;
-   b{
-    font-weight: 500;
-   }
-  `
+  card: css`
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    font-size: 15px;
+    gap: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    b {
+      font-weight: 500;
+    }
+  `,
 };
