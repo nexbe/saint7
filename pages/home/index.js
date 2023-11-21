@@ -23,6 +23,7 @@ import OperationIcon from "../../public/icons/operationIcon";
 import moment from "moment";
 import siteStore from "../../store/sites";
 import { parseCookies } from "nookies";
+import attendenceStore from "../../store/attendance";
 
 const Home = () => {
   const router = useRouter();
@@ -35,6 +36,7 @@ const Home = () => {
     loading,
   } = profileStore((state) => state);
   const { sites, getSites } = siteStore();
+  const { locationData: locationData } = attendenceStore((state) => state);
 
   const { user } = userStore((state) => state);
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
@@ -44,12 +46,26 @@ const Home = () => {
   );
 
   const [userInfo, setUsesrInfo] = useState();
+  const [locationInfo, setLocationInfo] = useState();
+
   const [attendanceData, setAttendanceData] = useState([]);
   const [progress, setProgress] = useState(0);
 
   const today = moment().format("YYYY-MM-DD");
 
   useEffect(() => {
+    if (AssignUsers[0]?.attributes?.site?.data?.attributes?.location?.Lat) {
+      setLocationInfo({
+        lat: AssignUsers[0]?.attributes?.site?.data?.attributes?.location?.Lat,
+        lng: AssignUsers[0]?.attributes?.site?.data?.attributes?.location?.Lng,
+      });
+    } else {
+      setLocationInfo({
+        lat: locationData?.Lat,
+        lng: locationData?.Lng,
+      });
+    }
+
     if (attendanceData?.length) {
       const currentTime = moment().format("hh:mm:ss.SSS");
 
@@ -79,6 +95,7 @@ const Home = () => {
 
   useEffect(() => {
     setUsesrInfo(userData);
+
     if (userData?.role?.name.toLowerCase() == "guard") {
       getAssignUsers({
         apolloClient,
@@ -154,14 +171,8 @@ const Home = () => {
           {user?.role?.name.toLowerCase() == "guard" ? (
             <div css={styles.mapContainer}>
               <HomeMap
-                lat={
-                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
-                    ?.Lat
-                }
-                lng={
-                  AssignUsers[0]?.attributes?.site?.data?.attributes?.location
-                    ?.Lng
-                }
+                lat={locationInfo?.lat}
+                lng={locationInfo?.lng}
                 AssignUsers={AssignUsers}
               />
             </div>
