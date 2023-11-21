@@ -36,10 +36,11 @@ const Home = () => {
     loading,
   } = profileStore((state) => state);
   const { sites, getSites } = siteStore();
-  const { locationData: locationData } = attendenceStore((state) => state);
 
   const { user } = userStore((state) => state);
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
+  const latitude = cookies.latitude ? JSON.parse(cookies.latitude) : null;
+  const longitude = cookies.longitude ? JSON.parse(cookies.longitude) : null;
 
   const { getAssignUsers, AssignUsers, notiData } = userUserStore(
     (state) => state
@@ -61,8 +62,8 @@ const Home = () => {
       });
     } else {
       setLocationInfo({
-        lat: locationData?.Lat,
-        lng: locationData?.Lng,
+        lat: latitude,
+        lng: longitude,
       });
     }
 
