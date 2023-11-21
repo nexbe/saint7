@@ -16,6 +16,9 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
 
   const [assignUserData, setAssignUsers] = useState([]);
 
+  console.log("lat", lat);
+  console.log("lng", lng);
+
   useEffect(() => {
     // if (user?.role?.name == "guard") {
     const filteredData =
@@ -38,7 +41,7 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
   return (
     <MapContainer
       className={styles.map2}
-      center={[lat ?? locationData?.lat, lng ?? locationData?.lng]}
+      center={[lat ? lat : locationData?.lat, lng ? lng : locationData?.lng]}
       zoom={17}
     >
       <TileLayer
@@ -48,7 +51,10 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
       <Marker
-        position={[lat ?? locationData?.lat, lng ?? locationData?.lng]}
+        position={[
+          lat ? lat : locationData?.lat,
+          lng ? lng : locationData?.lng,
+        ]}
         icon={customIcon}
       >
         <Popup>

@@ -121,8 +121,6 @@ const Home = () => {
     return formattedTime;
   };
 
-  console.log(userInfo);
-
   return (
     <Layout>
       <div css={styles.wrapper}>
