@@ -34,7 +34,12 @@ const Document = () => {
           >
             Document for Manager
           </div>
-          <div className="header-text">Acceptance Confirmation</div>
+          <div className="header-text" onClick={() => {
+             router.push({
+              pathname: "/documents/Manager/confirmation",
+              query: { visibleFor: "manager" },
+            })
+          }}>Acceptance Confirmation</div>
         </div>
       </div>
     </Layout>

@@ -4,6 +4,7 @@ import client from "../graphql/apolloClient";
 import { setCookie, parseCookies } from "nookies";
 import { GET_USER_INFO } from "../graphql/queries/profile";
 import { GET_OTP, RESEND_OTP, RESET_PASSWORD, VERIFY_OTP } from "../graphql/mutations/password";
+import { CREATE_LOGIN_HISTORY } from "../graphql/mutations/history";
 
 const cookies = parseCookies();
 const userData = cookies.user ? JSON.parse(cookies.user) : null;
@@ -64,7 +65,21 @@ const useAuth = create((set, get) => ({
             }
           }
         });
-        // console.log("=>", roleRes);
+        await client.mutate({
+          mutation: CREATE_LOGIN_HISTORY,
+          variables: {
+            "data" : {
+              "user" : response.data.login.user.id,
+              "loginAt": new Date().toISOString(),
+              "logoutAt": null
+            }
+          },
+          context:{
+            headers:{
+              Authorization : `Bearer ${response.data.login.jwt}`
+            }
+          }
+        })
     
       if (!response.errors && roleRes) {
         set((state) => ({
