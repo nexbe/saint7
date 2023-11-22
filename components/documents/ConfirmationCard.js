@@ -42,12 +42,27 @@ const ConfirmationCard = () => {
     return `${day}${getOrdinalSuffix(day)} ${date} at ${time}`;
     
   }
+
+  const get30DaysPeriod = () => {
+    const currentDate = new Date();
+    const startDate = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); 
+    startDate.setHours(0, 0, 0, 0); 
   
+    const endDate = currentDate;
+  
+    return {
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+    };
+  };
+  
+
   useEffect(() => {
     const fetchData = async () => {
       if (user.jwt) {
+        const { start, end } = get30DaysPeriod();
         try {
-          const historyData = await getAllUsersHistory(user.jwt);
+          const historyData = await getAllUsersHistory(user.jwt, start, end);
           setAllHistory(historyData);
         } catch (error) {
           console.error("Error fetching history:", error);
