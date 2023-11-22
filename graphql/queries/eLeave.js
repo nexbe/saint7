@@ -15,9 +15,13 @@ export const GET_LEAVE_BY_ID = gql`
           reason
           numberOfDays
           leaveDuration
-          leaveType
           halfdayOptions
           createdAt
+          leaveType {
+            data {
+              id
+            }
+          }
           actionBy {
             data {
               id
@@ -103,9 +107,13 @@ export const GET_LEAVES = gql`
           reason
           numberOfDays
           leaveDuration
-          leaveType
           halfdayOptions
           createdAt
+          leaveType {
+            data {
+              id
+            }
+          }
           actionBy {
             data {
               id
@@ -196,9 +204,13 @@ export const GET_LEAVES_BY_REQUEST = gql`
           reason
           numberOfDays
           leaveDuration
-          leaveType
           halfdayOptions
           createdAt
+          leaveType {
+            data {
+              id
+            }
+          }
           actionBy {
             data {
               id
@@ -289,9 +301,13 @@ export const GET_LEAVES_BY_CHOSEN_FIELDS = gql`
           reason
           numberOfDays
           leaveDuration
-          leaveType
           halfdayOptions
           createdAt
+          leaveType {
+            data {
+              id
+            }
+          }
           actionBy {
             data {
               id

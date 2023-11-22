@@ -8,9 +8,11 @@ import dayjs from "dayjs";
 import DatePicker from "react-datepicker";
 require("react-datepicker/dist/react-datepicker.css");
 import Select, { components } from "react-select";
+import CreatableSelect from "react-select/creatable";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { BiCalendarAlt } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
+import { FaPlus } from "react-icons/fa6";
 let isBetween = require("dayjs/plugin/isBetween");
 
 import Layout from "../../components/layout/Layout";
@@ -18,7 +20,10 @@ import HeaderNoti from "../../components/layout/HeaderNoti";
 import userStore from "../../store/user";
 import authStore from "../../store/auth";
 import leavestore from "../../store/eLeave";
+import leaveTypeStore from "../../store/leaveType";
 import { CREATE_LEAVE } from "../../graphql/mutations/eLeave";
+import { CREATE_LEAVE_TYPE } from "../../graphql/mutations/leaveType";
+// import { SelectLeaveTypeMenuButton } from "./selectLeaveTypeMenuButton";
 
 const ApplyLeave = () => {
   dayjs.extend(isBetween);
@@ -26,6 +31,28 @@ const ApplyLeave = () => {
     { value: "Firsthalf", label: "First Half (AM)" },
     { value: "Secondhalf", label: "Second Half (PM)" },
   ];
+  // const leaveTypeOptions = [
+  //   { value: "Annual_Leave", label: "Annual Leave (Vacation Leave)" },
+  //   { value: "Sick_Leave", label: "Sick Leave" },
+  //   { value: "Maternity_Leave", label: "Maternity Leave" },
+  //   { value: "Paternity_Leave", label: "Paternity Leave" },
+  //   { value: "Parental_Leave", label: "Parental Leave" },
+  //   { value: "Bereavement_Leave", label: "Bereavement Leave" },
+  //   {
+  //     value: "Compensatory_Time_Off",
+  //     label: "Compensatory Time Off (Comp Time)",
+  //   },
+  //   { value: "Unpaid_Leave", label: "Unpaid Leave" },
+  //   { value: "Educational_Leave", label: "Educational Leave" },
+  //   { value: "Jury_Duty_Leave", label: "Jury Duty Leave" },
+  //   { value: "Military_Leave", label: "Military Leave" },
+  //   { value: "Sabbatical_Leave", label: "Sabbatical Leave" },
+  //   { value: "Emergency_Leave", label: "Emergency Leave" },
+  //   {
+  //     value: "Leave_Act_FMLA_Leave",
+  //     label: "Family and Medical Leave Act (FMLA) Leave",
+  //   },
+  // ];
   const router = useRouter();
   const apolloClient = useApolloClient();
   const {
@@ -38,14 +65,23 @@ const ApplyLeave = () => {
     LeaveInfo: leaveInfo,
     createLeave,
   } = leavestore((state) => state);
+  const {
+    getAllLeaveTypes,
+    LeaveTypeInfo: leaveTypeInfo,
+    createLeaveType,
+  } = leaveTypeStore((state) => state);
   const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
   const { user } = authStore((state) => state);
   const [createLeaveAction, errCreateLeave] = useMutation(CREATE_LEAVE);
+  const [createLeaveTypeAction, errCreateLeaveType] =
+    useMutation(CREATE_LEAVE_TYPE);
   const [chosenType, setChosenType] = useState("Fullday");
   const [checkHalfDay, setCheckHalfDay] = useState(false);
   const [selectedHalfDayOption, setSelectedHalfDayOption] = useState(
     haldDayOptions[0]
   );
+
+  const [selectedLeaveTypeOption, setSelectedLeaveTypeOption] = useState();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [refetch, setRefetch] = useState(1);
@@ -66,6 +102,17 @@ const ApplyLeave = () => {
       where: { userId: user.id },
     });
   }, [user]);
+
+  useEffect(() => {
+    getAllLeaveTypes({
+      apolloClient,
+      where: {},
+    });
+  }, []);
+
+  const leaveTypeOptions = leaveTypeInfo?.map((eachLeaveType, index) => {
+    return { value: eachLeaveType?.id, label: eachLeaveType?.name };
+  });
 
   const calculateNumOfMaxDays = (startDate, endDate) => {
     const totalDays = dayjs(endDate).date() - dayjs(startDate).date() + 1;
@@ -222,6 +269,9 @@ const ApplyLeave = () => {
   const handleSelectHalfDayChange = (selectedOption) => {
     setSelectedHalfDayOption(selectedOption);
   };
+  const handleSelectLeaveTypeChange = (selectedOption) => {
+    setSelectedLeaveTypeOption(selectedOption);
+  };
 
   const DropdownIndicator = (props) => {
     return (
@@ -231,6 +281,43 @@ const ApplyLeave = () => {
         </components.DropdownIndicator>
       )
     );
+  };
+
+  const SelectLeaveTypeMenuButton = (props) => {
+    return (
+      components.MenuList && (
+        <components.MenuList {...props}>
+          {props.children}
+          <button
+            css={styles.editBtn}
+            className="primary-text"
+            onClick={() => addNewLeaveType(props?.focusedOption)}
+          >
+            <div className="icon">
+              <FaPlus size={20} />
+            </div>
+            Add New Leave Type
+          </button>
+        </components.MenuList>
+      )
+    );
+  };
+
+  const addNewLeaveType = async (newLeaveType) => {
+    await createLeaveType({
+      createLeaveTypeAction,
+      data: {
+        name: newLeaveType?.value,
+      },
+    });
+    setSelectedLeaveTypeOption({
+      label: newLeaveType?.value,
+      value: newLeaveType?.value,
+    });
+    getAllLeaveTypes({
+      apolloClient,
+      where: {},
+    });
   };
 
   const onSubmit = async (data) => {
@@ -246,6 +333,7 @@ const ApplyLeave = () => {
           leaveDuration: chosenType,
           halfdayOptions: selectedHalfDayOption?.value,
           users_permissions_user: user?.id,
+          leaveType: selectedLeaveTypeOption?.value,
           requestedTos: selectedRequestTosOptions?.map((eachRequest) => {
             return +eachRequest?.value;
           }),
@@ -461,6 +549,26 @@ const ApplyLeave = () => {
               </div>
               <div className="formFlex">
                 <div className="d-flex">
+                  <label className="secondary-text">Leave Types</label>
+                </div>
+                <CreatableSelect
+                  maxMenuHeight={150}
+                  value={selectedLeaveTypeOption}
+                  onChange={handleSelectLeaveTypeChange}
+                  options={leaveTypeOptions}
+                  placeholder="Select leave type"
+                  styles={selectBoxStyle}
+                  isSearchable={true}
+                  components={{
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                    DropdownIndicator,
+                    MenuList: SelectLeaveTypeMenuButton,
+                  }}
+                />
+              </div>
+              <div className="formFlex">
+                <div className="d-flex">
                   <label className="secondary-text">Leave Reason</label>
                 </div>
                 <textarea
@@ -552,9 +660,9 @@ const selectBoxStyle = {
   menu: (provided, state) => ({
     ...provided,
     width: "100%",
-    maxHeight: "150px",
-    overflowY: "scroll",
-    outline: "none",
+    // maxHeight: "150px",
+    // overflowY: "scroll",
+    // outline: "none",
   }),
   valueContainer: (provided, state) => ({
     ...provided,
@@ -753,5 +861,27 @@ const styles = {
     border: none;
     color: var(--white);
     background: var(--primary);
+  `,
+  editBtn: css`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-radius: 0px 0px 6px 6px;
+    background: #fff;
+    box-shadow: 1px -4px 8px 0px rgba(0, 0, 0, 0.08);
+    color: #293991;
+    padding: 12px;
+    margin-bottom: -4px;
+    cursor: pointer;
+    width: 100%;
+    .icon {
+      border-radius: 4px;
+      background: #e3f3ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3px;
+    }
   `,
 };
