@@ -54,15 +54,11 @@ const FilterModal = ({
     },
     {
       id: 11,
-      name: "Air Travel Expense",
+      name: "Parking",
     },
     {
       id: 12,
       name: "Telephone Expense",
-    },
-    {
-      id: 13,
-      name: "Parking",
     },
   ];
 
@@ -215,9 +211,10 @@ const styles = {
     }
     .category-group {
       display: flex;
-      gap: 7px;
+      gap: 3%;
     }
     .categoryValue {
+      width: 100%;
       label {
         cursor: pointer;
         border: 1px solid var(--darker-gray);
@@ -230,8 +227,8 @@ const styles = {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-width: 105px;
-        height: 40px;
+        height: 50px;
+        width: 100%;
       }
     }
   `,

@@ -178,12 +178,18 @@ const ExpenseRequestStatus = () => {
       }
     });
 
-    filteredResults = filteredResults.filter((item) => {
-      if (
-        !!checkCategoryList.find((category) => category === item.category.label)
-      )
-        return item;
-    });
+    filteredResults =
+      !!checkCategoryList && checkCategoryList.length > 0
+        ? filteredResults.filter((item) => {
+            if (
+              checkCategoryList.find(
+                (category) => category === item.category.label
+              )
+            )
+              return item;
+          })
+        : filteredResults;
+
     setFilteredData(filteredResults);
     const result = _.groupBy(filteredResults, monthName);
     const resultArr = _.entries(result);
@@ -285,6 +291,7 @@ const ExpenseRequestStatus = () => {
         return [...prevData, selectedId];
       }
     });
+    console.log("checkData...", checkData, selectedId);
     const checkList = claimInfo?.filter((eachClaim) => {
       if (eachClaim?.id === selectedId) {
         return eachClaim;
@@ -585,19 +592,18 @@ const ExpenseRequestStatus = () => {
               </div>
             )}
           </div>
-
-          <button css={styles.dateButton}>
-            <MdOutlineKeyboardDoubleArrowLeft
-              size={"20"}
-              onClick={decrementYear}
-            />
-            <label className="primary-text">{currentYear}</label>
-            <MdOutlineKeyboardDoubleArrowRight
-              size={"20"}
-              onClick={incrementYear}
-            />
-          </button>
         </div>
+        <button css={styles.dateButton}>
+          <MdOutlineKeyboardDoubleArrowLeft
+            size={"20"}
+            onClick={decrementYear}
+          />
+          <label className="primary-text">{currentYear}</label>
+          <MdOutlineKeyboardDoubleArrowRight
+            size={"20"}
+            onClick={incrementYear}
+          />
+        </button>
       </div>
       {openConfirmModal && (
         <ConfirmExpenseModal
@@ -682,7 +688,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 20px;
+    margin: 10px;
     gap: 12px;
     font-family: Inter;
     font-style: normal;
@@ -693,12 +699,6 @@ const styles = {
     .bodyContainer::-webkit-scrollbar-thumb {
       border-radius: 2px;
       background-color: var(--font-gray);
-    }
-    @media (max-width: 1400px) {
-      margin: 20px 20px 50px;
-    }
-    @media (min-width: 1400px) {
-      margin: 30px 30px 50px;
     }
     svg {
       cursor: pointer;
@@ -795,9 +795,8 @@ const styles = {
     gap: 8px;
   `,
   dateButton: css`
-    position: absolute;
-    bottom: 70px;
-    left: 35%;
+    position: relative;
+    align-items: center;
     border: none;
     background: none;
     label {
