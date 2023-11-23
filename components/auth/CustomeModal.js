@@ -33,12 +33,15 @@ const styles = {
     display: flex;
     border-radius: 16px;
     flex-direction: column;
-    gap: 9px;
-    font-size: 14px;
-    font-weight: 600;
+    line-height:22px;
+    font-size: 18px;
+    font-weight: 700;
     color: #718096;
     position: relative;
     z-index: 1;
+    p{
+      font-weight: 400;
+    }
   `,
   modalContent: css`
     width: 360px;

@@ -33,6 +33,7 @@ const styles = {
     font-weight: 600;
     color: #718096;
     button {
+      margin-top:30px;
       font-weight: 600;
       font-size: 18px;
       cursor: pointer;
@@ -46,6 +47,7 @@ const styles = {
       color:#2F4858;
       font-size: 16px;
       font-weight: 600;
+      margin-bottom:10px;
     }
   `,
   wrapper: css`

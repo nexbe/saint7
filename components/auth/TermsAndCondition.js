@@ -47,7 +47,6 @@ const styles = {
     display: flex;
     width:100%;
     padding:9px;
-    max-height:60vh;
     overflow:auto;
     flex-direction: column;
     font-size: 16px;
@@ -80,7 +79,7 @@ const styles = {
     .acceptBtn {
       border-radius: 10px;
       background: #293991;
-      padding: 3px 50px;
+      padding: 8px 50px;
       color: var(--white);
       box-shadow: -2px 0px 10px 0px rgba(65, 70, 92, 0.2);
     }
@@ -89,7 +88,7 @@ const styles = {
       border-radius: 10px;
       border: 2px solid #293991;
       background: #fff;
-      padding: 3px 50px;
+      padding: 8px 50px;
       color: #293991;
     }
   `,
