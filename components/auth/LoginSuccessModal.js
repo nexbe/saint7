@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import { Modal } from "reactstrap";
 import { useRouter } from "next/navigation";
+import CustomeModal from "./CustomeModal";
 
 const LoginSuccessModal = ({ modal, setModal }) => {
   const router = useRouter();
@@ -11,13 +11,13 @@ const LoginSuccessModal = ({ modal, setModal }) => {
     router.push("/home");
   };
   return (
-    <Modal isOpen={modal} toggle={() => setModal(!modal)} css={styles.wrapper}>
+    <CustomeModal isOpen={modal} toggle={() => setModal(!modal)} css={styles.wrapper}>
       <div css={styles.modalStyle}>
         <div className="title">Login Success</div>
         <div>You’re ready to continue. Thank you for logging in.</div>
         <button onClick={onClickHandler}>Continue</button>
       </div>
-    </Modal>
+    </CustomeModal>
   );
 };
 
@@ -25,7 +25,7 @@ export default LoginSuccessModal;
 const styles = {
   modalStyle: css`
     background: var(--white);
-    padding: 20px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 9px;
@@ -33,6 +33,7 @@ const styles = {
     font-weight: 600;
     color: #718096;
     button {
+      margin-top:30px;
       font-weight: 600;
       font-size: 18px;
       cursor: pointer;
@@ -46,12 +47,12 @@ const styles = {
       color:#2F4858;
       font-size: 16px;
       font-weight: 600;
+      margin-bottom:10px;
     }
   `,
   wrapper: css`
     margin-top: 50%;
-    padding: 20px;
-    border-radius: 16px;
+    padding: 13px;
     background: #fff;
     color: var(--primary-font);
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);

@@ -6,12 +6,13 @@ import useAuth from "../../store/auth";
 
 const Verification = () => {
   const router = useRouter();
-  const { verifyOTP, otpEmail, resendOTP, user} = useAuth();
+  const { verifyOTP, otpEmail, resendOTP, user } = useAuth();
   const [time, setTime] = useState({ minutes: 0, seconds: 59 });
   const [firstDigit, setFirstDigit] = useState(null);
   const [secDigit, setSecDigit] = useState(null);
   const [thirdDigit, setThirdDigit] = useState(null);
   const [fourthDigit, setFourthDigit] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const startCounting = setInterval(() => {
@@ -44,22 +45,35 @@ const Verification = () => {
   };
 
   const resendHandler = () => {
-    resendOTP({
-      input: {
-        identifier : otpEmail.email.email || user.email
-      }
-    }, router)
+    setFirstDigit('')
+    setSecDigit('')
+    setThirdDigit('')
+    setFourthDigit('')
+    resendOTP(
+      {
+        input: {
+          identifier: otpEmail.email.email || user.email,
+        },
+      },
+      router
+    );
   };
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
     if (firstDigit && secDigit && thirdDigit && fourthDigit && otpEmail) {
-      verifyOTP({
+      const response = await verifyOTP({
         input: {
-          identifier : otpEmail.email.email,
-          otpCode : `${firstDigit}${secDigit}${thirdDigit}${fourthDigit}`
-        }
-      },router)
+          identifier: otpEmail.email.email,
+          otpCode: `${firstDigit}${secDigit}${thirdDigit}${fourthDigit}`,
+        },
+      });
+      if (response?.verifyOtp?.error?.message) {
+        setError(response?.verifyOtp?.error?.message);
+      } else {
+        setError(null);
+        router.push("/auth/createNewPassword");
+      }
     }
   };
 
@@ -68,7 +82,8 @@ const Verification = () => {
       <div css={styles.info}>
         <h3 css={styles.title}>Verification</h3>
         <p>
-        Please enter the 4-digit verification code that we have sent via the email. 
+          Please enter the 4-digit verification code that we have sent via the
+          email.
         </p>
       </div>
       <form onSubmit={onSubmitHandler}>
@@ -110,7 +125,7 @@ const Verification = () => {
             min="0"
           />
         </div>
-
+        {error && <span css={styles.errorMsg}>{error}</span>}
         <div
           style={{ color: "var(--white)", margin: "9px", textAlign: "center" }}>
           code expire in :{" "}
@@ -189,7 +204,6 @@ const styles = {
     border: 1px solid transparent;
     font-size: 18px;
     cursor: pointer;
-    
   `,
   actions: css`
     margin-top: 25px;
@@ -202,5 +216,9 @@ const styles = {
     span {
       color: var(--blue);
     }
+  `,
+  errorMsg: css`
+    color: #fb7777;
+    font-weight: 500;
   `,
 };

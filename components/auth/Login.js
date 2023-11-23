@@ -23,13 +23,15 @@ const Login = () => {
     e.preventDefault();
     if (email && password) {
       try {
-        await login(
-          {
-            identifier: email,
-            password: password,
-          }
-        );
-        setModal(true)
+      const response =  await login({
+          identifier: email,
+          password: password,
+        });
+        if(!response.errors) {
+          setModal(true); 
+        } else {
+          setModal(false)
+        }
       } catch (err) {
         console.log(err);
       }
@@ -76,7 +78,7 @@ const Login = () => {
                 {!showPassword ? <CloseEyeSlashIcon /> : <OpenEyeIcon />}
               </div>
             </div>
-            {errorLogin && (
+            {errorLogin && !modal && (
               <span css={styles.errorMsg}>
                 Invalid email or password. Try Again !
               </span>
@@ -109,8 +111,12 @@ const Login = () => {
           Login
         </button>
       </form>
-      <TermsAndConditions modal={modal} setModal={setModal} setSuccessModal={setSuccessModal}/>
-      <LoginSuccessModal modal={successModal} setModal={setSuccessModal}/>
+      <TermsAndConditions
+        modal={modal}
+        setModal={setModal}
+        setSuccessModal={setSuccessModal}
+      />
+     <LoginSuccessModal modal={successModal} setModal={setSuccessModal} />
     </div>
   );
 };

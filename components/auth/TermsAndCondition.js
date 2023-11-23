@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import { Modal } from "reactstrap";
+import CustomeModal from "./CustomeModal";
 
 const TermsAndConditions = ({ modal, setModal, setSuccessModal }) => {
   const handleAcceptHandler = () => {
@@ -9,7 +9,7 @@ const TermsAndConditions = ({ modal, setModal, setSuccessModal }) => {
     setModal(false);
   };
   return (
-    <Modal isOpen={modal} toggle={() => setModal(!modal)} css={styles.wrapper}>
+    <CustomeModal isOpen={modal} toggle={() => setModal(!modal)} css={styles.wrapper}>
       <div css={styles.modalStyle}>
         <h4>Terms and conditions</h4>
         <p>I have read and understood the Data Protection Policy.</p>
@@ -36,7 +36,7 @@ const TermsAndConditions = ({ modal, setModal, setSuccessModal }) => {
           Decline
         </button>
       </div>
-    </Modal>
+    </CustomeModal>
   );
 };
 
@@ -45,13 +45,16 @@ const styles = {
   modalStyle: css`
     background: var(--white);
     display: flex;
+    width:100%;
+    padding:9px;
+    overflow:auto;
     flex-direction: column;
     font-size: 16px;
     color: #2f4858;
   `,
   wrapper: css`
-    margin-top: 9%;
-    padding: 40px;
+    padding:20px;
+    margin-top:20%;
     border-radius: 16px;
     background: #fff;
     color: var(--primary-font);
@@ -66,16 +69,17 @@ const styles = {
       border: none;
     }
     @media (min-width: 440px) {
-      margin-top: 5%;
+      margin-top: 20%;
     }
   `,
   actions: css`
     display: flex;
     gap: 20px;
+    padding:5px;
     .acceptBtn {
       border-radius: 10px;
       background: #293991;
-      padding: 5px 60px;
+      padding: 8px 50px;
       color: var(--white);
       box-shadow: -2px 0px 10px 0px rgba(65, 70, 92, 0.2);
     }
@@ -84,7 +88,7 @@ const styles = {
       border-radius: 10px;
       border: 2px solid #293991;
       background: #fff;
-      padding: 5px 50px;
+      padding: 8px 50px;
       color: #293991;
     }
   `,
