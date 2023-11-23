@@ -33,19 +33,30 @@ const Team = () => {
     });
   }
 
-  const teamLists = !!filterTerm
-    ? userInfo.filter(
-        (item) =>
-          item?.profile.firstName
-            ?.toLowerCase()
-            .includes(filterTerm?.toLowerCase()) ||
-          item?.profile.lastName
-            ?.toLowerCase()
-            .includes(filterTerm?.toLowerCase())
-      )
-    : !!addFavourite
-    ? favList
-    : userInfo;
+  const teamLists =
+    !!filterTerm && !!addFavourite
+      ? favList.filter(
+          (item) =>
+            item?.profile.firstName
+              ?.toLowerCase()
+              .includes(filterTerm?.toLowerCase()) ||
+            item?.profile.lastName
+              ?.toLowerCase()
+              .includes(filterTerm?.toLowerCase())
+        )
+      : !!filterTerm
+      ? userInfo.filter(
+          (item) =>
+            item?.profile.firstName
+              ?.toLowerCase()
+              .includes(filterTerm?.toLowerCase()) ||
+            item?.profile.lastName
+              ?.toLowerCase()
+              .includes(filterTerm?.toLowerCase())
+        )
+      : !!addFavourite
+      ? favList
+      : userInfo;
 
   useEffect(() => {
     getAllUsers({
