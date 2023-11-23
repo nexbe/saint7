@@ -375,8 +375,11 @@ const ExpenseRequestStatus = () => {
           </div>
         </div>
 
-        <div css={styles.addReport}>
-          <button onClick={() => router.push("/claims/addExpenseRequest")}>
+        <div
+          css={styles.addReport}
+          onClick={() => router.push("/claims/addExpenseRequest")}
+        >
+          <button>
             <PlusIcon />
           </button>
         </div>

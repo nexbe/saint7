@@ -14,7 +14,7 @@ const DateFilterModal = ({
   belongTo,
 }) => {
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date(startDate));
+  const [endDate, setEndDate] = useState(new Date());
   const [fullDayChecked, setFullDayChecked] = useState(false);
   const [halfDayChecked, setHalfDayChecked] = useState(false);
 
@@ -30,7 +30,7 @@ const DateFilterModal = ({
       <div css={styles.dateContent}>
         <div>
           Start Date
-          <label className="d-flex">
+          <div className="calendar-box">
             <BiCalendarAlt size={20} />
             <DatePicker
               selected={startDate}
@@ -39,23 +39,23 @@ const DateFilterModal = ({
               shouldCloseOnSelect={true}
               showYearDropdown
             />
-          </label>
+          </div>
         </div>
         <div className="arrow">
           <BsArrowRight />
         </div>
         <div>
           End Date
-          <label className="d-flex">
+          <div className="calendar-box">
             <BiCalendarAlt size={20} />
             <DatePicker
-              selected={endDate}
+              selected={startDate > endDate ? startDate : endDate}
               onChange={handleEndDateChange}
               dateFormat="MMM / dd / yy"
               shouldCloseOnSelect={true}
               showYearDropdown
             />
-          </label>
+          </div>
         </div>
       </div>
       {belongTo === "leaveApproval" && (
@@ -187,7 +187,7 @@ const styles = {
       font-size: 16px;
       border-color: #000;
     }
-    label {
+    .calendar-box {
       justify-content: center;
       align-items: center;
       cursor: pointer;

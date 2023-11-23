@@ -23,7 +23,6 @@ import leavestore from "../../store/eLeave";
 import leaveTypeStore from "../../store/leaveType";
 import { CREATE_LEAVE } from "../../graphql/mutations/eLeave";
 import { CREATE_LEAVE_TYPE } from "../../graphql/mutations/leaveType";
-// import { SelectLeaveTypeMenuButton } from "./selectLeaveTypeMenuButton";
 
 const ApplyLeave = () => {
   dayjs.extend(isBetween);
@@ -31,28 +30,7 @@ const ApplyLeave = () => {
     { value: "Firsthalf", label: "First Half (AM)" },
     { value: "Secondhalf", label: "Second Half (PM)" },
   ];
-  // const leaveTypeOptions = [
-  //   { value: "Annual_Leave", label: "Annual Leave (Vacation Leave)" },
-  //   { value: "Sick_Leave", label: "Sick Leave" },
-  //   { value: "Maternity_Leave", label: "Maternity Leave" },
-  //   { value: "Paternity_Leave", label: "Paternity Leave" },
-  //   { value: "Parental_Leave", label: "Parental Leave" },
-  //   { value: "Bereavement_Leave", label: "Bereavement Leave" },
-  //   {
-  //     value: "Compensatory_Time_Off",
-  //     label: "Compensatory Time Off (Comp Time)",
-  //   },
-  //   { value: "Unpaid_Leave", label: "Unpaid Leave" },
-  //   { value: "Educational_Leave", label: "Educational Leave" },
-  //   { value: "Jury_Duty_Leave", label: "Jury Duty Leave" },
-  //   { value: "Military_Leave", label: "Military Leave" },
-  //   { value: "Sabbatical_Leave", label: "Sabbatical Leave" },
-  //   { value: "Emergency_Leave", label: "Emergency Leave" },
-  //   {
-  //     value: "Leave_Act_FMLA_Leave",
-  //     label: "Family and Medical Leave Act (FMLA) Leave",
-  //   },
-  // ];
+
   const router = useRouter();
   const apolloClient = useApolloClient();
   const {
@@ -364,7 +342,7 @@ const ApplyLeave = () => {
                 <div css={styles.dateContent}>
                   <div className="secondary-text">
                     Start Date
-                    <label className="d-flex">
+                    <div className="calendar-box">
                       <BiCalendarAlt size={20} />
                       <DatePicker
                         selected={startDate}
@@ -378,7 +356,7 @@ const ApplyLeave = () => {
                         }}
                         dateFormat="MMM / dd / yy"
                       />
-                    </label>
+                    </div>
                     {startTaken && (
                       <div className="takenText">Already taken</div>
                     )}
@@ -390,7 +368,7 @@ const ApplyLeave = () => {
                   </span>
                   <div className="secondary-text">
                     End Date
-                    <label className="d-flex">
+                    <div className="calendar-box">
                       <BiCalendarAlt size={20} />
                       <DatePicker
                         selected={endDate}
@@ -403,7 +381,7 @@ const ApplyLeave = () => {
                         }}
                         dateFormat="MMM / dd / yy"
                       />
-                    </label>
+                    </div>
                     {endTaken && <div className="takenText">Already taken</div>}
                   </div>
                 </div>
@@ -725,7 +703,7 @@ const styles = {
       padding-top: 7px;
      margin-bottom: -15px;
     }
-    label {
+    .calendar-box {
       justify-content: center;
       align-items: center;
       cursor: pointer;
