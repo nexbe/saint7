@@ -120,6 +120,7 @@ const CreatePayslip = () => {
         data[index][name] = value;
       }
     }
+    console.log(data)
   };
 
   return (
@@ -199,6 +200,7 @@ const CreatePayslip = () => {
         </div>
         {morePayslipData &&
           morePayslipData.map((data, index) => {
+            console.log(morePayslipData[index]["options"])
             return (
               <div key={data.id} css={styles.box}>
                 {morePayslipData && morePayslipData.length > 0 && (
@@ -226,7 +228,6 @@ const CreatePayslip = () => {
                     <Select
                       id="options"
                       name="options"
-                      value={morePayslipData[index]["options"]}
                       onChange={(selected) =>
                         handleAddMoreChange(selected.value, index)
                       }
