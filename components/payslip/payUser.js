@@ -25,7 +25,6 @@ const PayUser = () => {
       where: { role: 3 },
     });
   }, []);
-
   useEffect(() => {
     if (filterTerm) {
       const filteredResults = roleUserData.filter((item) =>
@@ -83,12 +82,12 @@ const PayUser = () => {
         </div>
 
         <div>
-          <button
+          {/* <button
             onClick={dateModal}
             style={{ border: "none", background: "none" }}
           >
             <CalendarIcon />
-          </button>
+          </button> */}
           {dateModalOpen && (
             <DateFilterModal
               isOpen={dateModalOpen}
@@ -98,7 +97,7 @@ const PayUser = () => {
           )}
         </div>
       </div>
-
+      
       <div css={styles.wrapper}>
         {payData.length
           ? payData?.map((userData, index) => (
@@ -134,7 +133,7 @@ const styles = {
     flex-direction: column;
     gap: 9px;
     margin: 20px;
-    max-height: 80vh;
+    max-height: 60vh;
     overflow-y: scroll;
     color: #000;
     background-color: #fff;
@@ -193,7 +192,7 @@ const styles = {
     padding: 20px 25px 5px 20px;
     input {
       height: 40px;
-      width: 70%;
+      width: 90%;
       padding: 9px 12px;
       flex-direction: column;
       justify-content: center;

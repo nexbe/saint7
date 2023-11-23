@@ -117,7 +117,7 @@ export const GET_USER_BY_ID = gql`
 
 export const GET_USER_BY_ROLE = gql`
   query {
-    usersPermissionsUsers {
+    usersPermissionsUsers(pagination:{limit:200}){
       data {
         id
         attributes {
@@ -127,7 +127,6 @@ export const GET_USER_BY_ROLE = gql`
             data {
               attributes {
                 name
-
                 url
               }
             }
