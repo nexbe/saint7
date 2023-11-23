@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import { Modal } from "reactstrap";
 import CustomeModal from "./CustomeModal";
 
 const TermsAndConditions = ({ modal, setModal, setSuccessModal }) => {

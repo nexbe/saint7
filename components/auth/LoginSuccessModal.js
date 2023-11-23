@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import { Modal } from "reactstrap";
 import { useRouter } from "next/navigation";
 import CustomeModal from "./CustomeModal";
 
