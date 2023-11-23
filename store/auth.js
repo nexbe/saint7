@@ -139,26 +139,21 @@ const useAuth = create((set, get) => ({
       throw new Error("Sending OTP failed");
     }
   },
-  verifyOTP: async (data, router) => {
-    console.log(data);
+  verifyOTP: async (data) => {
     try {
       const response = await client.mutate({
         mutation: VERIFY_OTP,
         variables: data,
       });
+      console.log(response)
       if (!response.errors) {
         set((state) => ({
           ...state,
           verifiedOtpUserData: response.data.verifyOtp,
         }));
-        console.log("OTP Verified");
-        // console.log(response.data)
-        router.push("/auth/createNewPassword");
       }
-    } catch (err) {
-      console.log(err);
-      throw new Error("Verifing the OTP code failed");
-    }
+      return response.data
+    } catch (err) {}
   },
   resendOTP: async (data, router) => {
     try {
