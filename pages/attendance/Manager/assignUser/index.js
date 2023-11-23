@@ -21,12 +21,12 @@ const AssignUser = () => {
   const [selectedShiftName, setSelectedShiftName] = useState();
   const [selectedSite, setSelectedSite] = useState();
   const [assignedUsers, setAssignedUsers] = useState();
+  const [assignedUsersCount, setAssignedUsersCount] = useState();
   const [modal, setModal] = useState(false);
   const {sites, getSites} = siteStore();
   const {shifts, getShifts} = shiftStore();
   const { createAssignedUser } = attendenceStore();
   const [dutyDates, setDutyDates] = useState([]);
-
   useEffect(() => {
     getSites();
     getShifts();
@@ -35,6 +35,17 @@ const AssignUser = () => {
       where: {},
     })
   },[])
+
+  useEffect(() => {
+    const assingnedUserLists = []
+    if(assignedUsers){
+      assignedUsers?.map((user) => {
+        return assingnedUserLists.push(`${user.value}`)
+      })
+    }
+    setAssignedUsersCount(assingnedUserLists.length)
+  },[assignedUsers])
+
   const handleSiteChange = (selectedOption) => {
     setSelectedSite(selectedOption);
   };
@@ -66,7 +77,7 @@ const AssignUser = () => {
     e.preventDefault();
     const dates = []
     const assingnedUserLists = []
-   
+
     if(dutyDates){
       dutyDates?.map((date)=> {
         const formattedDay = String(date.day).padStart(2, '0');
@@ -89,6 +100,7 @@ const AssignUser = () => {
         }
       })
       setModal(false)
+      router.push('/attendance/Manager')
     }
   }
   const DropdownIndicator = (props) => {
@@ -180,7 +192,7 @@ const AssignUser = () => {
           Assign
         </div>
       </div>
-      <SuccessModal isOpen={modal} setModal={setModal} handleSubmit={handleSubmit}/>
+      <SuccessModal isOpen={modal} setModal={setModal} handleSubmit={handleSubmit} count={assignedUsersCount}/>
     </Layout>
   );
 };
