@@ -276,8 +276,9 @@ const styles = {
     }
   `,
   cancelBtn: css`
-    border: 1px solid rgba(160, 174, 192, 1);
-    color: var(--dark-gray);
+    border: 1px solid rgba(41, 57, 145, 1);
+    color: var(--primary);
+    background: var(--white);
   `,
   deleteBtn: css`
     border: none;

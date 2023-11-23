@@ -169,7 +169,7 @@ const styles = {
       margin-top: 12rem;
       width: 100%;
       background: var(--white);
-      padding: 10px;
+      padding: 20px;
     }
   `,
   amountContent: css`
@@ -249,8 +249,9 @@ const styles = {
     }
   `,
   cancelBtn: css`
-    border: 1px solid rgba(160, 174, 192, 1);
-    color: var(--dark-gray);
+    border: 1px solid rgba(41, 57, 145, 1);
+    color: var(--primary);
+    background: var(--white);
   `,
   addBtn: css`
     border: none;

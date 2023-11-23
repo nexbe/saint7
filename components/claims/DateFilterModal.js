@@ -14,7 +14,7 @@ const DateFilterModal = ({
   belongTo,
 }) => {
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date(startDate));
   const [fullDayChecked, setFullDayChecked] = useState(false);
   const [halfDayChecked, setHalfDayChecked] = useState(false);
 
@@ -124,7 +124,7 @@ const styles = {
     button {
       border-radius: 10px;
       padding: 3px 20px;
-      font-size: 16px;
+      font-size: 18px;
       font-style: normal;
       font-weight: 700;
       box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
@@ -132,8 +132,9 @@ const styles = {
     }
   `,
   cancelBtn: css`
-    border: 1px solid rgba(160, 174, 192, 1);
-    color: var(--dark-gray);
+    border: 1px solid rgba(41, 57, 145, 1);
+    color: var(--primary);
+    background: var(--white);
   `,
   addBtn: css`
     border: none;
