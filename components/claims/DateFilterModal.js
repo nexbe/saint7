@@ -30,7 +30,7 @@ const DateFilterModal = ({
       <div css={styles.dateContent}>
         <div>
           Start Date
-          <label className="d-flex">
+          <div className="calendar-box">
             <BiCalendarAlt size={20} />
             <DatePicker
               selected={startDate}
@@ -39,23 +39,23 @@ const DateFilterModal = ({
               shouldCloseOnSelect={true}
               showYearDropdown
             />
-          </label>
+          </div>
         </div>
         <div className="arrow">
           <BsArrowRight />
         </div>
         <div>
           End Date
-          <label className="d-flex">
+          <div className="calendar-box">
             <BiCalendarAlt size={20} />
             <DatePicker
-              selected={endDate}
+              selected={startDate > endDate ? startDate : endDate}
               onChange={handleEndDateChange}
               dateFormat="MMM / dd / yy"
               shouldCloseOnSelect={true}
               showYearDropdown
             />
-          </label>
+          </div>
         </div>
       </div>
       {belongTo === "leaveApproval" && (
@@ -124,7 +124,7 @@ const styles = {
     button {
       border-radius: 10px;
       padding: 3px 20px;
-      font-size: 16px;
+      font-size: 18px;
       font-style: normal;
       font-weight: 700;
       box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
@@ -132,8 +132,9 @@ const styles = {
     }
   `,
   cancelBtn: css`
-    border: 1px solid rgba(160, 174, 192, 1);
-    color: var(--dark-gray);
+    border: 1px solid rgba(41, 57, 145, 1);
+    color: var(--primary);
+    background: var(--white);
   `,
   addBtn: css`
     border: none;
@@ -186,7 +187,7 @@ const styles = {
       font-size: 16px;
       border-color: #000;
     }
-    label {
+    .calendar-box {
       justify-content: center;
       align-items: center;
       cursor: pointer;

@@ -250,13 +250,14 @@ const RequestDetail = () => {
               )}
             </div>
           </div>
-          <div
-            css={styles.addReport}
-            onClick={() => router.push("/claims/addExpenseRequest")}
-          >
-            <PlusIcon />
-          </div>
         </div>
+        {user?.role?.name?.toLowerCase() != "admin" && (
+          <div css={styles.addReport}>
+            <button onClick={() => router.push("/claims/addExpenseRequest")}>
+              <PlusIcon />
+            </button>
+          </div>
+        )}
       </div>
     </Layout>
   );
@@ -280,7 +281,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 20px;
+    margin: 10px;
     gap: 12px;
     font-family: Inter;
     font-style: normal;
@@ -404,14 +405,18 @@ const styles = {
     gap: 5px;
   `,
   addReport: css`
-    background: var(--primary);
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    padding: 3px;
-    cursor: pointer;
-    position: absolute;
-    bottom: 60px;
-    right: 12px;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+    position: relative;
+    button {
+      background: var(--primary);
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
+      padding: 3px;
+      cursor: pointer;
+      border: none;
+    }
   `,
 };

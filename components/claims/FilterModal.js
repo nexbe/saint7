@@ -54,15 +54,11 @@ const FilterModal = ({
     },
     {
       id: 11,
-      name: "Air Travel Expense",
+      name: "Parking",
     },
     {
       id: 12,
       name: "Telephone Expense",
-    },
-    {
-      id: 13,
-      name: "Parking",
     },
   ];
 
@@ -173,7 +169,7 @@ const styles = {
       margin-top: 12rem;
       width: 100%;
       background: var(--white);
-      padding: 10px;
+      padding: 20px;
     }
   `,
   amountContent: css`
@@ -215,9 +211,10 @@ const styles = {
     }
     .category-group {
       display: flex;
-      gap: 7px;
+      gap: 3%;
     }
     .categoryValue {
+      width: 100%;
       label {
         cursor: pointer;
         border: 1px solid var(--darker-gray);
@@ -230,8 +227,8 @@ const styles = {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-width: 105px;
-        height: 40px;
+        height: 50px;
+        width: 100%;
       }
     }
   `,
@@ -252,8 +249,9 @@ const styles = {
     }
   `,
   cancelBtn: css`
-    border: 1px solid rgba(160, 174, 192, 1);
-    color: var(--dark-gray);
+    border: 1px solid rgba(41, 57, 145, 1);
+    color: var(--primary);
+    background: var(--white);
   `,
   addBtn: css`
     border: none;

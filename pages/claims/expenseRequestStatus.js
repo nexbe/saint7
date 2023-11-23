@@ -165,12 +165,18 @@ const ExpenseRequestStatus = () => {
       }
     });
 
-    filteredResults = filteredResults.filter((item) => {
-      if (
-        !!checkCategoryList.find((category) => category === item.category.label)
-      )
-        return item;
-    });
+    filteredResults =
+      !!checkCategoryList && checkCategoryList.length > 0
+        ? filteredResults.filter((item) => {
+            if (
+              checkCategoryList.find(
+                (category) => category === item.category.label
+              )
+            )
+              return item;
+          })
+        : filteredResults;
+
     setFilteredData(filteredResults);
     const result = _.groupBy(filteredResults, monthName);
     const resultArr = _.entries(result);
@@ -367,24 +373,27 @@ const ExpenseRequestStatus = () => {
               </div>
             )}
           </div>
-          <button css={styles.dateButton}>
-            <MdOutlineKeyboardDoubleArrowLeft
-              size={"20"}
-              onClick={decrementYear}
-            />
-            <label className="primary-text">{currentYear}</label>
-            <MdOutlineKeyboardDoubleArrowRight
-              size={"20"}
-              onClick={incrementYear}
-            />
-          </button>
-          <div
-            css={styles.addReport}
-            onClick={() => router.push("/claims/addExpenseRequest")}
-          >
-            <PlusIcon />
-          </div>
         </div>
+
+        <div
+          css={styles.addReport}
+          onClick={() => router.push("/claims/addExpenseRequest")}
+        >
+          <button>
+            <PlusIcon />
+          </button>
+        </div>
+        <button css={styles.dateButton}>
+          <MdOutlineKeyboardDoubleArrowLeft
+            size={"20"}
+            onClick={decrementYear}
+          />
+          <label className="primary-text">{currentYear}</label>
+          <MdOutlineKeyboardDoubleArrowRight
+            size={"20"}
+            onClick={incrementYear}
+          />
+        </button>
       </div>
     </Layout>
   );
@@ -408,7 +417,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 20px;
+    margin: 10px;
     gap: 12px;
     font-family: Inter;
     font-style: normal;
@@ -419,12 +428,6 @@ const styles = {
     .bodyContainer::-webkit-scrollbar-thumb {
       border-radius: 2px;
       background-color: var(--font-gray);
-    }
-    @media (max-width: 1400px) {
-      margin: 20px 20px 50px;
-    }
-    @media (min-width: 1400px) {
-      margin: 30px 30px 50px;
     }
     svg {
       cursor: pointer;
@@ -509,9 +512,8 @@ const styles = {
     gap: 8px;
   `,
   dateButton: css`
-    position: absolute;
-    bottom: 70px;
-    left: 35%;
+    position: relative;
+    align-items: center;
     border: none;
     background: none;
     label {
@@ -573,14 +575,19 @@ const styles = {
     color: #fa7e0b;
   `,
   addReport: css`
-    background: var(--primary);
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    padding: 3px;
-    cursor: pointer;
-    position: absolute;
-    bottom: 60px;
-    right: 12px;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+    position: relative;
+    margin-bottom: -30px;
+    button {
+      background: var(--primary);
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
+      padding: 3px;
+      cursor: pointer;
+      border: none;
+    }
   `,
 };

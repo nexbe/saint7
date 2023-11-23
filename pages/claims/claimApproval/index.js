@@ -116,12 +116,17 @@ const Claims = () => {
       }
     });
 
-    filteredResults = filteredResults.filter((item) => {
-      if (
-        !!checkCategoryList.find((category) => category === item.category.label)
-      )
-        return item;
-    });
+    filteredResults =
+      !!checkCategoryList && checkCategoryList.length > 0
+        ? filteredResults.filter((item) => {
+            if (
+              checkCategoryList.find(
+                (category) => category === item.category.label
+              )
+            )
+              return item;
+          })
+        : filteredResults;
 
     const result = _.groupBy(filteredResults, monthName);
     const resultArr = _.entries(result);

@@ -116,12 +116,17 @@ const Claims = () => {
       }
     });
 
-    filteredResults = filteredResults.filter((item) => {
-      if (
-        !!checkCategoryList.find((category) => category === item.category.label)
-      )
-        return item;
-    });
+    filteredResults =
+      !!checkCategoryList && checkCategoryList.length > 0
+        ? filteredResults.filter((item) => {
+            if (
+              checkCategoryList.find(
+                (category) => category === item.category.label
+              )
+            )
+              return item;
+          })
+        : filteredResults;
 
     const result = _.groupBy(filteredResults, monthName);
     const resultArr = _.entries(result);
@@ -390,12 +395,11 @@ const Claims = () => {
               <label>You don’t have any report request</label>
             </div>
           )}
-          <div
-            css={styles.addReport}
-            onClick={() => router.push("/claims/addExpenseRequest")}
-          >
+        </div>
+        <div css={styles.addReport}>
+          <button onClick={() => router.push("/claims/addExpenseRequest")}>
             <PlusIcon />
-          </div>
+          </button>
         </div>
       </div>
     </Layout>
@@ -560,15 +564,19 @@ const styles = {
     color: #37474f;
   `,
   addReport: css`
-    background: var(--primary);
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    padding: 3px;
-    cursor: pointer;
-    position: absolute;
-    bottom: 60px;
-    right: 12px;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+    position: relative;
+    button {
+      background: var(--primary);
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
+      padding: 3px;
+      cursor: pointer;
+      border: none;
+    }
   `,
   noDataContainer: css`
     display: flex;

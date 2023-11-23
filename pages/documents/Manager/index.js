@@ -10,7 +10,7 @@ const Document = () => {
   return (
     <Layout>
       <div css={styles.wrapper}>
-        <HeaderNoti title={"E-Leave"} href={"/home"} />
+        <HeaderNoti title={"Documents"} href={"/home"} />
         <div css={styles.bodyContainer}>
           <div
             className="header-text"
@@ -34,12 +34,17 @@ const Document = () => {
           >
             Document for Manager
           </div>
-          <div className="header-text" onClick={() => {
-             router.push({
-              pathname: "/documents/Manager/confirmation",
-              query: { visibleFor: "manager" },
-            })
-          }}>Acceptance Confirmation</div>
+          <div
+            className="header-text"
+            onClick={() => {
+              router.push({
+                pathname: "/documents/Manager/confirmation",
+                query: { visibleFor: "manager" },
+              });
+            }}
+          >
+            Acceptance Confirmation
+          </div>
         </div>
       </div>
     </Layout>
