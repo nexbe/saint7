@@ -114,31 +114,6 @@ const ApplyLeave = () => {
     return { value: eachLeaveType?.id, label: eachLeaveType?.name };
   });
 
-  const calculateNumOfMaxDays = (startDate, endDate) => {
-    const totalDays = dayjs(endDate).date() - dayjs(startDate).date() + 1;
-    let numOfDays = 0;
-    if (totalDays >= 7) {
-      numOfDays = parseInt(totalDays / 7) * 5 + (totalDays % 7);
-      if (new Date(endDate).getDay() == 6) numOfDays = numOfDays - 1;
-      if (new Date(endDate).getDay() == 0) numOfDays = numOfDays - 2;
-      if (
-        new Date(startDate).getDay() > new Date(endDate).getDay() &&
-        new Date(endDate).getDay() != 0 &&
-        startDate.getDay() - endDate.getDay() > 1
-      ) {
-        numOfDays = numOfDays - 2;
-      }
-    } else {
-      numOfDays =
-        new Date(startDate).getDay() > new Date(endDate).getDay()
-          ? 6 - new Date(startDate).getDay() + new Date(endDate).getDay()
-          : new Date(endDate).getDay() == 6
-          ? dayjs(endDate).date() - dayjs(startDate).date()
-          : dayjs(endDate).date() - dayjs(startDate).date() + 1;
-    }
-    return numOfDays;
-  };
-
   const calculateNumOfDays = useCallback(async () => {
     if (
       (endDate == null || new Date(endDate) < new Date(startDate)) &&
@@ -146,46 +121,18 @@ const ApplyLeave = () => {
     ) {
       setEndDate(startDate);
     }
-
     let totalDays = 0;
-    let numOfDays = 0;
     if (dayjs(endDate).isSame(dayjs(startDate), "month")) {
-      numOfDays = calculateNumOfMaxDays(startDate, endDate);
+      totalDays = dayjs(endDate).date() - dayjs(startDate).date() + 1;
     } else if (dayjs(endDate).isAfter(dayjs(startDate), "month")) {
       totalDays =
         dayjs(startDate).daysInMonth() -
         dayjs(startDate).date() +
         dayjs(endDate).date() +
         1;
-
-      if (totalDays > 7) {
-        numOfDays = parseInt(totalDays / 7) * 5 + (totalDays % 7);
-        if (new Date(endDate).getDay() == 6) numOfDays = numOfDays - 1;
-        else if (new Date(endDate).getDay() == 0 && totalDays % 7 != 0)
-          numOfDays = numOfDays - 2;
-        else if (
-          new Date(startDate).getDay() > new Date(endDate).getDay() &&
-          new Date(endDate).getDay() != 0 &&
-          startDate.getDay() - endDate.getDay() > 1
-        ) {
-          numOfDays = numOfDays - 2;
-        }
-      } else {
-        numOfDays =
-          new Date(startDate).getDay() > new Date(endDate).getDay()
-            ? 6 - new Date(startDate).getDay() + new Date(endDate).getDay()
-            : new Date(endDate).getDay() == 6
-            ? dayjs(startDate).daysInMonth() -
-              dayjs(startDate).date() +
-              dayjs(endDate).date()
-            : dayjs(startDate).daysInMonth() -
-              dayjs(startDate).date() +
-              dayjs(endDate).date() +
-              1;
-      }
     }
 
-    setNumOfDay(numOfDays);
+    setNumOfDay(totalDays);
   }, [startDate, endDate]);
 
   const requestTosOption = async () => {
@@ -291,7 +238,10 @@ const ApplyLeave = () => {
           <button
             css={styles.editBtn}
             className="primary-text"
-            onClick={() => addNewLeaveType(props?.focusedOption)}
+            onClick={() => {
+              setSaveAction(false);
+              addNewLeaveType(props?.focusedOption);
+            }}
           >
             <div className="icon">
               <FaPlus size={20} />

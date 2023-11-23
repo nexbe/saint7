@@ -58,14 +58,12 @@ const LeaveCalendar = () => {
     if (!!startDate) {
       const filteredResults = leaveInfo?.filter(
         (item) =>
-          (new Date(item.from).getFullYear() ==
-            new Date(startDate).getFullYear() &&
-            new Date(item.from).getMonth() === new Date(startDate).getMonth() &&
-            new Date(item.from).getDate() === new Date(startDate).getDate()) ||
-          (new Date(item.to).getFullYear() ==
-            new Date(startDate).getFullYear() &&
-            new Date(item.to).getMonth() === new Date(startDate).getMonth() &&
-            new Date(item.to).getDate() === new Date(startDate).getDate())
+          dayjs(startDate).isBetween(
+            dayjs(item.from),
+            dayjs(item.to),
+            "day",
+            "[]"
+          ) == true
       );
       setLeaveList(filteredResults);
     }
@@ -185,14 +183,16 @@ const LeaveCalendar = () => {
                       >
                         <label>
                           <div className="d-flex">
-                            <img
-                              src={
-                                eachLeave?.users_permissions_user?.profile
-                                  ?.photo?.url
-                                  ? `${process.env.NEXT_PUBLIC_APP_URL}${eachLeave?.users_permissions_user?.profile?.photo.url}`
-                                  : "../../images/defaultImage.jpg"
-                              }
-                            />
+                            <div className="profile-img">
+                              <img
+                                src={
+                                  eachLeave?.users_permissions_user?.profile
+                                    ?.photo?.url
+                                    ? `${process.env.NEXT_PUBLIC_APP_URL}${eachLeave?.users_permissions_user?.profile?.photo.url}`
+                                    : "../../images/defaultImage.jpg"
+                                }
+                              />
+                            </div>
                             <label
                               style={{
                                 marginLeft: "10px",
@@ -526,6 +526,10 @@ const styles = {
       justify-content: flex-start;
       align-items: center;
       margin-left: 5px;
+    }
+    .profile-img {
+      width: 50px;
+      height: 50px;
     }
     img {
       width: 40px;

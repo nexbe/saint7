@@ -259,14 +259,16 @@ const LeaveHistory = () => {
                       >
                         <label>
                           <div className="d-flex">
-                            <img
-                              src={
-                                eachLeave?.users_permissions_user?.profile
-                                  ?.photo?.url
-                                  ? `${process.env.NEXT_PUBLIC_APP_URL}${eachLeave?.users_permissions_user?.profile?.photo.url}`
-                                  : "../../images/defaultImage.jpg"
-                              }
-                            />
+                            <div className="profile-img">
+                              <img
+                                src={
+                                  eachLeave?.users_permissions_user?.profile
+                                    ?.photo?.url
+                                    ? `${process.env.NEXT_PUBLIC_APP_URL}${eachLeave?.users_permissions_user?.profile?.photo.url}`
+                                    : "../../images/defaultImage.jpg"
+                                }
+                              />
+                            </div>
                             <label
                               style={{
                                 marginLeft: "10px",
@@ -639,6 +641,10 @@ const styles = {
       justify-content: flex-start;
       align-items: center;
       margin-left: 5px;
+    }
+    .profile-img {
+      width: 50px;
+      height: 50px;
     }
     img {
       width: 40px;
