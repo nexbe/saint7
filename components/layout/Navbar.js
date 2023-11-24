@@ -68,10 +68,14 @@ const Navbar = () => {
     },
     {
       id: 4,
-      href: "/more",
+      href: "/settings",
       label: "Settings",
       icon:
-        router.pathname == "/more" ? <SettingActiveIcon /> : <SettingIcon />,
+        router.pathname == "/settings" ? (
+          <SettingActiveIcon />
+        ) : (
+          <SettingIcon />
+        ),
     },
   ];
   return (
