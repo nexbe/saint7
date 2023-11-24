@@ -10,6 +10,7 @@ import attendenceStore from "../../store/attendance";
 import { setCookie, parseCookies } from "nookies";
 import { css } from "@emotion/react";
 import GlobalNotiBox from "../../components/notification/GlobalNotiBox";
+import { uploadFile } from "../../components/upload/upload";
 
 const FaceScanner = (props) => {
   const [resultUser, setResultUser] = useState(null);
@@ -86,6 +87,7 @@ const FaceScanner = (props) => {
           status: "Progress",
           publishedAt: new Date().toISOString(),
           assignee_shift: AssignUsers[0]?.id,
+          image:resultUser
         },
       });
       router.push({
@@ -108,6 +110,27 @@ const FaceScanner = (props) => {
     }
   };
 
+  const getPhotoId = async (capturedImage) => {
+    console.log(capturedImage)
+    const base64Image = capturedImage.split(',')[1] || capturedImage;
+
+    // Ensure proper encoding before decoding with atob
+    const binaryImage = atob(base64Image);
+
+    const byteArray = new Uint8Array(binaryImage.length);
+    for (let i = 0; i < binaryImage.length; i++) {
+      byteArray[i] = binaryImage.charCodeAt(i);
+    }
+    const blob = new Blob([byteArray], { type: 'image/png' });
+    const formData = new FormData();
+    formData.append("files", blob, 'image.png');
+    formData.append("ref", "scan-information");
+    const response = await uploadFile(formData);
+    let json = await response.json();
+    let imageId = json[0].id;
+    setResultUser(imageId);
+  }
+  console.log("=>>",resultUser)
   const captureImage = () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
@@ -116,11 +139,9 @@ const FaceScanner = (props) => {
       canvas.height = video.videoHeight;
       canvas.getContext("2d").drawImage(video, 0, 0);
       const capturedImage = canvas.toDataURL("image/png");
-      setResultUser(capturedImage);
-      console.log(capturedImage);
+      getPhotoId(capturedImage)
     }
   };
-
   return (
     <>
       <HeaderNoti title={"Check In"} href={"/attendance"} />
