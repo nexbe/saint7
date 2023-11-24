@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const GET_PAYSLIP = gql`
   query{
-    payslips(pagination:{limit:200}) {
+    payslips(sort: "payDate:desc",pagination:{limit:200}) {
       data {
         id
         attributes {
