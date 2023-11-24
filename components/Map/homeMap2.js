@@ -8,6 +8,7 @@ import moment from "moment";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
 import BuildingIcon from "../../public/icons/buildingIcon";
 import { parseCookies } from "nookies";
+import SiteModal from "./siteModal";
 const HomeMap2 = ({ siteData }) => {
   const cookies = parseCookies();
 
@@ -20,12 +21,17 @@ const HomeMap2 = ({ siteData }) => {
   });
 
   const [siteInfo, setSiteInfo] = useState([]);
+  const [viewModal, setViewModal] = useState(false);
 
   useEffect(() => {
     if (siteData.length) {
       setSiteInfo(siteData);
     }
   }, [siteData]);
+
+  const handleClick = () => {
+    setViewModal(true);
+  };
 
   return (
     <MapContainer
@@ -117,6 +123,7 @@ const HomeMap2 = ({ siteData }) => {
                     flexDirection: "row",
                     margin: "10px 0",
                   }}
+                  onClick={() => handleClick()}
                 >
                   {filteredData &&
                     filteredData?.length > 5 &&
@@ -183,6 +190,13 @@ const HomeMap2 = ({ siteData }) => {
                     </div>
                   )}
                 </div>
+
+                <SiteModal
+                  isOpen={viewModal}
+                  setModal={setViewModal}
+                  filteredData={filteredData}
+                  siteData={site}
+                />
               </div>
             </Popup>
           </Marker>
