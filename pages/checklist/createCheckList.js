@@ -754,7 +754,7 @@ const styles = {
   dateContent: css`
     display: flex;
     justify-content: space-between;
-    gap: 3px;
+    gap: 20px;
 
     @media (max-width: 345px) {
       flex-direction: column;
@@ -769,7 +769,7 @@ const styles = {
       padding: 20px 10px;
       gap: 7px;
       height: 50px;
-      width: 167px;
+      width: 170px;
     }
     .react-datepicker__input-container {
       width: 80%;
