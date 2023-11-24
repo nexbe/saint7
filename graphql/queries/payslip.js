@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_PAYSLIP = gql`
-  query {
-    payslips {
+  query{
+    payslips(pagination:{limit:200}) {
       data {
         id
         attributes {
