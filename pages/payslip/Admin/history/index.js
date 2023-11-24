@@ -32,7 +32,7 @@ const History = () => {
                   <Card data={data} />
                 </div>
               ))
-            : null}
+            : <b>No Data Found</b>}
         </div>
       </div>
     </Layout>
@@ -57,6 +57,9 @@ const styles = {
     .bodyContainer::-webkit-scrollbar-thumb {
       border-radius: 2px;
       background-color: var(--font-gray);
+    }
+    b{
+      text-align:center;
     }
   `,
 };
