@@ -39,6 +39,11 @@ const Announcement = () => {
   }, [setAddModal, addModal, router, setDeleteModal, setEditModal]);
 
   useEffect(() => {
+    setIsEdit(false);
+    setIsDelete(false)
+  },[editModal,deleteModal])
+
+  useEffect(() => {
     setData(announcements);
   }, [announcements, router]);
 
