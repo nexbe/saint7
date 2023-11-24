@@ -90,7 +90,7 @@ const AssignUser = () => {
         return assingnedUserLists.push(`${user.value}`)
       })
     }
-     if(assingnedUserLists){
+     if(assingnedUserLists && dates){
       createAssignedUser({
         "data": {
           "dates":dates,
@@ -127,6 +127,7 @@ const AssignUser = () => {
               onChange={setDutyDates}
               className="custom-calendar"
               format="DD/MM/YYYY"
+              required
             />
           </div>
           <div style={{marginTop:"15px"}}>
@@ -147,7 +148,7 @@ const AssignUser = () => {
               isClearable={false}
             />
           </div>
-          <div style={{marginTop:"15px"}}>
+          <div css={styles.selectUserStyle}>
             <label>Shift Name</label>
             <Select
               id="shift_name"
@@ -185,12 +186,13 @@ const AssignUser = () => {
         </form>
       </div>
       <div css={styles.btns}>
-        <div onClick={() => router.push("/attendance/Manager")}>Cancel</div>
-        <div
+        <button onClick={() => router.push("/attendance/Manager")}>Cancel</button>
+        <button
+          disabled={dutyDates?.length === 0 }
           style={{ background: "#293991", color: "#fff" }}
           onClick={() => setModal(true)}>
           Assign
-        </div>
+        </button>
       </div>
       <SuccessModal isOpen={modal} setModal={setModal} handleSubmit={handleSubmit} count={assignedUsersCount}/>
     </Layout>
@@ -235,15 +237,11 @@ const selectBoxStyle = {
   }),
   control: (base) => ({
     ...base,
+    border: "none",
     outline: "none",
     background: "none",
-    fontSize: "16px",
+    fontSize: "14px",
     height: "10px",
-    paddingLeft: "0px",
-    borderTop: "0px",
-    borderLeft: "0px",
-    borderRight: "0px",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.10);",
     color: "var(--primary-font)",
     fontWeight: "400",
     display: "flex",
@@ -252,13 +250,17 @@ const selectBoxStyle = {
 
 const styles = {
   container: css`
-    border-radius: 8px;
-    background: #fff;
     padding: 20px;
-    height: 70vh;
-    max-height:60vh;
-    margin: 9px;
-    overflow-y:auto;
+    background: #fff;
+    border-radius: 8px;
+    min-height: 60vh;
+    max-height: 62vh;
+    overflow: auto;
+    label {
+      color: #37474f;
+      font-size: 16px;
+      font-weight: 600;
+    }
   `,
   formStyle: css`
     div {
@@ -271,7 +273,7 @@ const styles = {
         border-top: none;
         border-left: none;
         border-right: none;
-        border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       }
     }
   `,
@@ -308,38 +310,40 @@ const styles = {
     flex-direction: row;
     justify-content: space-around;
     padding: 20px;
-    div {
+    button {
       border-radius: 10px;
       border: 1px solid #a0aec0;
       padding: 8px 30px;
     }
   `,
-  selectUserStyle:css`
-   margin-top:10px;
-  .css-3w2yfm-ValueContainer, .css-13cymwt-control, .css-1p3m7a8-multiValue{
-    display:flex;
-    flex-direction:row !important;
-    justify-content:start !important;
-  }
-  .css-13cymwt-control{
-    border-left:none;
-    border-right:none;
-    border-top:none;
-    flex-wrap:nowrap !important;
-    outline: none !important;
-    border-bottom:1px solid rgba(0, 0, 0, 0.1);
-  }
-  .css-t3ipsp-control{
-    flex-wrap:nowrap !important;
-    flex-direction: row;
-  }
-  .css-1p3m7a8-multiValue{
-    border-radius: 9px;
-    background-color: rgba(0, 171, 209, 0.10);
-  }
-  .css-1fdsijx-ValueContainer{
-    align-items:start;
-    justify-content:start !important;
-  }
-  `
+  selectUserStyle: css`
+    margin-top: 20px;
+    .css-3w2yfm-ValueContainer,
+    .css-13cymwt-control,
+    .css-1p3m7a8-multiValue {
+      display: flex;
+      flex-direction: row !important;
+      justify-content: start !important;
+    }
+    .css-13cymwt-control {
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      flex-wrap: nowrap !important;
+      outline: none !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .css-t3ipsp-control {
+      flex-wrap: nowrap !important;
+      flex-direction: row;
+    }
+    .css-1p3m7a8-multiValue {
+      border-radius: 9px;
+      background-color: rgba(0, 171, 209, 0.1);
+    }
+    .css-1fdsijx-ValueContainer {
+      align-items: start;
+      justify-content: start !important;
+    }
+  `,
 };

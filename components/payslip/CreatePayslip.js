@@ -86,7 +86,7 @@ const CreatePayslip = () => {
       user.jwt
     );
     router.push({
-      pathname: `/payslip/Admin`,
+      pathname: `/HRM`,
       query: {
         message: !createPayslipError ? "Success!" : "Apologies!",
         belongTo: !createPayslipError ? "Payslip" : "error",

@@ -135,9 +135,7 @@ const useAuth = create((set, get) => ({
         // console.log(response.data.forgotPassword.data?.message)
         router.push("/auth/verification");
       }
-    } catch (err) {
-      throw new Error("Sending OTP failed");
-    }
+    } catch (err) {}
   },
   verifyOTP: async (data) => {
     try {

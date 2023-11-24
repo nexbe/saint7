@@ -8,8 +8,8 @@ const ConfirmPasswordModal = ({ modal, setModal, password }) => {
   const router = useRouter();
 
   const onSubmitHandler = () => {
-    setModal(false);
     router.push("/");
+    setModal(false);
   };
   return (
     <Modal isOpen={modal} toggle={() => setModal(!modal)} css={styles.wrapper}>

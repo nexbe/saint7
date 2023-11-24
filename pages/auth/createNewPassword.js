@@ -43,7 +43,7 @@ const CreateNewPassword = () => {
           You will use this password to access your account. Enter a combination
           of at least six numbers, letters and punctuation marks.
         </p>
-        <form onSubmit={onSubmitHandler}>
+        <form>
           <div css={styles.loginFormStyle}>
             <div css={styles.passwordInputWrapper}>
               <input
@@ -55,7 +55,6 @@ const CreateNewPassword = () => {
                 aria-label="password"
                 required
               />
-
               <div
                 css={styles.eyeIcon}
                 onClick={() => setShowPassword(!showPassword)}>
@@ -69,10 +68,9 @@ const CreateNewPassword = () => {
               </span>
             )}
           </div>
-
-          <button id="reset" type="submit" css={styles.loginBtn}>
+          <div id="reset" type="submit" css={styles.loginBtn} onClick={onSubmitHandler}>
             Continue
-          </button>
+          </div>
           <div
             css={styles.backBtn}
             onClick={() => router.push("/auth/resetPassword")}>
@@ -126,6 +124,7 @@ const styles = {
     margin-bottom: 20px;
     border-radius: 15px;
     font-weight: 700;
+    text-align:center;
     border: 1px solid transparent;
     font-size: 18px;
     cursor: pointer;
