@@ -8,6 +8,7 @@ import moment from "moment";
 import { useState } from "react";
 import MapPineLineIcon from "/public/icons/mapPineLineIcon";
 import BuildingIcon from "../../public/icons/buildingIcon";
+import SiteModal2 from "./siteModal2";
 
 const HomeMap = ({ lat, lng, AssignUsers }) => {
   const { locationData: locationData, addressData } = attendenceStore(
@@ -15,9 +16,7 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
   );
 
   const [assignUserData, setAssignUsers] = useState([]);
-
-  console.log("lat", locationData);
-  console.log("lng", lng);
+  const [viewModal, setViewModal] = useState(false);
 
   useEffect(() => {
     // if (user?.role?.name == "guard") {
@@ -38,6 +37,10 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
     iconSize: [50, 50], // Size of the icon
   });
 
+  const handleClick = () => {
+    setViewModal(true);
+  };
+
   return (
     <MapContainer
       className={styles.map2}
@@ -50,138 +53,149 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
         maxZoom={30}
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
-      <Marker
-        position={[
-          lat ? lat : locationData?.lat,
-          lng ? lng : locationData?.lng,
-        ]}
-        icon={customIcon}
-      >
-        <Popup>
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <MapPineLineIcon />
-              <p
+      {AssignUsers[0]?.attributes?.site?.data?.attributes?.location?.Lat ? (
+        <Marker
+          position={[
+            lat ? lat : locationData?.lat,
+            lng ? lng : locationData?.lng,
+          ]}
+          icon={customIcon}
+        >
+          <Popup>
+            <div>
+              <div
                 style={{
-                  margin: 0,
-                  marginLeft: 5,
-                  color: "#2F4858",
-                  fontSize: 14,
-                  fontFamily: "Inter",
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                {AssignUsers[0]?.attributes?.site?.data?.attributes?.name}
-              </p>
-            </div>
-            <hr
-              style={{
-                borderTop: " 2px solid var(--light-gray2)",
-                margin: "10px 0px",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <BuildingIcon />
-              <p
+                <MapPineLineIcon />
+                <p
+                  style={{
+                    margin: 0,
+                    marginLeft: 5,
+                    color: "#2F4858",
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                  }}
+                >
+                  {AssignUsers[0]?.attributes?.site?.data?.attributes?.name}
+                </p>
+              </div>
+              <hr
                 style={{
-                  margin: 0,
-                  marginLeft: 10,
-                  color: "#2F4858",
-                  fontSize: 14,
-                  fontFamily: "Inter",
+                  borderTop: " 2px solid var(--light-gray2)",
+                  margin: "10px 0px",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                {AssignUsers[0]?.attributes?.site?.data?.attributes?.address}
-              </p>
+                <BuildingIcon />
+                <p
+                  style={{
+                    margin: 0,
+                    marginLeft: 10,
+                    color: "#2F4858",
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                  }}
+                >
+                  {AssignUsers[0]?.attributes?.site?.data?.attributes?.address}
+                </p>
+              </div>
+              <hr
+                style={{
+                  borderTop: " 2px solid var(--light-gray2)",
+                  margin: "10px 0px",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  margin: "10px 0",
+                }}
+                onClick={() => handleClick()}
+              >
+                {assignUserData &&
+                  assignUserData?.length > 5 &&
+                  assignUserData?.slice(0, 5)?.map((attendance, index) => {
+                    return (
+                      <div key={index}>
+                        <img
+                          id={attendance?.id}
+                          src={
+                            attendance?.attributes?.users_permissions_user?.data
+                              ?.attributes?.facialScanImage?.data?.attributes
+                              ?.url
+                              ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                              : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
+                          }
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            borderRadius: "50%",
+                            marginLeft: "-10px",
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                {assignUserData &&
+                  assignUserData?.length < 5 &&
+                  assignUserData?.map((attendance, index) => {
+                    return (
+                      <div key={index}>
+                        <img
+                          id={attendance?.id}
+                          src={
+                            attendance?.attributes?.users_permissions_user?.data
+                              ?.attributes?.facialScanImage?.data?.attributes
+                              ?.url
+                              ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                              : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
+                          }
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            borderRadius: "50%",
+                            marginLeft: "-10px",
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                {assignUserData && assignUserData?.length > 5 && (
+                  <div className={styles.circles}>
+                    <span
+                      style={{
+                        color: "#fff",
+                        display: "flex",
+                        padding: "5px",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: "22px",
+                      }}
+                    >
+                      +{assignUserData?.length - 5}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <SiteModal2
+                isOpen={viewModal}
+                setModal={setViewModal}
+                filteredData={AssignUsers}
+                assignUserData={assignUserData}
+              />
             </div>
-            <hr
-              style={{
-                borderTop: " 2px solid var(--light-gray2)",
-                margin: "10px 0px",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                margin: "10px 0",
-              }}
-            >
-              {assignUserData &&
-                assignUserData?.length > 5 &&
-                assignUserData?.slice(0, 5)?.map((attendance, index) => {
-                  return (
-                    <div key={index}>
-                      <img
-                        id={attendance?.id}
-                        src={
-                          attendance?.attributes?.users_permissions_user?.data
-                            ?.attributes?.facialScanImage?.data?.attributes?.url
-                            ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
-                            : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
-                        }
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          borderRadius: "50%",
-                          marginLeft: "-10px",
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              {assignUserData &&
-                assignUserData?.length < 5 &&
-                assignUserData?.map((attendance, index) => {
-                  return (
-                    <div key={index}>
-                      <img
-                        id={attendance?.id}
-                        src={
-                          attendance?.attributes?.users_permissions_user?.data
-                            ?.attributes?.facialScanImage?.data?.attributes?.url
-                            ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
-                            : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
-                        }
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          borderRadius: "50%",
-                          marginLeft: "-10px",
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              {assignUserData && assignUserData?.length > 5 && (
-                <div className={styles.circles}>
-                  <span
-                    style={{
-                      color: "#fff",
-                      display: "flex",
-                      padding: "5px",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      fontSize: "22px",
-                    }}
-                  >
-                    +{assignUserData?.length - 5}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </Popup>
-      </Marker>
+          </Popup>
+        </Marker>
+      ) : null}
     </MapContainer>
   );
 };
