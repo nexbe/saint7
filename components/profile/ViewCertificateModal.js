@@ -24,9 +24,7 @@ const ViewCertificateModal = ({
 
           <div className="formFlex">
             <div className="d-flex">
-              <label className="secondary-text">
-                Name <span>*</span>
-              </label>
+              <label className="secondary-text">Name</label>
             </div>
             <label className="secondary-text">
               {selectedCertificate?.name}
@@ -34,9 +32,7 @@ const ViewCertificateModal = ({
           </div>
           <div className="formFlex">
             <div className="d-flex">
-              <label className="secondary-text">
-                Expired Date <span>*</span>
-              </label>
+              <label className="secondary-text">Expired Date</label>
             </div>
             <label className="secondary-text">
               {dayjs(selectedCertificate?.expiryDate).format("DD/MM/YYYY")}
@@ -44,9 +40,7 @@ const ViewCertificateModal = ({
           </div>
           <div className="formFlex" style={{ border: "none" }}>
             <div className="d-flex">
-              <label className="secondary-text">
-                Attach Documents <span>*</span>
-              </label>
+              <label className="secondary-text">Attach Documents</label>
             </div>
 
             <div className="secondary-text" css={styles.attchBox}>
