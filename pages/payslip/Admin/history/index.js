@@ -8,17 +8,28 @@ import userStore from "../../../../store/user";
 import payslipStore from "../../../../store/payslip";
 import { useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
+import { useRouter } from "next/router";
 
 const History = () => {
-  const { payUserId } = userStore((state) => state);
+  const router = useRouter();
+  const { payUserId, getPaySlipData } = userStore((state) => state);
+  const { id } = router.query;
   const apolloClient = useApolloClient();
   const { getPayslipById, PayData } = payslipStore((state) => state);
 
   useEffect(() => {
-    getPayslipById({
-      apolloClient,
-      where: { userId: payUserId },
-    });
+    if (id) {
+      getPaySlipData(id);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (payUserId) {
+      getPayslipById({
+        apolloClient,
+        where: { userId: payUserId },
+      });
+    }
   }, [payUserId]);
 
   return (
@@ -26,13 +37,15 @@ const History = () => {
       <HeaderNoti title={"Payslip"} href={"/home"} />
       <div style={{ height: 0 }}>
         <div css={styles.wrapper}>
-          {PayData.length
-            ? PayData.map((data, index) => (
-                <div key={index}>
-                  <Card data={data} />
-                </div>
-              ))
-            : <b>No Data Found</b>}
+          {PayData.length ? (
+            PayData.map((data, index) => (
+              <div key={index}>
+                <Card data={data} />
+              </div>
+            ))
+          ) : (
+            <b>No Data Found</b>
+          )}
         </div>
       </div>
     </Layout>
@@ -58,8 +71,8 @@ const styles = {
       border-radius: 2px;
       background-color: var(--font-gray);
     }
-    b{
-      text-align:center;
+    b {
+      text-align: center;
     }
   `,
 };

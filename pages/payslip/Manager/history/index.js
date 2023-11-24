@@ -8,17 +8,28 @@ import userStore from "../../../../store/user";
 import payslipStore from "../../../../store/payslip";
 import { useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
+import { useRouter } from "next/router";
 
 const History = () => {
-  const { payUserId } = userStore((state) => state);
+  const router = useRouter();
+  const { id } = router.query;
+  const { payUserId, getPaySlipData } = userStore((state) => state);
   const apolloClient = useApolloClient();
   const { getPayslipById, PayData } = payslipStore((state) => state);
 
   useEffect(() => {
-    getPayslipById({
-      apolloClient,
-      where: { userId: payUserId },
-    });
+    if (id) {
+      getPaySlipData(id);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (payUserId) {
+      getPayslipById({
+        apolloClient,
+        where: { userId: payUserId },
+      });
+    }
   }, [payUserId]);
 
   return (

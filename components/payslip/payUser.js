@@ -55,7 +55,13 @@ const PayUser = () => {
 
   const handleClick = (userData) => {
     getPaySlipData(userData?.id);
-    user.role.name === "Admin" ? router.push(`/payslip/Admin/history`) : router.push(`/payslip/Manager/history`);
+    user.role.name === "Admin" ? router.push({
+      pathname:`/payslip/Admin/history`,
+      query:  {id : userData?.id}
+    }) : router.push({
+      pathname:`/payslip/Manager/history`,
+      query:  {id : userData?.id}
+    });
     
   };
 
