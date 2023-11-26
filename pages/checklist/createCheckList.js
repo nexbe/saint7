@@ -56,8 +56,8 @@ const CreateCheckList = () => {
     dateVisited: "",
     timeVisited: "",
     visitedBy: "",
-    sop: "",
-    equipment: "",
+    sop: [],
+    equipment: [],
     suggestions: "",
     guardOnDuty: "",
     remarks: "",
@@ -278,7 +278,7 @@ const CreateCheckList = () => {
     })
     //for equip docs
     if(equipFileList){
-      for (const [index,file] of equipFileList.entries()) {
+      for (const [index,file] of equipListArr.entries()) {
         const formData = new FormData();
         formData.append("files", file[index]);
         await uploadFile(formData).then(async (response) => {
@@ -289,6 +289,7 @@ const CreateCheckList = () => {
         });
       }
     }
+    console.log(formData)
     const equipResponse = formData?.equipment?.map((data,index)=> {
       const equipLists = {
         ...data,
@@ -296,24 +297,6 @@ const CreateCheckList = () => {
       }
       return equipLists
     })
-    console.log({
-      data: {
-        actionTakenForProperUniform: formData?.actionTakenForProperUniform,
-        actionTakenForWelfare: formData?.actionTakenForWelfare,
-        createdUser: user?.id,
-        dateVisited: formData?.dateVisited,
-        equipment: [...equipResponse],
-        guardOnDuty: formData?.guardOnDuty,
-        location: formData?.location,
-        reasonForProperUniform: formData?.reasonForProperUniform,
-        remarks: formData?.remarks,
-        sop: [...sopResponse],
-        suggestions: formData?.suggestions,
-        timeVisited: formData?.timeVisited,
-        title: formData?.title,
-        visitedBy: formData?.visitedBy,
-      },
-    },)
     if (formData) {
       createCheckList(
         {
@@ -322,7 +305,7 @@ const CreateCheckList = () => {
             actionTakenForWelfare: formData?.actionTakenForWelfare,
             createdUser: user?.id,
             dateVisited: formData?.dateVisited,
-            equipment: [],
+            equipment: [...equipResponse],
             guardOnDuty: formData?.guardOnDuty,
             location: formData?.location,
             reasonForProperUniform: formData?.reasonForProperUniform,
