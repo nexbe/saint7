@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
-import { use, useState } from "react";
+import { useEffect } from "react";
 
 import CloseIcon from "../../../public/icons/closeIcon";
 
@@ -12,15 +12,16 @@ const ConfirmExpenseModal = ({
   checkData,
   handleStatusConfirm,
   handleCancel,
-  checkArr,
 }) => {
-  const checkLists = checkArr?.map((each) => {
-    return each[0];
+  const checkLists = checkData?.map((each) => {
+    return each;
   });
   let sum = 0;
   sum = checkLists?.map((eachCheck, index) => {
     return (sum += eachCheck?.amount);
   });
+
+  useEffect(() => {}, [checkData]);
 
   return (
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
@@ -39,7 +40,11 @@ const ConfirmExpenseModal = ({
         <label className="label">
           Do you want to make{" "}
           {actionStatus === "rejected" ? "rejection" : "approval"} for these
-          selected {checkData.length} claims?
+          selected{" "}
+          <label style={{ fontWeight: "600" }}>
+            {checkData.length} expenses{" "}
+          </label>
+          ?
         </label>
         <div
           className="valueBox"
@@ -97,7 +102,7 @@ export default ConfirmExpenseModal;
 
 const styles = {
   wrapper: css`
-    margin-top: 65%;
+    margin-top: 12rem;
     padding: 20px;
     border-radius: 16px;
     background: #fff;
@@ -131,11 +136,10 @@ const styles = {
     flex-direction: column;
     line-height: 25px;
     .label {
-      display: flex;
-      line-height: 23px;
+      line-height: 25px;
       align-items: center;
       justify-content: center;
-      padding: 16px 40px;
+      padding: 16px;
     }
     .valueBox {
       padding: 12px;
@@ -143,6 +147,7 @@ const styles = {
       margin-bottom: 10px;
       label {
         display: flex;
+        font-size: 12px;
       }
       span {
         margin-left: auto;
