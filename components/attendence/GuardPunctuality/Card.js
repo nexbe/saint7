@@ -27,7 +27,7 @@ const Card = ({ state, attendanceData }) => {
                   <img
                     id={attendance?.id}
                     src={
-                      attendance?.attributes?.assignee_shift?.data
+                      attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data
                         ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
                         : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
                     }
@@ -49,7 +49,7 @@ const Card = ({ state, attendanceData }) => {
                   <img
                     id={attendance?.id}
                     src={
-                      attendance?.attributes?.assignee_shift?.data
+                      attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data
                         ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
                         : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
                     }
