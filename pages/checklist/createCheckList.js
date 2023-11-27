@@ -27,7 +27,7 @@ const CreateCheckList = () => {
   const [equipFileList, setEquipFileList] = useState([]);
   const { fetchSopTypes, sopTypes } = sopStore();
   const [selectedSopType, setSelectedSopTypes] = useState([]);
-  const [typedValue, setTypedValue] = useState('');
+  const [typedValue, setTypedValue] = useState("");
   const [sopData, setSopData] = useState([
     {
       id: 1,
@@ -48,7 +48,7 @@ const CreateCheckList = () => {
   const router = useRouter();
   let equipListArr = _.values(equipFileList);
   let fileListArr = _.values(fileList);
-  const { createCheckList, errorCreateCheckList} = siteCheckListStore();
+  const { createCheckList, errorCreateCheckList } = siteCheckListStore();
   const { createSopType } = sopStore();
   const [formData, setFormData] = useState({
     title: "",
@@ -56,8 +56,8 @@ const CreateCheckList = () => {
     dateVisited: "",
     timeVisited: "",
     visitedBy: "",
-    sop: "",
-    equipment: "",
+    sop: [],
+    equipment: [],
     suggestions: "",
     guardOnDuty: "",
     remarks: "",
@@ -69,14 +69,17 @@ const CreateCheckList = () => {
 
   const createNewSopType = (e) => {
     e.preventDefault();
-    if(typedValue){
-      createSopType({
-        data:{
-          name:typedValue
-        }
-      },user?.jwt)
+    if (typedValue) {
+      createSopType(
+        {
+          data: {
+            name: typedValue,
+          },
+        },
+        user?.jwt
+      );
     }
-  } 
+  };
 
   useEffect(() => {
     fetchSopTypes(user?.jwt);
@@ -97,7 +100,7 @@ const CreateCheckList = () => {
 
   const handleSopInputChange = (inputValue) => {
     setTypedValue(inputValue);
-  }
+  };
 
   const formatTime = (date) => {
     const hours = String(date.getHours()).padStart(2, "0");
@@ -137,28 +140,43 @@ const CreateCheckList = () => {
     for (let file of selectedFiles) {
       uploadedFiles[index] = file;
     }
-    setFileList({ ...fileList, ...uploadedFiles });
+    const updatedFileLists = [...fileList];
+    updatedFileLists[index] = uploadedFiles;
+    setFileList(updatedFileLists);
+  };
+
+  const handleSOPFileListChange = (files, index) => {
+    const updatedFileLists = [...fileList];
+    updatedFileLists[index] = files;
+    setFileList(updatedFileLists);
+  };
+
+  const handleEquipFileListChange = (files, index) => {
+    const updatedFileLists = [...equipFileList];
+    updatedFileLists[index] = files;
+    setEquipFileList(updatedFileLists);
   };
 
   const onEquipChange = async (e, index) => {
-    const selectedFiles = [...e.target?.files];
+    const selectedFiles = [...e.target.files];
     const uploadedFiles = {};
-
     for (let file of selectedFiles) {
       uploadedFiles[index] = file;
     }
-    setEquipFileList({ ...equipFileList, ...uploadedFiles });
+    const updatedFileLists = [...equipFileList];
+    updatedFileLists[index] = uploadedFiles;
+    setEquipFileList(updatedFileLists);
   };
-
   // sop handler
   const handleSOPAddMoreClick = () => {
     const lastId = sopData[sopData.length - 1]?.id || 0;
     let newRow = {
       id: lastId + 1,
       Name: "",
-      Attachments: "",
+      Attachments:[],
       sop_type: null,
     };
+    setFileList((prevFileLists) => [...prevFileLists, []]);
     setSopData((prevBoxes) => [...prevBoxes, newRow]);
   };
   const handleSOPDeleteClick = (index) => {
@@ -176,6 +194,7 @@ const CreateCheckList = () => {
       Remarks: "",
       Attachments: [],
     };
+    setEquipFileList((prevFileLists) => [...prevFileLists, []]);
     setEquipmentData((prevBoxes) => [...prevBoxes, newRow]);
   };
   const handleEquipDeleteClick = (index) => {
@@ -203,19 +222,13 @@ const CreateCheckList = () => {
     });
   };
 
-  const handleSopChange = (index, event) => {
+  const handleSopChange = async (index, event) => {
     let data = [...sopData];
     data[index][event?.target?.name] = event?.target?.value || event.value;
-
-    const attachments = fileList[index] || [];
-    data[index].Attachments = attachments;
-
     const sopType = selectedSopType[index]?.value || null;
-
     const updatedSop = data.map((sop, i) => {
       if (i === index) {
         return {
-          Attachments: attachments,
           Name: sop.Name,
           id: sop.id,
           sop_type: sopType,
@@ -234,18 +247,56 @@ const CreateCheckList = () => {
     let data = [...equipmentData];
     data[index][event?.target?.name || event.label] =
       event?.target?.value || event.value;
-
-    const attachments = equipFileList[index] || [];
-    data[index].Attachments = attachments;
-
     setFormData({
       ...formData,
       equipment: [...data],
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    let sopFilesArrToSend = [];
+    let equpFileArrToSend = [];
+    if(fileList){
+      for (const [index,file] of fileListArr.entries()) {
+        const formData = new FormData();
+        formData.append("files", file[index]);
+        await uploadFile(formData).then(async (response) => {
+          const json = await response.json();
+          if (response.status === 200) {
+            sopFilesArrToSend.push(json[0].id);
+          }
+        });
+      }
+    }
+    const sopResponse = formData?.sop?.map((data,index)=> {
+      const sopLists = {
+        ...data,
+        Attachments: sopFilesArrToSend[index]
+      }
+      return sopLists
+    })
+    //for equip docs
+    if(equipFileList){
+      for (const [index,file] of equipListArr.entries()) {
+        const formData = new FormData();
+        formData.append("files", file[index]);
+        await uploadFile(formData).then(async (response) => {
+          const json = await response.json();
+          if (response.status === 200) {
+            equpFileArrToSend.push(json[0].id);
+          }
+        });
+      }
+    }
+    console.log(formData)
+    const equipResponse = formData?.equipment?.map((data,index)=> {
+      const equipLists = {
+        ...data,
+        Attachments: equpFileArrToSend[index]
+      }
+      return equipLists
+    })
     if (formData) {
       createCheckList(
         {
@@ -254,12 +305,12 @@ const CreateCheckList = () => {
             actionTakenForWelfare: formData?.actionTakenForWelfare,
             createdUser: user?.id,
             dateVisited: formData?.dateVisited,
-            equipment: [],
+            equipment: [...equipResponse],
             guardOnDuty: formData?.guardOnDuty,
             location: formData?.location,
             reasonForProperUniform: formData?.reasonForProperUniform,
             remarks: formData?.remarks,
-            sop: [...formData?.sop],
+            sop: [...sopResponse],
             suggestions: formData?.suggestions,
             timeVisited: formData?.timeVisited,
             title: formData?.title,
@@ -437,10 +488,12 @@ const CreateCheckList = () => {
                         isClearable={false}
                       />
                     </div>
-                    {fileListArr?.length > 0 ? (
+                    {fileList && fileList[index] && Object?.keys(fileList[index]).length > 0 ? (
                       <UploadedFiles
-                        fileList={fileList}
-                        setFileList={setFileList}
+                        fileList={fileList[index]}
+                        setFileList={(files) =>
+                          handleSOPFileListChange(files, index)
+                        }
                       />
                     ) : (
                       <div>
@@ -514,18 +567,16 @@ const CreateCheckList = () => {
                         />
                       </label>
                     </div>
-
-                    {equipListArr?.length > 0 ? (
+                    {equipFileList && equipFileList[index] && Object?.keys(equipFileList[index]).length > 0 ? (
                       <UploadedFiles
-                        fileList={equipFileList}
-                        setFileList={setEquipFileList}
+                        fileList={equipFileList[index]}
+                        setFileList={(files) =>
+                          handleEquipFileListChange(files, index)
+                        }
                       />
                     ) : (
                       <div>
-                        <Upload
-                          onChange={(e) => onEquipChange(e, index)}
-                          belongTo={"checklist"}
-                        />
+                        <Upload onChange={(e) => onEquipChange(e, index)} />
                       </div>
                     )}
                     {equipmentData && equipmentData.length > 1 && <hr />}
@@ -803,7 +854,7 @@ const styles = {
     background: #e3f3ff;
     cursor: pointer;
     padding: 5px;
-    margin-top:3px;
+    margin-top: 3px;
     border: none;
     font-weight: 700;
   `,

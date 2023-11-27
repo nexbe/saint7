@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const GET_SITE_CHECKLIST = gql`
   query {
-    siteChecklists{
+    siteChecklists(sort: "createdAt:desc", pagination:{limit:200}){
       data {
         id
         attributes {

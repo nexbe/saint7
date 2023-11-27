@@ -15,8 +15,6 @@ const SiteModal = ({
     setModal(!isOpen);
   };
 
-  console.log(siteData);
-
   return (
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
       <div onClick={() => close()} style={{ textAlign: "end" }}>
