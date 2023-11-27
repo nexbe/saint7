@@ -96,6 +96,19 @@ export const GET_ALL_ATTENDANCE = gql`
                     id
                     attributes {
                       username
+                      profile {
+                        data {
+                          attributes {
+                            photo {
+                              data {
+                                attributes {
+                                  url
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                       facialScanImage {
                         data {
                           attributes {

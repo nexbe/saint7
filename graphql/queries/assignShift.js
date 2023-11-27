@@ -45,6 +45,19 @@ export const GET_ASSIGN_SHIFTS = gql`
                         data {
                           attributes {
                             username
+                            profile {
+                              data {
+                                attributes {
+                                  photo {
+                                    data {
+                                      attributes {
+                                        url
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
                             facialScanImage {
                               data {
                                 attributes {

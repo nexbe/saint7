@@ -6,6 +6,7 @@ import { ApolloProvider } from "@apollo/client";
 import client from "../graphql/apolloClient";
 import attendenceStore from "../store/attendance";
 import { setCookie, parseCookies } from "nookies";
+import io from "socket.io-client";
 
 function MyApp({ Component, pageProps }) {
   const {
@@ -14,6 +15,22 @@ function MyApp({ Component, pageProps }) {
     getLocationData,
     addressData,
   } = attendenceStore((state) => state);
+
+  const cookies = parseCookies();
+
+  const userData = cookies.user ? JSON.parse(cookies.user) : null;
+
+  useEffect(() => {
+    let socket = io(process.env.NEXT_PUBLIC_APP_URL, {
+      transport: ["websocket"],
+    });
+    socket.on(`stats:notification-${userData.id}`, () => {
+      console.log("blocked socket working");
+
+      // clearToken()
+      // removeCookies('accessToken')
+    });
+  }, [userData]);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
   const geocodeLocation = async (address) => {
