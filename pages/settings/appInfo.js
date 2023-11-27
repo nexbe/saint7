@@ -68,7 +68,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 200px;
-    margin: 20px 20px 0;
+    margin: 12px;
     gap: 16px;
     ::-webkit-scrollbar {
       width: 2px;

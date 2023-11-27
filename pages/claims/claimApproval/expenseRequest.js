@@ -12,6 +12,7 @@ import moment from "moment";
 import _ from "lodash";
 import { useApolloClient, useMutation } from "@apollo/client";
 import Select, { components } from "react-select";
+import { v4 as uuid } from "uuid";
 
 import Layout from "../../../components/layout/Layout";
 import HeaderNoti from "../../../components/layout/HeaderNoti";
@@ -45,7 +46,7 @@ const ExpenseRequestStatus = () => {
   const [actionStatus, setActionStatus] = useState(null);
   const [checkAll, setCheckAll] = useState(false);
   const [checkData, setCheckData] = useState([]);
-  const [checkArr, setCheckArr] = useState([]);
+  const [refetch, setRefetch] = useState(1);
 
   const filterModal = () => {
     setModalOpen(!modalOpen);
@@ -203,16 +204,17 @@ const ExpenseRequestStatus = () => {
 
   useMemo(() => {
     if (!!claimInfo) {
-      setFilteredData(claimInfo);
-      const result = _.groupBy(claimInfo, monthName);
+      const claimInfoUpdate = claimInfo.map((eachClaim, index) => {
+        return { ...eachClaim, isCheck: false };
+      });
+      setFilteredData(claimInfoUpdate);
+      const result = _.groupBy(claimInfoUpdate, monthName);
       const resultArr = _.entries(result);
       setExpenseList(resultArr);
-      handleListChange(claimInfo);
+      handleListChange(claimInfoUpdate);
     }
     setCheckAll(false);
-    setCheckData([]);
-    setCheckArr([]);
-  }, [claimInfo, router.query]);
+  }, [claimInfo, router.query, refetch]);
 
   useMemo(() => {
     if (!!claimInfo) {
@@ -229,7 +231,6 @@ const ExpenseRequestStatus = () => {
     handleListChange(claimInfo);
     setCheckAll(false);
     setCheckData([]);
-    setCheckArr([]);
   };
 
   const DropdownIndicator = (props) => {
@@ -283,26 +284,22 @@ const ExpenseRequestStatus = () => {
   };
 
   const handleCheck = (selectedId) => {
-    setCheckData([]);
-    setCheckData((prevData) => {
-      if (prevData?.includes(selectedId)) {
-        return prevData?.filter((id) => id !== selectedId);
-      } else {
-        return [...prevData, selectedId];
-      }
+    const updateCheckList = filteredData?.map((eachData, index) => {
+      return eachData?.id === selectedId
+        ? { ...eachData, isCheck: !eachData?.isCheck }
+        : eachData;
     });
-    console.log("checkData...", checkData, selectedId);
-    const checkList = claimInfo?.filter((eachClaim) => {
-      if (eachClaim?.id === selectedId) {
-        return eachClaim;
-      }
-    });
-    setCheckArr([...checkArr, checkList]);
+    setFilteredData(updateCheckList);
+    setCheckData(
+      updateCheckList?.filter((eachCheck) => {
+        return eachCheck.isCheck === true;
+      })
+    );
   };
 
   const handleCancel = () => {
     setCheckData([]);
-    setCheckArr([]);
+    setRefetch(uuid);
   };
 
   const handleStatusConfirm = async (status) => {
@@ -310,7 +307,7 @@ const ExpenseRequestStatus = () => {
       checkData?.map(async (eachCheckData) => {
         await updateClaim({
           updateClaimAction,
-          id: eachCheckData,
+          id: eachCheckData?.id,
           claimData: {
             status: status,
             actionBy: user?.id,
@@ -323,6 +320,7 @@ const ExpenseRequestStatus = () => {
       apolloClient,
       where: { userId: user.id },
     });
+    setRefetch(uuid);
     router.push({
       pathname: "/claims/claimApproval/expenseRequest",
       query: {
@@ -493,6 +491,7 @@ const ExpenseRequestStatus = () => {
                                   type={"checkbox"}
                                   className="checkbox"
                                   style={{ marginRight: "10px" }}
+                                  checked={item?.isCheck}
                                   onClick={() => handleCheck(item?.id)}
                                 />
                               )}
@@ -612,7 +611,6 @@ const ExpenseRequestStatus = () => {
           actionStatus={actionStatus}
           checkData={checkData}
           handleStatusConfirm={handleStatusConfirm}
-          checkArr={checkArr}
           handleCancel={handleCancel}
         />
       )}
