@@ -3,27 +3,74 @@ import React, { useState } from "react";
 import { css } from "@emotion/react";
 import ActiveIcon from "../../public/icons/activeIcon";
 import ProfileIcon from "../../public/icons/profileIcon";
+import DutyNoti from "./DutyNoti";
 
-const Card = ({ isActive, state }) => {
+const Card = ({ isActive, state, notiData }) => {
+  const convertTimeToAMPM = (timeString) => {
+    const time = new Date(`2000-01-01T${timeString}Z`); // Use a specific date to parse the time
+    const options = { hour: "numeric", minute: "2-digit", hour12: true };
+    return time.toLocaleString("en-US", options);
+  };
+
+  const [dutyModalOpen, setDutyModalOpen] = useState(false);
+
+  const handleClick = (data) => {
+    setDutyModalOpen(!dutyModalOpen);
+  };
+
   return (
-    <div css={styles.wrapper(isActive)}>
+    <div css={styles.wrapper(isActive)} onClick={handleClick}>
       <div css={styles.header(isActive)}>
         {isActive && <ActiveIcon />}
         <div css={styles.info}>
           <div style={{ marginTop: "-9px", marginLeft: "9px" }}>
-            <ProfileIcon />
-            <span style={{ marginLeft: "9px" }}>Jonah Johnson</span>
+            <img
+              src={
+                notiData?.attributes?.user?.data?.attributes?.profile?.data
+                  ?.attributes?.photo?.data?.attributes?.url
+                  ? `${process.env.NEXT_PUBLIC_APP_URL}${notiData?.attributes?.user?.data?.attributes?.profile?.data?.attributes?.photo?.data?.attributes?.url}`
+                  : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
+              }
+              style={{ width: 30, height: 30, borderRadius: 50 }}
+            />
+            <span style={{ marginLeft: "9px" }}>
+              {notiData?.attributes?.user?.data?.attributes?.username}
+            </span>
           </div>
           <div css={styles.stateStyle(state)}>{state ? "IN" : "Out"}</div>
         </div>
       </div>
-      <p css={styles.paragraph}>
-        I am checked in and I am ready to take on any duties.
-      </p>
-      <div css={styles.checkInStyle}>
-        <span>Check-in time: 10:00 AM</span>
-        <span>Location: Main Entrance </span>
-      </div>
+      {state ? (
+        <p css={styles.paragraph}>
+          I am checked in and I am ready to take on any duties.
+        </p>
+      ) : (
+        <p css={styles.paragraph}>
+          I have completed my duties and am ready to check out.
+        </p>
+      )}
+      {state ? (
+        <div css={styles.checkInStyle}>
+          <span>
+            Check-in time: {convertTimeToAMPM(notiData?.attributes?.time)}
+          </span>
+          <span>Location: {notiData?.attributes?.location} </span>
+        </div>
+      ) : (
+        <div css={styles.checkInStyle}>
+          <span>
+            Check-Out time: {convertTimeToAMPM(notiData?.attributes?.time)}
+          </span>
+          <span>Location: {notiData?.attributes?.location} </span>
+        </div>
+      )}
+      {dutyModalOpen && (
+        <DutyNoti
+          isOpen={dutyModalOpen}
+          close={() => setDutyModalOpen(!dutyModalOpen)}
+          notiData={notiData}
+        />
+      )}
     </div>
   );
 };
@@ -36,7 +83,8 @@ const styles = {
     background: ${isActive ? "#eef8ff" : "#fff"};
     padding: 20px;
     color: var(--primary-font);
-    box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
+    // box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px #d9d9d9 solid;
     p {
       margin-top: 9px;
     }
@@ -55,7 +103,7 @@ const styles = {
   paragraph: css`
     font-size: 14px;
     font-weight: 400;
-    line-height:20px;
+    line-height: 20px;
   `,
   info: css`
     display: flex;

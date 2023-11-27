@@ -9,8 +9,6 @@ const SiteModal2 = ({ isOpen, setModal, assignUserData, filteredData }) => {
     setModal(!isOpen);
   };
 
-  console.log(assignUserData);
-
   return (
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
       <div onClick={() => close()} style={{ textAlign: "end" }}>
@@ -31,8 +29,9 @@ const SiteModal2 = ({ isOpen, setModal, assignUserData, filteredData }) => {
                   <img
                     src={
                       attendance?.attributes?.users_permissions_user?.data
-                        ?.attributes?.facialScanImage?.data?.attributes?.url
-                        ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                        ?.attributes?.profile?.data?.attributes?.photo?.data
+                        ?.attributes?.url
+                        ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.profile?.data?.attributes?.photo?.data?.attributes?.url}`
                         : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
                     }
                     style={{

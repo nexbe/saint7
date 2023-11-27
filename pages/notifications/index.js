@@ -7,9 +7,29 @@ import NotiSearchIcon from "../../public/icons/notiSearchIcon";
 import SearchIcon from "../../public/icons/searchIcon";
 import Card from "../../components/notifications/Card";
 import Layout from "../../components/layout/Layout";
+import { useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
+import notiStore from "../../store/notification";
+import { parseCookies } from "nookies";
 
 const Notifications = () => {
   const [searchBox, setSearchBox] = useState(false);
+  const apolloClient = useApolloClient();
+  const cookies = parseCookies();
+  const userData = cookies.user ? JSON.parse(cookies.user) : null;
+
+  const { getNotibyUser, notiUser } = notiStore((state) => state);
+
+  useEffect(() => {
+    getNotibyUser({
+      apolloClient,
+      where: {
+        userId: userData.id,
+      },
+    });
+  }, []);
+
+  console.log(notiUser);
 
   return (
     <Layout>
@@ -35,15 +55,17 @@ const Notifications = () => {
       </div>
       <div css={styles.bodyWrapper}>
         <div>
-          <h4>New</h4>
-          <Card isActive={true} state={false} />
-          <Card isActive={true} state={true} />
-        </div>
-        <div>
-          <h4>Earlier</h4>
-          <Card isActive={false} state={true} />
-          <Card isActive={false} state={true} />
-          <Card isActive={false} state={false} />
+          <h4>Notifications</h4>
+          {notiUser &&
+            notiUser?.map((noti, index) => (
+              <div key={index}>
+                <Card
+                  isActive={false}
+                  notiData={noti}
+                  state={noti?.attributes?.status == "In" ? true : false}
+                />
+              </div>
+            ))}
         </div>
       </div>
     </Layout>
@@ -57,7 +79,7 @@ const styles = {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    gap: 20%;
+    gap: 5%;
     font-size: 20px;
     font-weight: 700;
     padding: 20px;
