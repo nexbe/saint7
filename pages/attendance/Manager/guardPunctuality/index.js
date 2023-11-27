@@ -80,10 +80,10 @@ const GuardPunctuality = () => {
                 ? "Today"
                 : moment(attendances?.date).format("Do MMMM YYYY")}
             </h4>
-            {attendances?.CompleteData?.length && (
+            { attendances?.CompleteData && attendances?.CompleteData?.length > 0 && (
               <Card state={false} attendanceData={attendances?.CompleteData} />
             )}
-            {attendances?.NotCompleteData?.length && (
+            {attendances?.NotCompleteData && attendances?.NotCompleteData?.length > 0 && (
               <Card
                 state={true}
                 attendanceData={attendances?.NotCompleteData}
