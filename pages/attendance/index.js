@@ -45,7 +45,7 @@ const Index = () => {
   }, []);
 
   return (
-    <Layout className="container ">
+    <Layout className="container">
       <HeaderNoti title={"Attendance"} href={"/home"} />
       <div style={{ position: "relative", margin: "2px 10px" }}>
         <GlobalNotiBox
@@ -61,7 +61,7 @@ const Index = () => {
           css={activeComponent === "check" ? styles.activeTab : styles.tabpane}
           onClick={() => setActiveComponent("check")}
         >
-          <p>Check In/Out</p>
+          Check In/Out
         </div>
         <div
           css={
@@ -69,19 +69,11 @@ const Index = () => {
           }
           onClick={() => setActiveComponent("history")}
         >
-          <p>Attendance History</p>
+          Attendance History
         </div>
       </div>
       <div css={styles.container}>
-        {activeComponent === "check" ? (
-          attendanceId ? (
-            <Profile />
-          ) : (
-            <CheckInOut />
-          )
-        ) : (
-          <History />
-        )}
+        {activeComponent === "check" ? <CheckInOut /> : <History />}
       </div>
     </Layout>
   );
