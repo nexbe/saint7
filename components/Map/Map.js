@@ -17,15 +17,24 @@ const Map = ({ lat, lng }) => {
     iconSize: [50, 50], // Size of the icon
   });
 
+  console.log(locationData);
+
   return (
-    <MapContainer className={styles.map} center={[lat, lng]} zoom={15}>
+    <MapContainer
+      className={styles.map}
+      center={[lat ?? locationData?.lat, lng ?? locationData?.lng]}
+      zoom={15}
+    >
       <TileLayer
         attribution="Google Maps"
         url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" // regular
         maxZoom={30}
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
-      <Marker position={[lat, lng]} icon={customIcon}>
+      <Marker
+        position={[lat ?? locationData?.lat, lng ?? locationData?.lng]}
+        icon={customIcon}
+      >
         <Popup>{addressData}</Popup>
       </Marker>
     </MapContainer>

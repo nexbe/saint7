@@ -20,6 +20,7 @@ const CheckInOut = () => {
   const [dateTime, setDateTime] = useState({});
   const [locationInfo, setLocationInfo] = useState();
 
+  const { getAssignUsers, AssignUsers } = userStore((state) => state);
   const latitude = cookies.latitude ? JSON.parse(cookies.latitude) : null;
   const longitude = cookies.longitude ? JSON.parse(cookies.longitude) : null;
   useEffect(() => {
@@ -35,9 +36,7 @@ const CheckInOut = () => {
       lat: latitude,
       lng: longitude,
     });
-  }, []);
-
-  const { getAssignUsers, AssignUsers } = userStore((state) => state);
+  }, [AssignUsers]);
 
   const formattedTime = (time) => {
     const timeObject = new Date(`${moment().format("YYYY-MM-DD")}T${time}`);
@@ -74,7 +73,7 @@ const CheckInOut = () => {
         title={"Current Location"}
         body={
           <div css={styles.mapContainer}>
-            <Map lat={locationInfo?.lat} lng={locationInfo?.lng} />
+            <Map lat={latitude} lng={longitude} />
           </div>
         }
         icon={<LocationIcon />}
