@@ -18,7 +18,7 @@ const Map = () => {
     <MapContainer
       className={styles.map}
       center={[locationData?.lat, locationData?.lng]}
-      zoom={17}
+      zoom={10}
     >
       <TileLayer
         attribution="Google Maps"
@@ -27,7 +27,12 @@ const Map = () => {
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
       <Marker
-        position={[locationData?.lat, locationData?.lng]}
+        position={[
+          locationData?.lat ?? "16.871311",
+
+          locationData?.lng ?? "96.199379",
+          ,
+        ]}
         icon={customIcon}
       >
         <Popup>{addressData}</Popup>

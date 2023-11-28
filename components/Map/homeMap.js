@@ -44,7 +44,7 @@ const HomeMap = ({ lat, lng, AssignUsers }) => {
   return (
     <MapContainer
       className={styles.map2}
-      center={[lat ? lat : locationData?.lat, lng ? lng : locationData?.lng]}
+      center={["16.871311", "96.199379"]}
       zoom={17}
     >
       <TileLayer
