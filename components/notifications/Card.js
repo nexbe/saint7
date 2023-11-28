@@ -4,6 +4,11 @@ import { css } from "@emotion/react";
 import ActiveIcon from "../../public/icons/activeIcon";
 import ProfileIcon from "../../public/icons/profileIcon";
 import DutyNoti from "./DutyNoti";
+import { UPDATE_NOTI } from "../../graphql/mutations/notification";
+import notiStore from "../../store/notification";
+import _ from "lodash";
+import { useMutation } from "@apollo/client";
+import { parseCookies } from "nookies";
 
 const Card = ({ isActive, state, notiData }) => {
   const convertTimeToAMPM = (timeString) => {
@@ -11,10 +16,34 @@ const Card = ({ isActive, state, notiData }) => {
     const options = { hour: "numeric", minute: "2-digit", hour12: true };
     return time.toLocaleString("en-US", options);
   };
+  const cookies = parseCookies();
+  const userData = cookies.user ? JSON.parse(cookies.user) : null;
+
+  const [updateNotiAction] = useMutation(UPDATE_NOTI);
+  const { updateNoti, getNotiFetchData } = notiStore((state) => state);
 
   const [dutyModalOpen, setDutyModalOpen] = useState(false);
 
-  const handleClick = (data) => {
+  const readUsers = _.map(notiData?.attributes?.read_user?.data, "id");
+
+  const handleClick = () => {
+    if (isActive) {
+      updateNoti({
+        updateNotiAction,
+        id: notiData?.id,
+        notiData: {
+          read_user: [...readUsers, userData?.id],
+        },
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    getNotiFetchData(true);
+    setDutyModalOpen(!dutyModalOpen);
+  };
+
+  const handleClose = () => {
+    getNotiFetchData(false);
     setDutyModalOpen(!dutyModalOpen);
   };
 
@@ -67,7 +96,7 @@ const Card = ({ isActive, state, notiData }) => {
       {dutyModalOpen && (
         <DutyNoti
           isOpen={dutyModalOpen}
-          close={() => setDutyModalOpen(!dutyModalOpen)}
+          close={() => handleClose()}
           notiData={notiData}
         />
       )}

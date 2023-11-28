@@ -14,9 +14,32 @@ const notiStore = create((set, get) => ({
     }
   },
 
+  getNotiFetchData: async (data) => {
+    set({ loading: true });
+
+    try {
+      set({ notiFetchData: data });
+    } catch (error) {}
+  },
+
+  updateNoti: async ({ updateNotiAction, id, notiData }) => {
+    set({ loading: true });
+    try {
+      await updateNotiAction({
+        variables: {
+          data: notiData,
+          id: id,
+        },
+      }).then((value) => {
+        set({ loading: false });
+      });
+    } catch (error) {}
+  },
+
   fetch: false,
   loading: true,
   notiUser: [],
+  notiFetchData: false,
 }));
 
 export default notiStore;
