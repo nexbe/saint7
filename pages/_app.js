@@ -22,17 +22,17 @@ function MyApp({ Component, pageProps }) {
 
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
-  useEffect(() => {
-    let socket = io(process.env.NEXT_PUBLIC_APP_URL, {
-      transport: ["websocket"],
-    });
-    socket.on(`stats:notification-${userData.id}`, () => {
-      console.log("blocked socket working");
+  // useEffect(() => {
+  //   let socket = io(process.env.NEXT_PUBLIC_APP_URL, {
+  //     transport: ["websocket"],
+  //   });
+  //   socket.on(`stats:notification-${userData.id}`, () => {
+  //     console.log("blocked socket working");
 
-      // clearToken()
-      // removeCookies('accessToken')
-    });
-  }, [userData]);
+  //     // clearToken()
+  //     // removeCookies('accessToken')
+  //   });
+  // }, [userData]);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
   const geocodeLocation = async (address) => {
