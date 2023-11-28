@@ -61,7 +61,7 @@ const Index = () => {
           css={activeComponent === "check" ? styles.activeTab : styles.tabpane}
           onClick={() => setActiveComponent("check")}
         >
-          Check In/Out
+          <p>Check In/Out</p>
         </div>
         <div
           css={
@@ -69,7 +69,7 @@ const Index = () => {
           }
           onClick={() => setActiveComponent("history")}
         >
-          Attendance History
+          <p>Attendance History</p>
         </div>
       </div>
       <div css={styles.container}>

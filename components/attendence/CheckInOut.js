@@ -6,23 +6,34 @@ import CalendarIcon from "../../public/icons/calendarIcon";
 import LocationIcon from "../../public/icons/locationIcon";
 import ScanIcon from "../../public/icons/scanIcon";
 import { css } from "@emotion/react";
-import Map from "../../components/Map";
+import Map from "../../components/Map/index";
 import moment from "moment";
 import userStore from "../../store/user";
-import dayjs from "dayjs";
+import { parseCookies } from "nookies";
 
 const CheckInOut = () => {
   const currentDate = moment().format("Do MMMM YYYY");
   const currentDay = moment().format("dddd");
   const currentTime = moment().format("HH:mm:ss");
+  const cookies = parseCookies();
 
   const [dateTime, setDateTime] = useState({});
+  const [locationInfo, setLocationInfo] = useState();
 
+  const latitude = cookies.latitude ? JSON.parse(cookies.latitude) : null;
+  const longitude = cookies.longitude ? JSON.parse(cookies.longitude) : null;
   useEffect(() => {
     setDateTime({
       currentDate: currentDate,
       currentDay: currentDay,
       currentTime: currentTime,
+    });
+  }, []);
+
+  useEffect(() => {
+    setLocationInfo({
+      lat: latitude,
+      lng: longitude,
     });
   }, []);
 
@@ -63,7 +74,7 @@ const CheckInOut = () => {
         title={"Current Location"}
         body={
           <div css={styles.mapContainer}>
-            <Map />
+            <Map lat={locationInfo?.lat} lng={locationInfo?.lng} />
           </div>
         }
         icon={<LocationIcon />}
@@ -80,15 +91,21 @@ const CheckInOut = () => {
               <li>
                 <span>Time </span>:{" "}
                 <b>
-                  {formattedTime(
-                    AssignUsers[0]?.attributes?.shift?.data?.attributes
-                      ?.timeRange?.StartTime
-                  )}{" "}
+                  {AssignUsers[0]?.attributes?.shift?.data?.attributes
+                    ?.timeRange?.StartTime
+                    ? formattedTime(
+                        AssignUsers[0]?.attributes?.shift?.data?.attributes
+                          ?.timeRange?.StartTime
+                      )
+                    : "00:00"}{" "}
                   -{" "}
-                  {formattedTime(
-                    AssignUsers[0]?.attributes?.shift?.data?.attributes
-                      ?.timeRange?.EndTime
-                  )}
+                  {AssignUsers[0]?.attributes?.shift?.data?.attributes
+                    ?.timeRange?.EndTime
+                    ? formattedTime(
+                        AssignUsers[0]?.attributes?.shift?.data?.attributes
+                          ?.timeRange?.EndTime
+                      )
+                    : "00:00"}
                 </b>
               </li>
               <li>
