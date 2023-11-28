@@ -23,7 +23,7 @@ const Map = ({ lat, lng }) => {
     <MapContainer
       className={styles.map}
       center={[lat ?? locationData?.lat, lng ?? locationData?.lng]}
-      zoom={15}
+      zoom={17}
     >
       <TileLayer
         attribution="Google Maps"
