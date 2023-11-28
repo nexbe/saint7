@@ -18,7 +18,9 @@ const Notifications = () => {
   const cookies = parseCookies();
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
-  const { getNotibyUser, notiUser } = notiStore((state) => state);
+  const { getNotibyUser, notiUser, notiFetchData } = notiStore(
+    (state) => state
+  );
 
   useEffect(() => {
     getNotibyUser({
@@ -27,9 +29,7 @@ const Notifications = () => {
         userId: userData.id,
       },
     });
-  }, []);
-
-  console.log(notiUser);
+  }, [notiFetchData]);
 
   return (
     <Layout>
@@ -57,15 +57,22 @@ const Notifications = () => {
         <div>
           <h4>Notifications</h4>
           {notiUser &&
-            notiUser?.map((noti, index) => (
-              <div key={index}>
-                <Card
-                  isActive={false}
-                  notiData={noti}
-                  state={noti?.attributes?.status == "In" ? true : false}
-                />
-              </div>
-            ))}
+            notiUser?.map((noti, index) => {
+              const readUsers = noti?.attributes?.read_user?.data;
+              const isUserIdIncluded = readUsers.some(
+                (obj) => obj.id === userData?.id
+              );
+
+              return (
+                <div key={index}>
+                  <Card
+                    isActive={!isUserIdIncluded}
+                    notiData={noti}
+                    state={noti?.attributes?.status == "In" ? true : false}
+                  />
+                </div>
+              );
+            })}
         </div>
       </div>
     </Layout>

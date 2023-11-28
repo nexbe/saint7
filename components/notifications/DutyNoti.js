@@ -10,19 +10,12 @@ import attendenceStore from "../../store/attendance";
 import { useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
 import moment from "moment";
+import notiStore from "../../store/notification";
 
 const DutyNoti = ({ isOpen = false, close = () => {}, notiData }) => {
   const apolloClient = useApolloClient();
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-  };
+  const { updateNoti, getNotiFetchData } = notiStore((state) => state);
 
   const formatTime = (timeString) => {
     const timeParts = timeString?.split(":"); // Split the string by colon
@@ -34,13 +27,16 @@ const DutyNoti = ({ isOpen = false, close = () => {}, notiData }) => {
     return formattedTime;
   };
 
-  console.log(notiData);
+  const handleClose = () => {
+    close();
+    getNotiFetchData(false);
+  };
 
   return (
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
       <div css={styles.actions}>
         <h3>Duty In Progress...</h3>
-        <div onClick={() => close()}>
+        <div onClick={() => handleClose()}>
           <CloseIcon />
         </div>
       </div>
