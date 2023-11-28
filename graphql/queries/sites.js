@@ -46,6 +46,19 @@ export const GET_SITES = gql`
                   data {
                     attributes {
                       username
+                      profile {
+                        data {
+                          attributes {
+                            photo {
+                              data {
+                                attributes {
+                                  url
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                       facialScanImage {
                         data {
                           attributes {

@@ -36,10 +36,7 @@ const HomeMap2 = ({ siteData }) => {
   return (
     <MapContainer
       className={styles.map2}
-      center={[
-        siteInfo[1]?.attributes?.location?.Lat ?? latitude,
-        siteInfo[1]?.attributes?.location?.Lng ?? longitude,
-      ]}
+      center={["16.871311", "96.199379"]}
       zoom={17}
     >
       <TileLayer
@@ -134,9 +131,9 @@ const HomeMap2 = ({ siteData }) => {
                             id={attendance?.id}
                             src={
                               attendance?.attributes?.users_permissions_user
-                                ?.data?.attributes?.facialScanImage?.data
-                                ?.attributes?.url
-                                ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                                ?.data?.attributes?.profile?.data?.attributes
+                                ?.photo?.data?.attributes?.url
+                                ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.profile?.data?.attributes?.photo?.data?.attributes?.url}`
                                 : "images/defaultImage.jpg"
                             }
                             style={{
@@ -158,9 +155,9 @@ const HomeMap2 = ({ siteData }) => {
                             id={attendance?.id}
                             src={
                               attendance?.attributes?.users_permissions_user
-                                ?.data?.attributes?.facialScanImage?.data
-                                ?.attributes?.url
-                                ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
+                                ?.data?.attributes?.profile?.data?.attributes
+                                ?.photo?.data?.attributes?.url
+                                ? `${process.env.NEXT_PUBLIC_APP_URL}${attendance?.attributes?.users_permissions_user?.data?.attributes?.profile?.data?.attributes?.photo?.data?.attributes?.url}`
                                 : "images/defaultImage.jpg"
                             }
                             style={{

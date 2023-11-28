@@ -7,6 +7,8 @@ import client from "../graphql/apolloClient";
 import attendenceStore from "../store/attendance";
 import { setCookie, parseCookies } from "nookies";
 import io from "socket.io-client";
+import GlobalNotiBox from "../components/notification/GlobalNotiBox";
+import PageNotiBox from "../components/notification/PageNotiBox";
 
 function MyApp({ Component, pageProps }) {
   const {
@@ -70,6 +72,10 @@ function MyApp({ Component, pageProps }) {
   return (
     <ApolloProvider client={client}>
       <GlobalStyle />
+      {/* <div style={{ position: "relative", margin: "0px 10px" }}>
+        <PageNotiBox message="Info" timeout={10000} label="helllo" />
+      </div> */}
+
       <Component {...pageProps} />
     </ApolloProvider>
   );
