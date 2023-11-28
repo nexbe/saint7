@@ -114,8 +114,6 @@ const styles = {
     gap: 30px;
     width: 100%;
     padding: 0 10px;
-    position: absolute;
-    bottom: 0;
   `,
   navLink: css`
     display: flex;
