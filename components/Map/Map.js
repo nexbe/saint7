@@ -14,6 +14,8 @@ const Map = () => {
     iconSize: [50, 50], // Size of the icon
   });
 
+  console.log(locationData);
+
   return (
     <MapContainer
       className={styles.map}
@@ -29,14 +31,10 @@ const Map = () => {
       <Marker
         position={[
           locationData?.lat ?? "16.871311",
-
           locationData?.lng ?? "96.199379",
-          ,
         ]}
         icon={customIcon}
-      >
-        <Popup>{addressData}</Popup>
-      </Marker>
+      ></Marker>
     </MapContainer>
   );
 };
