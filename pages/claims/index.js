@@ -350,31 +350,31 @@ const Claims = () => {
                     </label>
                   </div>
                   <div css={styles.chartDataStatus}>
-                    <div style={{ gap: "10px" }}>
+                    <div>
                       <span css={styles.colorStatus}></span>
-                      <span
-                        css={styles.colorStatus}
-                        style={{ background: "#75DD48" }}
-                      ></span>
-                      <span
-                        css={styles.colorStatus}
-                        style={{ background: "#E53E3E" }}
-                      ></span>
-                    </div>
-                    <div className="primary-text" style={{ fontWeight: "400" }}>
-                      <label>Pending</label>
-                      <label>Approved</label>
-                      <label>Rejected</label>
-                    </div>
-                    <div className="primary-text">
+                      <label className="statusName">Pending</label>
                       <span css={styles.percentageStatus}>
                         {pendingTotal} SGD -{" "}
                         {((pendingCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
+                    </div>
+                    <div>
+                      <span
+                        css={styles.colorStatus}
+                        style={{ background: "#75DD48" }}
+                      ></span>
+                      <label className="statusName">Approved</label>
                       <span css={styles.percentageStatus}>
                         {approvedTotal} SGD -{" "}
                         {((approvedCount / expenseCount) * 100).toFixed(1)}%{" "}
                       </span>
+                    </div>
+                    <div>
+                      <span
+                        css={styles.colorStatus}
+                        style={{ background: "#E53E3E" }}
+                      ></span>
+                      <label className="statusName">Rejected</label>
                       <span css={styles.percentageStatus}>
                         {rejectedTotal} SGD -{" "}
                         {((rejectedCount / expenseCount) * 100).toFixed(1)}%{" "}
@@ -450,7 +450,7 @@ const styles = {
     padding: 10px;
     height: 40px;
     display: flex;
-    font-size: 18px;
+    font-size: 16px;
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -543,14 +543,17 @@ const styles = {
   `,
   chartDataStatus: css`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
-    padding: 20px 0;
+    padding: 20px;
     div {
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      padding-left: 20px;
+      gap: 20px;
+    }
+    .statusName {
+      width: 20%;
     }
   `,
   colorStatus: css`
@@ -562,6 +565,7 @@ const styles = {
   `,
   percentageStatus: css`
     color: #37474f;
+    width: 60%;
   `,
   addReport: css`
     display: flex;

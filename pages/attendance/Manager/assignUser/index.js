@@ -116,8 +116,8 @@ const AssignUser = () => {
     <Layout>
       <HeaderNoti title={"Assign User"} href={"/attendance/Manager"} />
       <div css={styles.container}>
-        <form css={styles.formStyle}>
-          <div css={styles.datePickerStyle}>
+        <form css={styles.formContent}>
+          <div css={styles.datePickerStyle} className="formFlex">
             <label>
               Date <span>*</span>
             </label>
@@ -148,7 +148,7 @@ const AssignUser = () => {
               isClearable={false}
             />
           </div>
-          <div css={styles.selectUserStyle}>
+          <div className="formFlex">
             <label>Shift Name</label>
             <Select
               id="shift_name"
@@ -202,38 +202,36 @@ const AssignUser = () => {
 export default AssignUser;
 
 const selectBoxStyle = {
-  singleValue: (styles, { data }) => {
+  placeholder: (defaultStyles) => {
     return {
-      ...styles,
+      ...defaultStyles,
+      color: "rgba(0, 0, 0, 0.30)",
+      fontWeight: "600",
+      fontSize: "14px",
     };
   },
   multiValue: (styles, { data }) => {
     return {
       ...styles,
-      padding: "5px",
-      height: "80px",
-      borderRadius: "9px",
       backgroundColor: "rgba(0, 171, 209, 0.10)",
+      borderRadius: "10px",
+      color: "#293991",
+      width: "100%",
+      display: "flex",
     };
   },
-  multiValueLabel: (styles, { data }) => ({
-    ...styles,
-    color: "#293991",
-  }),
-  multiValueRemove: (styles, { data }) => ({
-    ...styles,
-    color: "#293991",
-    marginLeft: "auto",
-    marginTop: "-35px",
-  }),
+  singleValue: (styles, { data }) => {
+    return {
+      ...styles,
+    };
+  },
   menu: (provided, state) => ({
     ...provided,
     width: "100%",
   }),
   valueContainer: (provided, state) => ({
     ...provided,
-    padding: "0px",
-    width:'34vh'
+    padding: "0",
   }),
   control: (base) => ({
     ...base,
@@ -245,7 +243,22 @@ const selectBoxStyle = {
     color: "var(--primary-font)",
     fontWeight: "400",
     display: "flex",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.1)"
   }),
+  option: (styles, { isSelected }) => {
+    return {
+      ...styles,
+      backgroundColor: isSelected ? "#E3F3FF" : "#fff",
+      color: "#000",
+      cursor: isSelected ? "not-allowed" : "pointer",
+      fontSize: "14px",
+      margin: "0",
+      padding: "5px 20px",
+      "&:hover": {
+        backgroundColor: "none",
+      },
+    };
+  },
 };
 
 const styles = {
@@ -262,17 +275,25 @@ const styles = {
       font-weight: 600;
     }
   `,
-  formStyle: css`
-    div {
+  formContent: css`
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    background: var(--white);
+    padding: 5px 20px 30px;
+    line-height: 20px;
+    span {
+      color: #ec1c24;
+    }
+    .formFlex {
       display: flex;
       flex-direction: column;
-      span {
-        color: #ec1c24;
-      }
-      input {
-        border-top: none;
-        border-left: none;
-        border-right: none;
+      padding-top: 20px;
+      input,
+      textarea {
+        border: none;
+        outline: none;
+        padding: 7px 0;
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       }
     }
@@ -325,6 +346,11 @@ const styles = {
       flex-direction: row !important;
       justify-content: start !important;
     }
+    .css-1jbwqn3-ValueContainer{
+      align-items:start;
+      flex-direction:row;
+      outline:none !important;
+    }
     .css-13cymwt-control {
       border-left: none;
       border-right: none;
@@ -344,6 +370,7 @@ const styles = {
     .css-1fdsijx-ValueContainer {
       align-items: start;
       justify-content: start !important;
+      width:96%;
     }
   `,
 };
