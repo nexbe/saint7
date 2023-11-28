@@ -177,11 +177,9 @@ const Home = () => {
                 <div css={styles.formFlexDiv}>
                   <div css={styles.formFlexChildDiv}>
                     <button
-                    // onClick={() => {
-                    //   router.push({
-                    //     pathname: data?.router,
-                    //   });
-                    // }}
+                      onClick={() => {
+                        router.push("/checklist");
+                      }}
                     >
                       <EsuperVisorIcon />
                       E-Supervisor
