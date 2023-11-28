@@ -58,7 +58,7 @@ const Card = ({ expenseList, role }) => {
                     handleOpen(index);
                   }}
                 >
-                  <label>{eachResult[0]}</label>
+                  <label className="monthName">{eachResult[0]}</label>
                   <label
                     className="count"
                     style={{
@@ -67,7 +67,7 @@ const Card = ({ expenseList, role }) => {
                   >
                     {eachResult[1].length}
                   </label>
-                  <label>
+                  <label className="amount">
                     {"$"} {total[index]}
                   </label>
                   <label>
@@ -176,9 +176,16 @@ const styles = {
     opacity: 0.8;
     background: #e3f3ff;
     color: var(--primary);
+    gap: 10px;
     box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.08);
     @media (max-width: 700px) {
       font-size: 13px;
+    }
+    .amount {
+      width: 20%;
+    }
+    .monthName {
+      width: 40%;
     }
     .count {
       border: 1px solid var(--primary);
