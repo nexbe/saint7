@@ -31,7 +31,7 @@ const ScheduleCard = ({ state, attendanceData }) => {
           <div>
             <img
               src={
-                attendanceData?.attributes?.assignee_shift?.data
+                attendanceData?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data
                   ? `${process.env.NEXT_PUBLIC_APP_URL}${attendanceData?.attributes?.assignee_shift?.data?.attributes?.users_permissions_user?.data?.attributes?.facialScanImage?.data?.attributes?.url}`
                   : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
               }
