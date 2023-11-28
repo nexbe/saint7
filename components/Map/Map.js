@@ -18,7 +18,7 @@ const Map = ({ lat, lng }) => {
   });
 
   return (
-    <MapContainer className={styles.map} center={[lat, lng]} zoom={17}>
+    <MapContainer className={styles.map} center={[lat, lng]} zoom={15}>
       <TileLayer
         attribution="Google Maps"
         url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" // regular
