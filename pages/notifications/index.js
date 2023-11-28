@@ -11,9 +11,13 @@ import { useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
 import notiStore from "../../store/notification";
 import { parseCookies } from "nookies";
+import { AiOutlineClose } from "react-icons/ai";
 
 const Notifications = () => {
   const [searchBox, setSearchBox] = useState(false);
+  const [name, setName] = useState();
+  const [filterData, setFilterData] = useState();
+
   const apolloClient = useApolloClient();
   const cookies = parseCookies();
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
@@ -31,6 +35,20 @@ const Notifications = () => {
     });
   }, [notiFetchData]);
 
+  useEffect(() => {
+    if (name) {
+      const filteredResults = notiUser.filter((item) =>
+        item?.attributes.user?.data?.attributes?.username
+          ?.toLowerCase()
+          .includes(name?.toLowerCase())
+      );
+
+      setFilterData(filteredResults);
+    } else {
+      setFilterData(notiUser);
+    }
+  }, [name, notiUser]);
+
   return (
     <Layout>
       <div css={styles.headerWrapper}>
@@ -39,9 +57,24 @@ const Notifications = () => {
         </Link>
         {searchBox ? (
           <div css={styles.searchBox}>
-            <input type="text" placeholder="John" />
             <label css={styles.searchIcon}>
               <SearchIcon />
+            </label>
+            <input
+              type="text"
+              placeholder="Enter Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <label css={styles.crossIcon}>
+              <AiOutlineClose
+                color={"rgba(123, 123, 123, 1)"}
+                size={16}
+                onClick={() => {
+                  setSearchBox(false);
+                  setName("");
+                }}
+              />
             </label>
           </div>
         ) : (
@@ -56,8 +89,8 @@ const Notifications = () => {
       <div css={styles.bodyWrapper}>
         <div>
           <h4>Notifications</h4>
-          {notiUser &&
-            notiUser?.map((noti, index) => {
+          {filterData &&
+            filterData?.map((noti, index) => {
               const readUsers = noti?.attributes?.read_user?.data;
               const isUserIdIncluded = readUsers.some(
                 (obj) => obj.id === userData?.id
@@ -96,7 +129,7 @@ const styles = {
   `,
   searchBox: css`
     display: flex;
-    justify-content: space-between;
+
     align-items: center;
     position: relative;
     width: 100%;
@@ -134,6 +167,12 @@ const styles = {
   searchIcon: css`
     position: absolute;
     margin: 10px;
+  `,
+
+  crossIcon: css`
+    position: absolute;
+    margin: 10px;
+    right: 0;
   `,
   bodyWrapper: css`
     h4 {
