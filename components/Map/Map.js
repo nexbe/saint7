@@ -31,12 +31,14 @@ const Map = ({ lat, lng }) => {
         maxZoom={30}
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
-      <Marker
-        position={[lat ?? 16.7968768, lng ?? 96.1544192]}
-        icon={customIcon}
-      >
-        <Popup>{addressData}</Popup>
-      </Marker>
+      {lat && lng ? (
+        <Marker
+          position={[lat ?? 16.7968768, lng ?? 96.1544192]}
+          icon={customIcon}
+        >
+          <Popup>{addressData}</Popup>
+        </Marker>
+      ) : null}
     </MapContainer>
   );
 };
