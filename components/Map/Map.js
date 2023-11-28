@@ -22,7 +22,7 @@ const Map = ({ lat, lng }) => {
   return (
     <MapContainer
       className={styles.map}
-      center={[lat ?? locationData?.lat, lng ?? locationData?.lng]}
+      center={[lat ?? 16.7968768, lng ?? 96.1544192]}
       zoom={17}
     >
       <TileLayer
@@ -32,7 +32,7 @@ const Map = ({ lat, lng }) => {
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
       <Marker
-        position={[lat ?? locationData?.lat, lng ?? locationData?.lng]}
+        position={[lat ?? 16.7968768, lng ?? 96.1544192]}
         icon={customIcon}
       >
         <Popup>{addressData}</Popup>
