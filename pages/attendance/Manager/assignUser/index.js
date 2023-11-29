@@ -112,6 +112,47 @@ const AssignUser = () => {
       )
     );
   };
+
+  const ValueContainer = ({ children, hasValue, ...props }) => {
+    if (!hasValue) {
+      return (
+        <components.ValueContainer {...props}>
+          {children}
+        </components.ValueContainer>
+      );
+    }
+    const [chips, otherChildren] = children;
+    const CHIPS_LIMIT = 11;
+    const overflowCounter = chips.slice(CHIPS_LIMIT).length;
+    const displayChips = chips.slice(
+      overflowCounter,
+      overflowCounter + CHIPS_LIMIT
+    );
+    return (
+      <components.ValueContainer {...props}>
+        <div>
+          {displayChips?.map((displayChip, index) => (
+            <label key={index}>{displayChip}</label>
+          ))}
+          {overflowCounter === 0 ? (
+            ""
+          ) : (
+            <label
+              style={{
+                color: "#293991",
+                borderRadius: "9px",
+                background: "rgba(0, 171, 209, 0.1)",
+                padding: "3px",
+                fontSize: "12px",
+                fontWeight: 400,
+              }}
+            >{`+ ${overflowCounter}`}</label>
+          )}
+        </div>
+      </components.ValueContainer>
+    );
+  };
+
   return (
     <Layout>
       <HeaderNoti title={"Assign User"} href={"/attendance/Manager"} />
@@ -125,8 +166,8 @@ const AssignUser = () => {
               multiple
               value={dutyDates}
               onChange={setDutyDates}
-              className="custom-calendar"
               format="DD/MM/YYYY"
+              inputClass="custom-calendar"
               required
             />
           </div>
@@ -180,6 +221,7 @@ const AssignUser = () => {
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
                 DropdownIndicator,
+                ValueContainer,
               }}
               isMulti
               isClearable={false}
@@ -188,12 +230,15 @@ const AssignUser = () => {
         </form>
       </div>
       <div css={styles.btns}>
-        <button onClick={() => router.push("/attendance/Manager")}>
+        <button
+          onClick={() => router.push("/attendance/Manager")}
+          css={styles.cancelBtn}
+        >
           Cancel
         </button>
         <button
           disabled={dutyDates?.length === 0}
-          style={{ background: "#293991", color: "#fff" }}
+          css={styles.addBtn}
           onClick={() => setModal(true)}
         >
           Assign
@@ -225,7 +270,6 @@ const selectBoxStyle = {
       ...styles,
       backgroundColor: "rgba(0, 171, 209, 0.10)",
       borderRadius: "10px",
-      color: "#293991",
       width: "100%",
       display: "flex",
     };
@@ -276,9 +320,7 @@ const styles = {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
-    min-height: 60vh;
-    max-height: 62vh;
-    overflow: auto;
+    height: 78%;
     label {
       color: #37474f;
       font-size: 16px;
@@ -299,11 +341,13 @@ const styles = {
       display: flex;
       flex-direction: column;
       padding-top: 20px;
-      input,
-      textarea {
-        border: none;
-        outline: none;
+      input {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        outline: none !important;
         padding: 7px 0;
+        width: 100%;
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       }
     }
@@ -340,13 +384,29 @@ const styles = {
   btns: css`
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
+    align-items: center;
     padding: 20px;
+    gap: 7px;
     button {
+      text-align: center;
       border-radius: 10px;
-      border: 1px solid #a0aec0;
-      padding: 8px 30px;
+      padding: 3px 55px;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      min-width: 120px;
     }
+  `,
+  cancelBtn: css`
+    border: 1px solid rgba(41, 57, 145, 1);
+    color: var(--primary);
+    background: var(--white);
+  `,
+  addBtn: css`
+    border: 1px solid rgba(41, 57, 145, 1);
+    color: var(--white);
+    background: var(--primary);
   `,
   selectUserStyle: css`
     margin-top: 20px;
@@ -356,6 +416,14 @@ const styles = {
       display: flex;
       flex-direction: row !important;
       justify-content: start !important;
+    }
+    .css-wsp0cs-MultiValueGeneric {
+      color: var(--Primary, #293991);
+      font-size: 12px;
+      font-weight: 400;
+    }
+    .css-tj5bde-Svg {
+      color: var(--Primary, #293991);
     }
     .css-1jbwqn3-ValueContainer {
       align-items: start;

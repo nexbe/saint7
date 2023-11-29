@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import userStore from "../../store/user";
 import SearchIcon from "../../public/icons/searchIcon";
 import RefreshIcon from "/public/icons/refreshIcon";
-import CalendarIcon from "/public/icons/calendarIcon";
+import NoDataIcon from "/public/icons/noDataIcon";
 import DateFilterModal from "../../components/claims/DateFilterModal";
 import useAuth from "../../store/auth";
 
@@ -55,14 +55,15 @@ const PayUser = () => {
 
   const handleClick = (userData) => {
     getPaySlipData(userData?.id);
-    user.role.name === "Admin" ? router.push({
-      pathname:`/payslip/Admin/history`,
-      query:  {id : userData?.id}
-    }) : router.push({
-      pathname:`/payslip/Manager/history`,
-      query:  {id : userData?.id}
-    });
-    
+    user.role.name === "Admin"
+      ? router.push({
+          pathname: `/payslip/Admin/history`,
+          query: { id: userData?.id },
+        })
+      : router.push({
+          pathname: `/payslip/Manager/history`,
+          query: { id: userData?.id },
+        });
   };
 
   const router = useRouter();
@@ -81,19 +82,12 @@ const PayUser = () => {
         <div>
           <button
             style={{ border: "none", background: "none" }}
-            onClick={handleRefresh}
-          >
+            onClick={handleRefresh}>
             <RefreshIcon />
           </button>
         </div>
 
         <div>
-          {/* <button
-            onClick={dateModal}
-            style={{ border: "none", background: "none" }}
-          >
-            <CalendarIcon />
-          </button> */}
           {dateModalOpen && (
             <DateFilterModal
               isOpen={dateModalOpen}
@@ -103,29 +97,34 @@ const PayUser = () => {
           )}
         </div>
       </div>
-      
+
       <div css={styles.wrapper}>
-        {payData.length
-          ? payData?.map((userData, index) => (
-              <div css={styles.listWrapper} key={index}>
-                <div css={styles.nameBox}>
-                  <img
-                    src={
-                      userData?.attributes?.facialScanImage?.data?.attributes
-                        ?.url
-                        ? `${process.env.NEXT_PUBLIC_APP_URL}${userData?.attributes?.facialScanImage?.data?.attributes?.url}`
-                        : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
-                    }
-                    css={styles.profile}
-                  />
-                  <p>{userData?.attributes?.username}</p>
-                </div>
-                <div css={styles.viewBox} onClick={() => handleClick(userData)}>
-                  <p>View Details</p>
-                </div>
+        {payData.length ? (
+          payData?.map((userData, index) => (
+            <div css={styles.listWrapper} key={index}>
+              <div css={styles.nameBox}>
+                <img
+                  src={
+                    userData?.attributes?.facialScanImage?.data?.attributes?.url
+                      ? `${process.env.NEXT_PUBLIC_APP_URL}${userData?.attributes?.facialScanImage?.data?.attributes?.url}`
+                      : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/default_Image_49ed37eb5a.jpg`
+                  }
+                  css={styles.profile}
+                />
+                <p>{userData?.attributes?.username}</p>
               </div>
-            ))
-          : null}
+              <div css={styles.viewBox} onClick={() => handleClick(userData)}>
+                <p>View Details</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div css={styles.noDataContainer} className="primary-text">
+            <NoDataIcon />
+            <label>Nothing Here to show</label>
+            <label>You don’t have any data.</label>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -224,5 +223,11 @@ const styles = {
   searchIcon: css`
     position: absolute;
     margin: 10px;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

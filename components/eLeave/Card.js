@@ -27,40 +27,37 @@ const LeaveHistoryCard = ({ eachLeave }) => {
             )}
           </div>
           <div css={styles.leaveDetails}>
-            <div>
-              <span>Request To</span>
-              <span>Reason</span>
-              {eachLeave?.status != "Pending" && (
-                <span>
-                  {eachLeave?.status == "Approved" ? "Approved" : "Rejected"} by
-                </span>
-              )}
-            </div>
-            <div>
+            <div className="d-flex">
+              <span style={{ width: "30%" }}>Request To</span>
               <span>:</span>
-              <span>:</span>
-              {eachLeave?.status != "Pending" && <span>:</span>}
-            </div>
-            <div>
-              <span style={{ width: "100%" }}>
+              <span>
                 {eachLeave?.requestedTos?.map((eachRequest) => {
                   return (
                     eachRequest?.username +
                     " (" +
                     eachRequest?.role?.name +
-                    ")  "
+                    "), "
                   );
                 })}
               </span>
-
+            </div>
+            <div className="d-flex">
+              <span style={{ width: "24%" }}>Reason</span>
+              <span>:</span>
               <span>{eachLeave?.reason}</span>
-              {eachLeave?.status != "Pending" && (
+            </div>
+            {eachLeave?.status != "Pending" && (
+              <div className="d-flex">
+                <span style={{ width: "24%" }}>
+                  {eachLeave?.status == "Approved" ? "Approved" : "Rejected"} by
+                </span>
+                <span>:</span>
                 <span>
                   {eachLeave?.actionBy?.username} (
                   {eachLeave?.actionBy?.role?.name})
                 </span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
           <span className="leaveDate">
             <BiCalendarAlt color="#A0AEC0" size={18} />
@@ -118,11 +115,14 @@ const styles = {
   `,
   leaveDetails: css`
     display: flex;
+    flex-direction: column;
     gap: 2%;
     width: 100%;
     margin: 10px 5px;
     div {
-      justify-content: space-between;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
     }
   `,
 };

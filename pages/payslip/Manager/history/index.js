@@ -6,6 +6,7 @@ import Layout from "../../../../components/layout/Layout";
 import HeaderNoti from "../../../../components/layout/HeaderNoti";
 import userStore from "../../../../store/user";
 import payslipStore from "../../../../store/payslip";
+import NoDataIcon from "../../../../public/icons/noDataIcon";
 import { useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
 import { useRouter } from "next/router";
@@ -37,13 +38,19 @@ const History = () => {
       <HeaderNoti title={"Payslip"} href={"/home"} />
       <div style={{ height: 0 }}>
         <div css={styles.wrapper}>
-          {PayData.length
-            ? PayData.map((data, index) => (
-                <div key={index}>
-                  <Card data={data} />
-                </div>
-              ))
-            : <b>No Data Found</b>}
+          {PayData.length ? (
+            PayData.map((data, index) => (
+              <div key={index}>
+                <Card data={data} />
+              </div>
+            ))
+          ) : (
+            <div css={styles.noDataContainer} className="primary-text">
+              <NoDataIcon />
+              <label>Nothing Here to show</label>
+              <label>You don’t have any data.</label>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
@@ -69,8 +76,14 @@ const styles = {
       border-radius: 2px;
       background-color: var(--font-gray);
     }
-    b{
-      text-align:center;
+    b {
+      text-align: center;
     }
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

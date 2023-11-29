@@ -133,12 +133,14 @@ const ApplyLeave = () => {
     return (
       <div>
         <components.Option {...props}>
-          <input
-            type="checkbox"
-            checked={props.isSelected}
-            onChange={() => null}
-          />{" "}
-          <label>{props.label}</label>
+          <div className="d-flex" style={{ gap: "7px" }}>
+            <input
+              type="checkbox"
+              checked={props.isSelected}
+              onChange={() => null}
+            />
+            <label>{props.label}</label>
+          </div>
         </components.Option>
       </div>
     );
@@ -164,19 +166,24 @@ const ApplyLeave = () => {
         <div
           style={{
             display: "flex",
-            width: "100%",
+            width: "auto",
             color: "#293991",
+            alignItems: "center",
+            gap: "3px",
           }}
         >
           {displayChips.map((displayChip, index) => (
-            <label style={{ color: "#293991", width: "80%" }} key={index}>
+            <label style={{ color: "#293991" }} key={index}>
               {displayChip}
             </label>
           ))}
           {overflowCounter === 0 ? (
             ""
           ) : (
-            <label style={{ color: "#293991" }}>{`+ ${overflowCounter}`}</label>
+            <label
+              className="d-flex"
+              style={{ color: "#293991", fontWeight: "600", width: "100%" }}
+            >{`+ ${overflowCounter}`}</label>
           )}
         </div>
       </components.ValueContainer>
@@ -515,12 +522,14 @@ const ApplyLeave = () => {
                     Send Request To (For Approval) <span>*</span>
                   </label>
                 </div>
+
                 <Select
                   isMulti
                   allowSelectAll={true}
                   placeholder="Please select"
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
+                  blurInputOnSelect={false}
                   options={requestTosOptionList}
                   blurInputOnSelect={false}
                   components={{
@@ -577,7 +586,7 @@ const selectBoxStyle = {
       backgroundColor: "rgba(0, 171, 209, 0.10)",
       borderRadius: "10px",
       color: "#293991",
-      width: "100%",
+      width: "fit-content",
       display: "flex",
     };
   },
@@ -611,6 +620,7 @@ const selectBoxStyle = {
   option: (styles, { isSelected }) => {
     return {
       ...styles,
+
       backgroundColor: isSelected ? "#E3F3FF" : "#fff",
       color: "#000",
       cursor: isSelected ? "not-allowed" : "pointer",
@@ -663,6 +673,7 @@ const styles = {
     background: var(--white);
     padding: 5px 20px 30px;
     line-height: 20px;
+    height: 90vh;
     .formFlex {
       display: flex;
       flex-direction: column;
@@ -686,7 +697,7 @@ const styles = {
     gap: 3px;
     
     @media (max-width: 345px) {
-        background: red;
+       gap: 0;
         flex-direction: column;
       }
     span {

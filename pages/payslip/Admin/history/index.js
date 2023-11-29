@@ -5,6 +5,7 @@ import Card from "../../../../components/payslip/history/Card";
 import Layout from "../../../../components/layout/Layout";
 import HeaderNoti from "../../../../components/layout/HeaderNoti";
 import userStore from "../../../../store/user";
+import NoDataIcon from "../../../../public/icons/noDataIcon";
 import payslipStore from "../../../../store/payslip";
 import { useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
@@ -44,7 +45,11 @@ const History = () => {
               </div>
             ))
           ) : (
-            <b>No Data Found</b>
+            <div css={styles.noDataContainer} className="primary-text">
+              <NoDataIcon />
+              <label>Nothing Here to show</label>
+              <label>You don’t have any data.</label>
+            </div>
           )}
         </div>
       </div>
@@ -74,5 +79,11 @@ const styles = {
     b {
       text-align: center;
     }
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };
