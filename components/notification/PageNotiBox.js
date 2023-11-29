@@ -1,11 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useState, useMemo, useEffect } from "react";
-import { AiOutlineClose, AiFillInfoCircle } from "react-icons/ai";
+import {
+  AiOutlineClose,
+  AiFillInfoCircle,
+  AiFillNotification,
+} from "react-icons/ai";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { useRouter } from "next/router";
+import BellIcon from "../../public/icons/bellIcon";
 
-const PageNotiBox = ({ message, timeout, label }) => {
+const PageNotiBox = ({ message, timeout, status, label, user, time }) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -20,39 +25,33 @@ const PageNotiBox = ({ message, timeout, label }) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [isVisible, timeout, label]);
+  }, [isVisible, timeout, status]);
 
   useMemo(() => {
-    !!label && setIsVisible(true);
-  }, [label]);
+    !!status && setIsVisible(true);
+  }, [status]);
 
   const handleClick = () => {
     router.push("/notifications");
   };
 
   return (
-    <div
-      className={`notification-box ${isVisible ? "visible" : "hidden"}`}
-      css={styles.notiBoxWrapper}
-    >
+    <div className={`notification-box visible`} css={styles.notiBoxWrapper}>
       {isVisible && message && (
         <>
           <div css={styles.notiBox} onClick={handleClick}>
             <div>
-              {message === "Success!" ? (
-                <BsFillCheckCircleFill
-                  color={"rgba(95, 164, 82, 1)"}
-                  size={20}
-                />
-              ) : message === "Info" ? (
-                <AiFillInfoCircle color={"rgba(89, 156, 255, 1)"} size={25} />
-              ) : (
-                <AiFillInfoCircle color={"rgba(235, 86, 86, 1)"} size={25} />
-              )}
+              <BellIcon />
             </div>
             <div className="d-flex" style={{ flexDirection: "column" }}>
-              {message}
-              <label>{label}</label>
+              <p css={styles.notiText}>
+                {user} <span css={styles.notiSpan}>{message}</span>{" "}
+              </p>
+              {status == "In" ? (
+                <label css={styles.notiTime}>{`check-In Time: ${time}`}</label>
+              ) : (
+                <label css={styles.notiTime}>{`check-Out Time: ${time}`}</label>
+              )}
             </div>
             <div css={styles.closeIcon}>
               <AiOutlineClose
@@ -88,7 +87,7 @@ const styles = {
   notiBox: css`
     display: flex;
     padding: 7px 10px;
-    gap: 7px;
+    gap: 5px;
     font-style: normal;
     font-weight: 400;
     line-height: 30px;
@@ -102,5 +101,24 @@ const styles = {
     display: flex;
     cursor: pointer;
     margin-left: auto;
+  `,
+  notiText: css`
+    margin-bottom: 0;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 5px;
+  `,
+  notiSpan: css`
+    margin-bottom: 0;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 400;
+  `,
+  notiTime: css`
+    margin-bottom: 0;
+    font-family: Inter;
+    font-size: 12px;
+    font-weight: 400;
   `,
 };
