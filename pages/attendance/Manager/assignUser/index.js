@@ -23,8 +23,8 @@ const AssignUser = () => {
   const [assignedUsers, setAssignedUsers] = useState();
   const [assignedUsersCount, setAssignedUsersCount] = useState();
   const [modal, setModal] = useState(false);
-  const {sites, getSites} = siteStore();
-  const {shifts, getShifts} = shiftStore();
+  const { sites, getSites } = siteStore();
+  const { shifts, getShifts } = shiftStore();
   const { createAssignedUser } = attendenceStore();
   const [dutyDates, setDutyDates] = useState([]);
   useEffect(() => {
@@ -33,18 +33,18 @@ const AssignUser = () => {
     getAllUsers({
       apolloClient,
       where: {},
-    })
-  },[])
+    });
+  }, []);
 
   useEffect(() => {
-    const assingnedUserLists = []
-    if(assignedUsers){
+    const assingnedUserLists = [];
+    if (assignedUsers) {
       assignedUsers?.map((user) => {
-        return assingnedUserLists.push(`${user.value}`)
-      })
+        return assingnedUserLists.push(`${user.value}`);
+      });
     }
-    setAssignedUsersCount(assingnedUserLists.length)
-  },[assignedUsers])
+    setAssignedUsersCount(assingnedUserLists.length);
+  }, [assignedUsers]);
 
   const handleSiteChange = (selectedOption) => {
     setSelectedSite(selectedOption);
@@ -75,34 +75,34 @@ const AssignUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const dates = []
-    const assingnedUserLists = []
+    const dates = [];
+    const assingnedUserLists = [];
 
-    if(dutyDates){
-      dutyDates?.map((date)=> {
-        const formattedDay = String(date.day).padStart(2, '0');
-        const formattedMonth = String(date.month).padStart(2, '0');
-        return dates.push(`${date.year}-${formattedMonth}-${formattedDay}`)
-      })
+    if (dutyDates) {
+      dutyDates?.map((date) => {
+        const formattedDay = String(date.day).padStart(2, "0");
+        const formattedMonth = String(date.month).padStart(2, "0");
+        return dates.push(`${date.year}-${formattedMonth}-${formattedDay}`);
+      });
     }
-    if(assignedUsers){
+    if (assignedUsers) {
       assignedUsers?.map((user) => {
-        return assingnedUserLists.push(`${user.value}`)
-      })
+        return assingnedUserLists.push(`${user.value}`);
+      });
     }
-     if(assingnedUserLists && dates){
+    if (assingnedUserLists && dates) {
       createAssignedUser({
-        "data": {
-          "dates":dates,
-          "site":selectedSite?.value,
-          "shift":selectedShiftName?.value,
-          "users":assingnedUserLists
-        }
-      })
-      setModal(false)
-      router.push('/attendance/Manager')
+        data: {
+          dates: dates,
+          site: selectedSite?.value,
+          shift: selectedShiftName?.value,
+          users: assingnedUserLists,
+        },
+      });
+      setModal(false);
+      router.push("/attendance/Manager");
     }
-  }
+  };
   const DropdownIndicator = (props) => {
     return (
       components.DropdownIndicator && (
@@ -130,7 +130,7 @@ const AssignUser = () => {
               required
             />
           </div>
-          <div style={{marginTop:"15px"}}>
+          <div style={{ marginTop: "15px" }}>
             <label>Site Name</label>
             <Select
               id="site_name"
@@ -174,6 +174,8 @@ const AssignUser = () => {
               onChange={handleUsersChange}
               value={assignedUsers}
               options={userOptions}
+              blurInputOnSelect={false}
+              closeMenuOnSelect={false}
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
@@ -186,15 +188,23 @@ const AssignUser = () => {
         </form>
       </div>
       <div css={styles.btns}>
-        <button onClick={() => router.push("/attendance/Manager")}>Cancel</button>
+        <button onClick={() => router.push("/attendance/Manager")}>
+          Cancel
+        </button>
         <button
-          disabled={dutyDates?.length === 0 }
+          disabled={dutyDates?.length === 0}
           style={{ background: "#293991", color: "#fff" }}
-          onClick={() => setModal(true)}>
+          onClick={() => setModal(true)}
+        >
           Assign
         </button>
       </div>
-      <SuccessModal isOpen={modal} setModal={setModal} handleSubmit={handleSubmit} count={assignedUsersCount}/>
+      <SuccessModal
+        isOpen={modal}
+        setModal={setModal}
+        handleSubmit={handleSubmit}
+        count={assignedUsersCount}
+      />
     </Layout>
   );
 };
@@ -243,7 +253,7 @@ const selectBoxStyle = {
     color: "var(--primary-font)",
     fontWeight: "400",
     display: "flex",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.1)"
+    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
   }),
   option: (styles, { isSelected }) => {
     return {
@@ -306,23 +316,24 @@ const styles = {
     .rmdp-calendar {
       width: 30vh;
     }
-    .rmdp-input{
-      width:100%;
+    .rmdp-input {
+      width: 100%;
     }
-    .rmdp-header div{
+    .rmdp-header div {
       flex-direction: row !important;
-      padding:6px;
+      padding: 6px;
     }
     .rmdp-week,
-    .rmdp-ym, .rmdp-header-values {
+    .rmdp-ym,
+    .rmdp-header-values {
       display: flex;
       flex-direction: row !important;
       justify-content: space-evenly;
     }
-    div span{
-      color:#000 !important;
-      display:flex;
-      flex-direction:row !important;
+    div span {
+      color: #000 !important;
+      display: flex;
+      flex-direction: row !important;
       justify-content: space-evenly;
     }
   `,
@@ -346,10 +357,10 @@ const styles = {
       flex-direction: row !important;
       justify-content: start !important;
     }
-    .css-1jbwqn3-ValueContainer{
-      align-items:start;
-      flex-direction:row;
-      outline:none !important;
+    .css-1jbwqn3-ValueContainer {
+      align-items: start;
+      flex-direction: row;
+      outline: none !important;
     }
     .css-13cymwt-control {
       border-left: none;
@@ -370,7 +381,7 @@ const styles = {
     .css-1fdsijx-ValueContainer {
       align-items: start;
       justify-content: start !important;
-      width:96%;
+      width: 96%;
     }
   `,
 };

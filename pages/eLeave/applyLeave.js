@@ -522,6 +522,7 @@ const ApplyLeave = () => {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   options={requestTosOptionList}
+                  blurInputOnSelect={false}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
