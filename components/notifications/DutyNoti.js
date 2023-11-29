@@ -16,7 +16,7 @@ const DutyNoti = ({ isOpen = false, close = () => {}, notiData }) => {
   const apolloClient = useApolloClient();
 
   const { updateNoti, getNotiFetchData } = notiStore((state) => state);
-
+  const [workedHours, setWorkHours] = useState();
   const formatTime = (timeString) => {
     const timeParts = timeString?.split(":"); // Split the string by colon
 
@@ -31,6 +31,36 @@ const DutyNoti = ({ isOpen = false, close = () => {}, notiData }) => {
     close();
     getNotiFetchData(false);
   };
+
+  useEffect(() => {
+    if (notiData?.attributes?.attendance?.data?.attributes?.checkOutTIme) {
+      const checkInDateTime = new Date(
+        `2000-01-01T${notiData?.attributes?.attendance?.data?.attributes?.checkInTime}`
+      );
+      const checkOutDateTime = new Date(
+        `2000-01-01T${notiData?.attributes?.attendance?.data?.attributes?.checkOutTIme}`
+      );
+
+      // Calculate the difference in milliseconds between check-in and check-out times
+      const timeDifferenceMs = checkOutDateTime - checkInDateTime;
+
+      // Convert milliseconds to hours and minutes
+      const hours = Math.floor(timeDifferenceMs / (1000 * 60 * 60)); // Get total hours
+      const minutes = Math.floor(
+        (timeDifferenceMs % (1000 * 60 * 60)) / (1000 * 60)
+      ); // Get remaining minutes
+
+      // Format the hours and minutes into a readable string
+      const formattedTimeDifference = `${hours
+        .toString()
+        .padStart(2, "0")}:${minutes.toString().padStart(2, "0")} Hrs`;
+
+      console.log(`Time difference: ${formattedTimeDifference}`);
+      setWorkHours(formattedTimeDifference);
+    }
+  }, [notiData]);
+
+  console.log(workedHours);
 
   return (
     <Modal isOpen={isOpen} toggle={close} css={styles.wrapper}>
@@ -115,10 +145,10 @@ const DutyNoti = ({ isOpen = false, close = () => {}, notiData }) => {
               <label className="d-flex" css={styles.boldText}>
                 {notiData?.attributes?.attendance?.data?.attributes?.status ==
                   "Complete" &&
-                notiData?.attributes?.attendance?.data?.attributes?.checkOutTime
+                notiData?.attributes?.attendance?.data?.attributes?.checkOutTIme
                   ? formatTime(
                       notiData?.attributes?.attendance?.data?.attributes
-                        ?.checkOutTime
+                        ?.checkOutTIme
                     )
                   : "N.A"}
               </label>
@@ -127,7 +157,11 @@ const DutyNoti = ({ isOpen = false, close = () => {}, notiData }) => {
           <div className="d-flex">
             <span className="lineDash"></span>
           </div>
-          <button>00:00 Hr</button>
+          <button>
+            {notiData?.attributes?.attendance?.data?.attributes?.checkOutTIme
+              ? workedHours
+              : "00:00 Hr"}
+          </button>
         </div>
       </div>
     </Modal>

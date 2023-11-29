@@ -17,8 +17,6 @@ const Map = ({ lat, lng }) => {
     iconSize: [50, 50], // Size of the icon
   });
 
-  console.log(locationData);
-
   return (
     <MapContainer
       className={styles.map}

@@ -9,6 +9,7 @@ import { setCookie, parseCookies } from "nookies";
 import io from "socket.io-client";
 import GlobalNotiBox from "../components/notification/GlobalNotiBox";
 import PageNotiBox from "../components/notification/PageNotiBox";
+import { useState } from "react";
 
 function MyApp({ Component, pageProps }) {
   const {
@@ -21,18 +22,19 @@ function MyApp({ Component, pageProps }) {
   const cookies = parseCookies();
 
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
+  const [notiData, setNotiData] = useState();
 
-  // useEffect(() => {
-  //   let socket = io(process.env.NEXT_PUBLIC_APP_URL, {
-  //     transport: ["websocket"],
-  //   });
-  //   socket.on(`stats:notification-${userData.id}`, () => {
-  //     console.log("blocked socket working");
-
-  //     // clearToken()
-  //     // removeCookies('accessToken')
-  //   });
-  // }, [userData]);
+  useEffect(() => {
+    let socket = io(process.env.NEXT_PUBLIC_APP_URL, {
+      transport: ["websocket"],
+    });
+    socket.on(`stats:notification-${userData.id}`, (data) => {
+      console.log("blocked socket working", data);
+      setNotiData(data);
+      // clearToken()
+      // removeCookies('accessToken')
+    });
+  }, [userData]);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
   const geocodeLocation = async (address) => {
@@ -41,7 +43,6 @@ function MyApp({ Component, pageProps }) {
     try {
       const response = await fetch(geocodingUrl);
       const data = await response.json();
-      console.log(data);
       const address = data.results[0]?.formatted;
       getAddressData(address);
     } catch (error) {
@@ -72,9 +73,17 @@ function MyApp({ Component, pageProps }) {
   return (
     <ApolloProvider client={client}>
       <GlobalStyle />
-      {/* <div style={{ position: "relative", margin: "0px 10px" }}>
-        <PageNotiBox message="Info" timeout={10000} label="helllo" />
-      </div> */}
+      {notiData?.status == "success" ? (
+        <div style={{ position: "relative", margin: "0px 10px" }}>
+          <PageNotiBox
+            message={notiData?.message}
+            user={notiData?.username}
+            timeout={5000}
+            status={notiData?.attendance}
+            time={notiData?.time}
+          />
+        </div>
+      ) : null}
 
       <Component {...pageProps} />
     </ApolloProvider>
