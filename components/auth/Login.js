@@ -16,6 +16,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+  const [error, setError] = useState();
   const [modal, setModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
 
@@ -29,11 +30,13 @@ const Login = () => {
         });
         if(!response.errors) {
           setModal(true); 
+          setError(null)
         } else {
           setModal(false)
         }
       } catch (err) {
         console.log(err);
+        setError(errorLogin)
       }
     }
   };
@@ -78,7 +81,7 @@ const Login = () => {
                 {!showPassword ? <CloseEyeSlashIcon /> : <OpenEyeIcon />}
               </div>
             </div>
-            {errorLogin && !modal && (
+            {error && !modal && (
               <span css={styles.errorMsg}>
                 Invalid email or password. Try Again !
               </span>
