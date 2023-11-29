@@ -20,6 +20,7 @@ import leavestore from "../../../store/eLeave";
 import Card from "../../../components/eLeave/leaveCalendar/Card";
 import { UPDATE_LEAVE } from "../../../graphql/mutations/eLeave";
 import NotificationBox from "../../../components/notification/NotiBox";
+import NoDataIcon from "/public/icons/noDataIcon";
 
 const LeaveCalendar = () => {
   const router = useRouter();
@@ -33,7 +34,6 @@ const LeaveCalendar = () => {
   const [updateLeaveAction, errUpdateLeave] = useMutation(UPDATE_LEAVE);
 
   const statusOptions = [
-    { value: "Pending", label: "New" },
     { value: "Approved", label: "Approved" },
     { value: "Rejected", label: "Rejected" },
   ];
@@ -41,7 +41,7 @@ const LeaveCalendar = () => {
   const [isFullHeight, setIsFullHeight] = useState(true);
   const [startDate, setStartDate] = useState(new Date());
   const [leaveList, setLeaveList] = useState(leaveInfo);
-  const [status, setStatus] = useState(statusOptions[0]);
+  const [status, setStatus] = useState({ value: "Pending", label: "New" });
 
   useEffect(() => {
     if (!!user?.id) {
@@ -171,7 +171,7 @@ const LeaveCalendar = () => {
             <label className="primary-text" style={{ marginBottom: "10px" }}>
               {dayjs(startDate).locale("en-US").format("D MMMM, YYYY")}
             </label>
-            {leaveList && leaveList.length > 0 && (
+            {leaveList && leaveList.length > 0 ? (
               <>
                 {leaveList.map((eachLeave, index) =>
                   eachLeave?.status === "Pending" ? (
@@ -223,6 +223,7 @@ const LeaveCalendar = () => {
                                   DropdownIndicator,
                                 }}
                                 isClearable={false}
+                                isSearchable={false}
                               />
                             </label>
                           </div>
@@ -324,6 +325,12 @@ const LeaveCalendar = () => {
                   )
                 )}
               </>
+            ) : (
+              <div css={styles.noDataContainer} className="primary-text">
+                <NoDataIcon />
+                <label>Nothing Here to show</label>
+                <label>You don’t have any report request</label>
+              </div>
             )}
           </div>
         </div>
@@ -583,5 +590,11 @@ const styles = {
     height: 10px;
     background: rgba(113, 128, 150, 1);
     border-radius: 50px;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

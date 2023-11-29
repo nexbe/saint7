@@ -24,7 +24,7 @@ const AppInfo = () => {
         <div css={styles.bodyContainer}>
           <div css={styles.infoBox}>
             <label className="header-text">Saint 7 Security Mobile App</label>
-            <label className="secondary-text">Version 1.02</label>
+            <label className="secondary-text">Version 1.0.2</label>
             <LoginLogo />
             <button
               id="login"
