@@ -327,22 +327,29 @@ const Claims = () => {
             </button>
           </div>
           <div style={{ display: showChart ? "block" : "none" }}>
+            <div css={styles.dateContainer}>
+              <button onClick={() => changeYearMonth(false)}>
+                <BackIcon />
+              </button>
+              <label className="primary-text">
+                {dayjs()
+                  .month(currentMonth - 1)
+                  .format("MMMM")}{" "}
+                {currentYear}
+              </label>
+              {dayjs()
+                .month(currentMonth - 1)
+                .format("MMMM") !=
+              dayjs().month(new Date().getMonth()).format("MMMM") ? (
+                <button onClick={() => changeYearMonth(true)}>
+                  <ForwardIcon />
+                </button>
+              ) : (
+                <label></label>
+              )}
+            </div>
             {expenseList && expenseList.length > 0 && (
               <>
-                <div css={styles.dateContainer}>
-                  <button onClick={() => changeYearMonth(false)}>
-                    <BackIcon />
-                  </button>
-                  <label className="primary-text">
-                    {dayjs()
-                      .month(currentMonth - 1)
-                      .format("MMMM")}{" "}
-                    {currentYear}
-                  </label>
-                  <button onClick={() => changeYearMonth(true)}>
-                    <ForwardIcon />
-                  </button>
-                </div>
                 <div style={{ textAlign: "center" }}>
                   <div css={styles.pieChart}>
                     <canvas id="myChart" ref={canvas}></canvas>

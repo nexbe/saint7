@@ -20,6 +20,8 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
     updateAttendance,
   } = attendenceStore((state) => state);
 
+  const [workedHours, setWorkHours] = useState();
+
   useEffect(() => {
     if (historyData?.id) {
       getAttendanceUser({
@@ -29,15 +31,33 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
     }
   }, [historyData]);
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  useEffect(() => {
+    if (AttendanceUser?.attributes?.checkOutTImee) {
+      const checkInDateTime = new Date(
+        `2000-01-01T${AttendanceUser?.attributes?.checkInTime}`
+      );
+      const checkOutDateTime = new Date(
+        `2000-01-01T${AttendanceUser?.attributes?.checkOutTIme}`
+      );
 
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-  };
+      // Calculate the difference in milliseconds between check-in and check-out times
+      const timeDifferenceMs = checkOutDateTime - checkInDateTime;
+
+      // Convert milliseconds to hours and minutes
+      const hours = Math.floor(timeDifferenceMs / (1000 * 60 * 60)); // Get total hours
+      const minutes = Math.floor(
+        (timeDifferenceMs % (1000 * 60 * 60)) / (1000 * 60)
+      ); // Get remaining minutes
+
+      // Format the hours and minutes into a readable string
+      const formattedTimeDifference = `${hours
+        .toString()
+        .padStart(2, "0")}:${minutes.toString().padStart(2, "0")} Hrs`;
+
+      console.log(`Time difference: ${formattedTimeDifference}`);
+      setWorkHours(formattedTimeDifference);
+    }
+  }, [AttendanceUser]);
 
   const formatTime = (timeString) => {
     const timeParts = timeString?.split(":"); // Split the string by colon
@@ -110,8 +130,8 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
               Actual Check-out Time{" "}
               <label className="d-flex" css={styles.boldText}>
                 {AttendanceUser?.attributes?.status == "Complete" &&
-                AttendanceUser?.attributes?.checkOutTime
-                  ? formatTime(AttendanceUser?.attributes?.checkOutTime)
+                AttendanceUser?.attributes?.checkOutTIme
+                  ? formatTime(AttendanceUser?.attributes?.checkOutTIme)
                   : "N.A"}
               </label>
             </label>
@@ -119,7 +139,11 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
           <div className="d-flex">
             <span className="lineDash"></span>
           </div>
-          <button>00:00 Hr</button>
+          <button>
+            {AttendanceUser?.attributes?.checkOutTIme
+              ? workedHours
+              : "00:00 Hr"}
+          </button>
         </div>
       </div>
       <div css={styles.repotText}>

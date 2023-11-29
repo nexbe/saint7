@@ -2,16 +2,18 @@
 import React, { useState } from "react";
 import { css } from "@emotion/react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useApolloClient } from "@apollo/client";
+import { parseCookies } from "nookies";
+import { AiOutlineClose } from "react-icons/ai";
+
 import BackArrow from "../../public/icons/backArrow";
 import NotiSearchIcon from "../../public/icons/notiSearchIcon";
 import SearchIcon from "../../public/icons/searchIcon";
 import Card from "../../components/notifications/Card";
 import Layout from "../../components/layout/Layout";
-import { useEffect } from "react";
-import { useApolloClient } from "@apollo/client";
+import NoDataIcon from "/public/icons/noDataIcon";
 import notiStore from "../../store/notification";
-import { parseCookies } from "nookies";
-import { AiOutlineClose } from "react-icons/ai";
 
 const Notifications = () => {
   const [searchBox, setSearchBox] = useState(false);
@@ -89,24 +91,45 @@ const Notifications = () => {
       <div css={styles.bodyWrapper}>
         <div>
           <h4>Notifications</h4>
-          {filterData &&
-            filterData?.map((noti, index) => {
-              const readUsers = noti?.attributes?.read_user?.data;
-              const isUserIdIncluded = readUsers.some(
-                (obj) => obj.id === userData?.id
-              );
+          {filterData && filterData.length > 0 ? (
+            <>
+              {filterData?.map((noti, index) => {
+                const readUsers = noti?.attributes?.read_user?.data;
+                const isUserIdIncluded = readUsers.some(
+                  (obj) => obj.id === userData?.id
+                );
 
-              return (
-                <div key={index}>
-                  <Card
-                    isActive={!isUserIdIncluded}
-                    notiData={noti}
-                    state={noti?.attributes?.status == "In" ? true : false}
-                  />
-                </div>
-              );
-            })}
+                return (
+                  <div key={index}>
+                    <Card
+                      isActive={!isUserIdIncluded}
+                      notiData={noti}
+                      state={noti?.attributes?.status == "In" ? true : false}
+                    />
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            notiUser &&
+            notiUser.length != 0 && (
+              <div
+                css={styles.noDataContainer}
+                className="primary-text"
+                style={{ marginTop: "10rem" }}
+              >
+                No Results
+              </div>
+            )
+          )}
         </div>
+        {notiUser && notiUser.length == 0 && (
+          <div css={styles.noDataContainer} className="primary-text">
+            <NoDataIcon />
+            <label>Nothing Here to show</label>
+            <label>You don’t have any report request</label>
+          </div>
+        )}
       </div>
     </Layout>
   );
@@ -150,13 +173,13 @@ const styles = {
       border-radius: 10px;
       border: 1px solid var(--dark-gray);
       background: var(--white);
+      padding-left: 35px;
       ::placeholder {
         color: var(--dark-gray);
         font-family: Open Sans;
         font-size: 16px;
         font-style: normal;
         font-weight: 400;
-        padding-left: 18px;
       }
       :focus {
         border: 1px solid var(--primary);
@@ -183,5 +206,12 @@ const styles = {
     }
     max-height: 82vh;
     overflow-y: scroll;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
   `,
 };

@@ -35,7 +35,6 @@ const LeaveHistory = () => {
   const [updateLeaveAction, errUpdateLeave] = useMutation(UPDATE_LEAVE);
 
   const statusOptions = [
-    { value: "Pending", label: "New" },
     { value: "Approved", label: "Approved" },
     { value: "Rejected", label: "Rejected" },
   ];
@@ -45,7 +44,7 @@ const LeaveHistory = () => {
   const [approvedData, setApprovedData] = useState(leaveInfo);
   const [rejectedData, setRejectedData] = useState(leaveInfo);
   const [filterTerm, setFilterTerm] = useState("");
-  const [status, setStatus] = useState(statusOptions[0]);
+  const [status, setStatus] = useState({ value: "Pending", label: "New" });
   const [modalOpen, setModalOpen] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
 
@@ -299,6 +298,7 @@ const LeaveHistory = () => {
                                   DropdownIndicator,
                                 }}
                                 isClearable={false}
+                                isSearchable={false}
                               />
                             </label>
                           </div>
@@ -518,7 +518,7 @@ const styles = {
     position: relative;
     input {
       height: 30px;
-      width: 60%;
+      width: 70%;
       padding: 9px 12px;
       flex-direction: column;
       justify-content: center;

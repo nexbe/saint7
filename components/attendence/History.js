@@ -1,13 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
-import DutyModal from "./DutyModal";
 import moment from "moment";
 import attendenceStore from "../../store/attendance";
 import NoDataIcon from "/public/icons/noDataIcon";
 import { setCookie, parseCookies } from "nookies";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+
+import DutyModal from "./DutyModal";
+import NoDataIcon from "/public/icons/noDataIcon";
 
 const Historty = () => {
   const cookies = parseCookies();
@@ -54,48 +56,53 @@ const Historty = () => {
           css={styles.calendar}
         />
         <div css={styles.requestCard}>
-          {attendanceData?.attendanceData?.map((data, index) => (
-            <div onClick={() => dutyModal(data)} key={index}>
-              <label className="primary-text">
-                {moment(data?.date).format("Do MMMM YYYY")}
-              </label>
-              <div css={styles.eachCard}>
-                <label>
-                  {data?.check_in_time
-                    ? formatTime(data?.check_in_time)
-                    : "00:00"}{" "}
-                  -{" "}
-                  {data?.check_out_t_ime
-                    ? formatTime(data?.check_out_t_ime)
-                    : "00:00"}
-                  <label>
-                    <span className="address">{data?.address}</span>
+          {attendanceData?.attendanceData &&
+          attendanceData?.attendanceData.length > 0 ? (
+            <>
+              {attendanceData?.attendanceData?.map((data, index) => (
+                <div onClick={() => dutyModal(data)} key={index}>
+                  <label className="primary-text">
+                    {moment(data?.date).format("Do MMMM YYYY")}
                   </label>
-                </label>
-                <span
-                  css={[
-                    styles.expenseStatus,
-                    {
-                      background:
-                        data?.status == "Complete" ? "#293991" : "#EC1C24",
-                    },
-                  ]}>
-                  {data?.status == "Complete" ? "Complete" : "Incomplete"}
-                </span>
-              </div>
-              <hr
-                style={{
-                  borderTop: " 1px solid var(--darker-gray)",
-                  margin: "15px -10px 0 -10px",
-                }}
-              />
-            </div>
-          ))}
-          {attendanceData && attendanceData?.attendanceData.length === 0 && (
+                  <div css={styles.eachCard}>
+                    <label>
+                      {data?.check_in_time
+                        ? formatTime(data?.check_in_time)
+                        : "00:00"}{" "}
+                      -{" "}
+                      {data?.check_out_t_ime
+                        ? formatTime(data?.check_out_t_ime)
+                        : "00:00"}
+                      <label>
+                        <span className="address">{data?.address}</span>
+                      </label>
+                    </label>
+                    <span
+                      css={[
+                        styles.expenseStatus,
+                        {
+                          background:
+                            data?.status == "Complete" ? "#293991" : "#EC1C24",
+                        },
+                      ]}
+                    >
+                      {data?.status == "Complete" ? "Complete" : "Incomplete"}
+                    </span>
+                  </div>
+                  <hr
+                    style={{
+                      borderTop: " 1px solid var(--darker-gray)",
+                      margin: "15px -10px 0 -10px",
+                    }}
+                  />
+                </div>
+              ))}
+            </>
+          ) : (
             <div css={styles.noDataContainer} className="primary-text">
               <NoDataIcon />
               <label>Nothing Here to show</label>
-              <label>You don’t have any data.</label>
+              <label>You don’t have any report request</label>
             </div>
           )}
         </div>

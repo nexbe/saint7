@@ -10,21 +10,21 @@ function Icon() {
       viewBox="0 0 25 25"
     >
       <path
-        stroke="#A0AEC0"
+        stroke="rgba(41, 57, 145, 1)"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
         d="M17.204 9.738h4.688V5.051"
       ></path>
       <path
-        stroke="#A0AEC0"
+        stroke="rgba(41, 57, 145, 1)"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
         d="M6.423 6.423a8.594 8.594 0 0112.153 0l3.315 3.315M7.796 15.262H3.108v4.687"
       ></path>
       <path
-        stroke="#A0AEC0"
+        stroke="rgba(41, 57, 145, 1)"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"

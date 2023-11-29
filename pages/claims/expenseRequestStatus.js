@@ -389,10 +389,12 @@ const ExpenseRequestStatus = () => {
             onClick={decrementYear}
           />
           <label className="primary-text">{currentYear}</label>
-          <MdOutlineKeyboardDoubleArrowRight
-            size={"20"}
-            onClick={incrementYear}
-          />
+          {currentYear != new Date().getFullYear() && (
+            <MdOutlineKeyboardDoubleArrowRight
+              size={"20"}
+              onClick={incrementYear}
+            />
+          )}
         </button>
       </div>
     </Layout>
