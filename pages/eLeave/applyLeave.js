@@ -531,6 +531,7 @@ const ApplyLeave = () => {
                   hideSelectedOptions={false}
                   blurInputOnSelect={false}
                   options={requestTosOptionList}
+                  blurInputOnSelect={false}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
