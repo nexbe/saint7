@@ -71,7 +71,6 @@ const ExpenseRequestStatus = () => {
   }, [user]);
 
   const statusOptions = [
-    { value: "pending", label: "New" },
     { value: "approved", label: "Approved" },
     { value: "rejected", label: "Rejected" },
   ];
@@ -83,7 +82,7 @@ const ExpenseRequestStatus = () => {
   const [rejectedData, setRejectedData] = useState(claimInfo);
   const [approvedTotal, setApprovedTotal] = useState();
   const [rejectedTotal, setRejectedTotal] = useState();
-  const [status, setStatus] = useState(statusOptions[0]);
+  const [status, setStatus] = useState({ value: "pending", label: "New" });
 
   const monthName = (item) =>
     moment(item.expenseDate, "YYYY-MM-DD").format("MMMM YYYY");
@@ -543,7 +542,6 @@ const ExpenseRequestStatus = () => {
                               <label>
                                 <Select
                                   value={status}
-                                  // onChange={handleStatusChange(item?.id)}
                                   onChange={(e) => {
                                     handleStatusChange(item.id, e.value);
                                   }}
@@ -555,6 +553,7 @@ const ExpenseRequestStatus = () => {
                                     DropdownIndicator,
                                   }}
                                   isClearable={false}
+                                  isSearchable={false}
                                 />
                               </label>
                             </div>
@@ -598,10 +597,12 @@ const ExpenseRequestStatus = () => {
             onClick={decrementYear}
           />
           <label className="primary-text">{currentYear}</label>
-          <MdOutlineKeyboardDoubleArrowRight
-            size={"20"}
-            onClick={incrementYear}
-          />
+          {currentYear != new Date().getFullYear() && (
+            <MdOutlineKeyboardDoubleArrowRight
+              size={"20"}
+              onClick={incrementYear}
+            />
+          )}
         </button>
       </div>
       {openConfirmModal && (
