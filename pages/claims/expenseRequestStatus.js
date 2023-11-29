@@ -347,11 +347,19 @@ const ExpenseRequestStatus = () => {
                 )}
                 {filteredData && filteredData.length == 0 && (
                   <div css={styles.noDataContainer} className="primary-text">
-                    <NoDataIcon />
                     <label>Nothing Here to show</label>
                     <label>You don’t have any report request</label>
                   </div>
                 )}
+                {filteredData &&
+                  filteredData.length == 0 &&
+                  claimInfo?.length == 0 && (
+                    <div css={styles.noDataContainer} className="primary-text">
+                      <NoDataIcon />
+                      <label>Nothing Here to show</label>
+                      <label>You don’t have any report request</label>
+                    </div>
+                  )}
               </>
             )}
             {activeTab == 2 && (
@@ -389,10 +397,12 @@ const ExpenseRequestStatus = () => {
             onClick={decrementYear}
           />
           <label className="primary-text">{currentYear}</label>
-          <MdOutlineKeyboardDoubleArrowRight
-            size={"20"}
-            onClick={incrementYear}
-          />
+          {currentYear != new Date().getFullYear() && (
+            <MdOutlineKeyboardDoubleArrowRight
+              size={"20"}
+              onClick={incrementYear}
+            />
+          )}
         </button>
       </div>
     </Layout>
