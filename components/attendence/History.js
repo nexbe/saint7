@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 import DutyModal from "./DutyModal";
 import moment from "moment";
 import attendenceStore from "../../store/attendance";
+import NoDataIcon from "/public/icons/noDataIcon";
 import { setCookie, parseCookies } from "nookies";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -78,8 +79,7 @@ const Historty = () => {
                       background:
                         data?.status == "Complete" ? "#293991" : "#EC1C24",
                     },
-                  ]}
-                >
+                  ]}>
                   {data?.status == "Complete" ? "Complete" : "Incomplete"}
                 </span>
               </div>
@@ -91,6 +91,13 @@ const Historty = () => {
               />
             </div>
           ))}
+          {attendanceData && attendanceData?.attendanceData.length === 0 && (
+            <div css={styles.noDataContainer} className="primary-text">
+              <NoDataIcon />
+              <label>Nothing Here to show</label>
+              <label>You don’t have any data.</label>
+            </div>
+          )}
         </div>
       </div>
       {dutyModalOpen && (
@@ -286,5 +293,11 @@ const styles = {
     border-radius: 8px;
     background: rgba(89, 109, 121, 0.5);
     color: #fff;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

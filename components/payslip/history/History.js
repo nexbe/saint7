@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { css } from "@emotion/react";
 import Card from "./Card";
 import payslipStore from "../../../store/payslip";
+import NoDataIcon from "/public/icons/noDataIcon";
 
 const History = () => {
   const { getPayslip, payslips } = payslipStore();
@@ -19,6 +20,13 @@ const History = () => {
             </div>
           );
         })}
+      {payslips && payslips.data?.length == 0 && (
+        <div css={styles.noDataContainer} className="primary-text">
+          <NoDataIcon />
+          <label>Nothing Here to show</label>
+          <label>You don’t have any report request</label>
+        </div>
+      )}
     </div>
   );
 };
@@ -34,5 +42,11 @@ const styles = {
     max-height: 72vh;
     overflow-y: scroll;
     color: #000;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

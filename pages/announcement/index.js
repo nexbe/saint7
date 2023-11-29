@@ -9,6 +9,7 @@ import useAuth from "../../store/auth";
 import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
 import SearchIcon from "../../public/icons/searchIcon";
+import NoDataIcon from "../../public/icons/noDataIcon";
 import AddAnnouncementModal from "../../components/announcement/AddAnnouncementModal";
 import EditAnnouncementModal from "../../components/announcement/EditAnnouncementModal";
 import DeleteModal from "../../components/Modal/DeleteModal";
@@ -40,8 +41,8 @@ const Announcement = () => {
 
   useEffect(() => {
     setIsEdit(false);
-    setIsDelete(false)
-  },[editModal,deleteModal])
+    setIsDelete(false);
+  }, [editModal, deleteModal]);
 
   useEffect(() => {
     setData(announcements);
@@ -95,14 +96,12 @@ const Announcement = () => {
           <div css={styles.actions}>
             <button
               css={styles.actionBtn(true)}
-              onClick={() => setAddModal(true)}
-            >
+              onClick={() => setAddModal(true)}>
               ADD ANNOUNCEMENT
             </button>
             <button
               css={styles.actionBtn(isEdit)}
-              onClick={() => setIsEdit(!isEdit)}
-            >
+              onClick={() => setIsEdit(!isEdit)}>
               {isEdit ? <EditIcon /> : <EditPencil />}
             </button>
             <button
@@ -111,8 +110,7 @@ const Announcement = () => {
                 selectedDeletedData && selectedDeletedData.length > 0
                   ? setDeleteModal(true)
                   : setIsDelete(!isDelete)
-              }
-            >
+              }>
               {isDelete ? <DeleteIcon /> : <BinIcon />}
             </button>
           </div>
@@ -146,7 +144,13 @@ const Announcement = () => {
               />
             );
           })}
-          {data && data.length === 0 && <b css={styles.notFound}>No Results</b>}
+          {data && data.length === 0 && (
+            <div css={styles.noDataContainer} className="primary-text">
+              <NoDataIcon />
+              <label>Nothing Here to show</label>
+              <label>You don’t have any data.</label>
+            </div>
+          )}
         </div>
       </div>
       <AddAnnouncementModal
@@ -195,7 +199,7 @@ const styles = {
       height: 30px;
       width: 100%;
       padding: 20px 12px;
-      padding-left:40px;
+      padding-left: 40px;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
@@ -218,10 +222,10 @@ const styles = {
     }
   `,
   searchIcon: css`
-     position:absolute;
-     top:50%;
-     left:10px;
-     transform:translateY(-50%);
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
   `,
   cardContainer: css`
     display: flex;
@@ -229,15 +233,6 @@ const styles = {
     gap: 20px;
     max-height: 64vh;
     overflow-y: scroll;
-  `,
-  notFound: css`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #b3b3b3;
-    font-size: 20px;
-    font-weight: 600;
   `,
   actions: css`
     display: flex;
@@ -277,5 +272,11 @@ const styles = {
       box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
         0px 4px 6px 0px rgba(50, 50, 93, 0.11);
     }
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

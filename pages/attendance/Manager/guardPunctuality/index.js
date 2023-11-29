@@ -4,6 +4,7 @@ import Layout from "../../../../components/layout/Layout";
 import HeaderNoti from "../../../../components/layout/HeaderNoti";
 import Card from "../../../../components/attendence/GuardPunctuality/Card";
 import attendenceStore from "../../../../store/attendance";
+import NoDataIcon from "../../../../public/icons/noDataIcon";
 import { useAmp } from "next/amp";
 import { useApolloClient } from "@apollo/client";
 import { useEffect } from "react";
@@ -80,17 +81,29 @@ const GuardPunctuality = () => {
                 ? "Today"
                 : moment(attendances?.date).format("Do MMMM YYYY")}
             </h4>
-            { attendances?.CompleteData && attendances?.CompleteData?.length > 0 && (
-              <Card state={false} attendanceData={attendances?.CompleteData} />
-            )}
-            {attendances?.NotCompleteData && attendances?.NotCompleteData?.length > 0 && (
-              <Card
-                state={true}
-                attendanceData={attendances?.NotCompleteData}
-              />
-            )}
+            {attendances?.CompleteData &&
+              attendances?.CompleteData?.length > 0 && (
+                <Card
+                  state={false}
+                  attendanceData={attendances?.CompleteData}
+                />
+              )}
+            {attendances?.NotCompleteData &&
+              attendances?.NotCompleteData?.length > 0 && (
+                <Card
+                  state={true}
+                  attendanceData={attendances?.NotCompleteData}
+                />
+              )}
           </div>
         ))}
+        {attendanceInfo && attendanceInfo?.length === 0 && (
+          <div css={styles.noDataContainer} className="primary-text">
+            <NoDataIcon />
+            <label>Nothing Here to show</label>
+            <label>You don’t have any data.</label>
+          </div>
+        )}
       </div>
     </Layout>
   );
@@ -107,5 +120,11 @@ const styles = {
       color: var(--primary-font);
     }
     height: 0px;
+  `,
+  noDataContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `,
 };

@@ -7,6 +7,7 @@ import EditPencil from "../../public/icons/editPencil";
 import BinIcon from "../../public/icons/binIcon";
 import EditIcon from "../../public/icons/editIcon";
 import DeleteIcon from "../../public/icons/deleteIcon";
+import NoDataIcon from "../../public/icons/noDataIcon";
 import Card from "../../components/checklist/Card";
 import { useRouter } from "next/router";
 import siteCheckListStore from "../../store/siteCheckList";
@@ -25,7 +26,7 @@ const SiteCheckList = () => {
   const [selectedDeletedData, setSelectedDeletedData] = useState([]);
   useEffect(() => {
     fetchCheckList(user?.jwt);
-  }, [ router, setDeleteModal, isEdit]);
+  }, [router, setDeleteModal, isEdit]);
   //delete announcements
   const handleSelect = (selectedId) => {
     setSelectedDeletedData((prevData) => {
@@ -55,7 +56,7 @@ const SiteCheckList = () => {
     <Layout>
       <HeaderNoti title={"Site Checklist"} href={"/home"} />
       <div css={styles.wrapper}>
-      <div style={{ position: "relative", margin: "2px 10px" }}>
+        <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox
             message={router.query.message}
             belongTo={router.query.belongTo}
@@ -80,8 +81,7 @@ const SiteCheckList = () => {
               selectedDeletedData && selectedDeletedData.length > 0
                 ? setDeleteModal(true)
                 : setIsDelete(!isDelete)
-            }
-          >
+            }>
             {isDelete ? <DeleteIcon /> : <BinIcon />}
           </button>
         </div>
@@ -90,10 +90,14 @@ const SiteCheckList = () => {
             siteCheckLists.length > 0 &&
             siteCheckLists.map((checklist) => {
               return (
-                <div key={checklist.id}  onClick={() => router.push({
-                  pathname: '/checklist/viewCheckList',
-                  query: { id: checklist.id }
-                })}>
+                <div
+                  key={checklist.id}
+                  onClick={() =>
+                    router.push({
+                      pathname: "/checklist/viewCheckList",
+                      query: { id: checklist.id },
+                    })
+                  }>
                   <Card
                     isEdit={isEdit}
                     isDelete={isDelete}
@@ -105,7 +109,11 @@ const SiteCheckList = () => {
               );
             })}
           {siteCheckLists && siteCheckLists.length === 0 && (
-            <b css={styles.notFound}>No Results</b>
+            <div css={styles.noDataContainer} className="primary-text">
+              <NoDataIcon />
+              <label>Nothing Here to show</label>
+              <label>You don’t have any data.</label>
+            </div>
           )}
         </div>
         <DeleteModal
@@ -173,13 +181,10 @@ const styles = {
     max-height: 63vh;
     overflow-y: scroll;
   `,
-  notFound: css`
+  noDataContainer: css`
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    color: #b3b3b3;
-    font-size: 20px;
-    font-weight: 600;
   `,
 };
