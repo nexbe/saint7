@@ -133,12 +133,14 @@ const ApplyLeave = () => {
     return (
       <div>
         <components.Option {...props}>
-          <input
-            type="checkbox"
-            checked={props.isSelected}
-            onChange={() => null}
-          />
-          <label>{props.label}</label>
+          <div className="d-flex" style={{ gap: "7px" }}>
+            <input
+              type="checkbox"
+              checked={props.isSelected}
+              onChange={() => null}
+            />
+            <label>{props.label}</label>
+          </div>
         </components.Option>
       </div>
     );
@@ -527,6 +529,7 @@ const ApplyLeave = () => {
                   placeholder="Please select"
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
+                  blurInputOnSelect={false}
                   options={requestTosOptionList}
                   components={{
                     DropdownIndicator: () => null,
