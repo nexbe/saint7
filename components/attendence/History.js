@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import moment from "moment";
 import attendenceStore from "../../store/attendance";
-import NoDataIcon from "/public/icons/noDataIcon";
 import { setCookie, parseCookies } from "nookies";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
