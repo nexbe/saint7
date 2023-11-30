@@ -35,7 +35,7 @@ export const GET_PAYSLIP = gql`
 
 export const GET_PAYSLIP_BY_ID = gql`
   query ($id: ID) {
-    payslips(filters: { id: { eq: $id } }) {
+    payslips(sort: "createdAt:desc",pagination:{limit:200}, filters: { id: { eq: $id } }) {
       data {
         id
         attributes {
@@ -45,6 +45,7 @@ export const GET_PAYSLIP_BY_ID = gql`
           allowance
           netSalary
           basicSalary
+          createdAt
           additionalTransactions {
             id
             value
@@ -67,7 +68,7 @@ export const GET_PAYSLIP_BY_ID = gql`
 
 export const GET_PAYSLIPS_BY_USER = gql`
   query ($userId: ID!) {
-    payslips(filters: { user: { id: { eq: $userId } } }) {
+    payslips(sort: "createdAt:desc",pagination:{limit:200},filters: { user: { id: { eq: $userId } } }) {
       data {
         id
         attributes {
@@ -76,7 +77,7 @@ export const GET_PAYSLIPS_BY_USER = gql`
           payDate
           netSalary
           allowance
-
+          createdAt
           basicSalary
           additionalTransactions {
             id
