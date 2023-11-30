@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const GET_PAYSLIP = gql`
   query{
-    payslips(sort: "month:desc",pagination:{limit:200}) {
+    payslips(sort: "createdAt:desc",pagination:{limit:200}) {
       data {
         id
         attributes {
@@ -12,6 +12,7 @@ export const GET_PAYSLIP = gql`
           allowance
           netSalary
           basicSalary
+          createdAt
           additionalTransactions {
             id
             value
