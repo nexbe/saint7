@@ -67,12 +67,14 @@ const SiteCheckList = () => {
         <div css={styles.actions}>
           <button
             css={styles.actionBtn(true)}
-            onClick={() => router.push("/checklist/createCheckList")}>
+            onClick={() => router.push("/checklist/createCheckList")}
+          >
             ADD NEW CHECKLIST
           </button>
           <button
             css={styles.actionBtn(isEdit)}
-            onClick={() => setIsEdit(!isEdit)}>
+            onClick={() => setIsEdit(!isEdit)}
+          >
             {isEdit ? <EditIcon /> : <EditPencil />}
           </button>
           <button
@@ -81,7 +83,8 @@ const SiteCheckList = () => {
               selectedDeletedData && selectedDeletedData.length > 0
                 ? setDeleteModal(true)
                 : setIsDelete(!isDelete)
-            }>
+            }
+          >
             {isDelete ? <DeleteIcon /> : <BinIcon />}
           </button>
         </div>
@@ -92,12 +95,14 @@ const SiteCheckList = () => {
               return (
                 <div
                   key={checklist.id}
-                  onClick={() =>
-                    router.push({
-                      pathname: "/checklist/viewCheckList",
-                      query: { id: checklist.id },
-                    })
-                  }>
+                  onClick={() => {
+                    !isDelete &&
+                      router.push({
+                        pathname: "/checklist/viewCheckList",
+                        query: { id: checklist.id },
+                      });
+                  }}
+                >
                   <Card
                     isEdit={isEdit}
                     isDelete={isDelete}
