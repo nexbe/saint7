@@ -29,7 +29,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 9px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #718096;
     button {

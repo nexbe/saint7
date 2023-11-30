@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { CREATE_USER, GET_USER } from "../graphql/mutations/user";
 import client from "../graphql/apolloClient";
-import { setCookie, parseCookies } from "nookies";
+import { setCookie, parseCookies, destroyCookie } from "nookies";
 import { GET_USER_INFO } from "../graphql/queries/profile";
 import {
   GET_OTP,
@@ -110,7 +110,7 @@ const useAuth = create((set, get) => ({
           path: "/",
         });
       }
-      return response; 
+      return response;
     } catch (err) {
       set((state) => ({
         ...state,
@@ -143,14 +143,14 @@ const useAuth = create((set, get) => ({
         mutation: VERIFY_OTP,
         variables: data,
       });
-      console.log(response)
+      console.log(response);
       if (!response.errors) {
         set((state) => ({
           ...state,
           verifiedOtpUserData: response.data.verifyOtp,
         }));
       }
-      return response.data
+      return response.data;
     } catch (err) {}
   },
   resendOTP: async (data, router) => {
@@ -190,6 +190,37 @@ const useAuth = create((set, get) => ({
     } catch (err) {
       console.log(err);
       throw new Error("created new password failed");
+    }
+  },
+  logout: async (id, jwt) => {
+    console.log({
+      data: {
+        user: id,
+        loginAt: null,
+        logoutAt: new Date().toISOString(),
+      },
+    });
+    try {
+      const response = await client.mutate({
+        mutation: CREATE_LOGIN_HISTORY,
+        variables: {
+          data: {
+            user: id,
+            loginAt: null,
+            logoutAt: new Date().toISOString(),
+          },
+        },
+        context: {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        },
+      });
+      if (!response.errors) {
+        destroyCookie(null, "jwt", { path: "/" });
+      }
+    } catch (error) {
+      console.log(error);
     }
   },
 }));

@@ -2,14 +2,21 @@
 import { css } from "@emotion/react";
 import { Modal } from "reactstrap";
 import { useRouter } from "next/router";
+import useAuth from "../../store/auth";
 
 const LogoutModal = ({ modal, setModal }) => {
   const router = useRouter();
-
+  const { user , logout }= useAuth();
   const toggle = () => {
     setModal(!modal);
   };
 
+  const logoutHandler = async () => {
+    if(user?.id && user?.jwt){
+      await logout(user?.id, user?.jwt)
+      router.push('/')
+    }
+  }
   return (
     <Modal isOpen={modal} toggle={toggle} css={styles.wrapper}>
       <div className="primary-text" css={styles.confirmText}>
@@ -24,7 +31,7 @@ const LogoutModal = ({ modal, setModal }) => {
         >
           Cancel
         </div>
-        <div onClick={() => router.push("/")}>Logout</div>
+        <div onClick={logoutHandler}>Logout</div>
       </div>
     </Modal>
   );
