@@ -145,13 +145,14 @@ const AssignUser = () => {
                 padding: "3px",
                 fontSize: "12px",
                 fontWeight: 400,
-              }}>{`+ ${overflowCounter}`}</label>
+              }}
+            >{`+ ${overflowCounter}`}</label>
           )}
         </div>
       </components.ValueContainer>
     );
   };
-  
+
   return (
     <Layout>
       <HeaderNoti title={"Assign User"} href={"/attendance/Manager"} />
@@ -214,6 +215,8 @@ const AssignUser = () => {
               onChange={handleUsersChange}
               value={assignedUsers}
               options={userOptions}
+              blurInputOnSelect={false}
+              closeMenuOnSelect={false}
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
@@ -229,13 +232,15 @@ const AssignUser = () => {
       <div css={styles.btns}>
         <button
           onClick={() => router.push("/attendance/Manager")}
-          css={styles.cancelBtn}>
+          css={styles.cancelBtn}
+        >
           Cancel
         </button>
         <button
           disabled={dutyDates?.length === 0}
           css={styles.addBtn}
-          onClick={() => setModal(true)}>
+          onClick={() => setModal(true)}
+        >
           Assign
         </button>
       </div>
@@ -382,9 +387,9 @@ const styles = {
     justify-content: space-evenly;
     align-items: center;
     padding: 20px;
-    gap:7px;
+    gap: 7px;
     button {
-      text-align:center;
+      text-align: center;
       border-radius: 10px;
       padding: 3px 55px;
       font-size: 18px;
