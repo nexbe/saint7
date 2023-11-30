@@ -358,7 +358,7 @@ const styles = {
       background-color: #fff;
     }
     .rmdp-calendar {
-      width: 30vh;
+      width: 100%;
     }
     .rmdp-input {
       width: 100%;
