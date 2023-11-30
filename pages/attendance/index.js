@@ -73,7 +73,15 @@ const Index = () => {
         </div>
       </div>
       <div css={styles.container}>
-        {activeComponent === "check" ? <CheckInOut /> : <History />}
+        {activeComponent === "check" ? (
+          attendanceId ? (
+            <Profile />
+          ) : (
+            <CheckInOut />
+          )
+        ) : (
+          <History />
+        )}
       </div>
     </Layout>
   );
