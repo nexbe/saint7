@@ -18,7 +18,11 @@ export const FilePreview = ({ onRemove, src, fileName, size }) => {
       <div css={styles.fileIconContainer}>
         <img
           css={styles.previewImage}
-          src={isImage ? src : "images/pdfIcon.png"}
+          src={
+            isImage
+              ? src
+              : `${process.env.NEXT_PUBLIC_APP_URL}/uploads/pdf_Icon_c25ad717da.png`
+          }
         />
       </div>
 

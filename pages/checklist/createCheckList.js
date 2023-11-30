@@ -21,6 +21,7 @@ import sopStore from "../../store/sop";
 import useAuth from "../../store/auth";
 import { useRouter } from "next/router";
 import siteCheckListStore from "../../store/siteCheckList";
+import moment from "moment";
 
 const CreateCheckList = () => {
   const [fileList, setFileList] = useState([]);
@@ -44,6 +45,8 @@ const CreateCheckList = () => {
       Attachments: "",
     },
   ]);
+
+  console.log(fileList);
   const { user } = useAuth();
   const router = useRouter();
   let equipListArr = _.values(equipFileList);
@@ -53,7 +56,7 @@ const CreateCheckList = () => {
   const [formData, setFormData] = useState({
     title: "",
     location: "",
-    dateVisited: "",
+    dateVisited: moment().format("YYYY-MM-DD"),
     timeVisited: "",
     visitedBy: "",
     sop: [],
@@ -83,7 +86,7 @@ const CreateCheckList = () => {
 
   useEffect(() => {
     fetchSopTypes(user?.jwt);
-  }, [createNewSopType]);
+  }, []);
 
   const handleSOPTypeChange = (selected, index) => {
     const updatedSopTypes = [...selectedSopType];
@@ -173,7 +176,7 @@ const CreateCheckList = () => {
     let newRow = {
       id: lastId + 1,
       Name: "",
-      Attachments:[],
+      Attachments: [],
       sop_type: null,
     };
     setFileList((prevFileLists) => [...prevFileLists, []]);
@@ -257,8 +260,8 @@ const CreateCheckList = () => {
     e.preventDefault();
     let sopFilesArrToSend = [];
     let equpFileArrToSend = [];
-    if(fileList){
-      for (const [index,file] of fileListArr.entries()) {
+    if (fileList) {
+      for (const [index, file] of fileListArr.entries()) {
         const formData = new FormData();
         formData.append("files", file[index]);
         await uploadFile(formData).then(async (response) => {
@@ -269,16 +272,16 @@ const CreateCheckList = () => {
         });
       }
     }
-    const sopResponse = formData?.sop?.map((data,index)=> {
+    const sopResponse = formData?.sop?.map((data, index) => {
       const sopLists = {
         ...data,
-        Attachments: sopFilesArrToSend[index]
-      }
-      return sopLists
-    })
+        Attachments: sopFilesArrToSend[index],
+      };
+      return sopLists;
+    });
     //for equip docs
-    if(equipFileList){
-      for (const [index,file] of equipListArr.entries()) {
+    if (equipFileList) {
+      for (const [index, file] of equipListArr.entries()) {
         const formData = new FormData();
         formData.append("files", file[index]);
         await uploadFile(formData).then(async (response) => {
@@ -289,16 +292,17 @@ const CreateCheckList = () => {
         });
       }
     }
-    console.log(formData)
-    const equipResponse = formData?.equipment?.map((data,index)=> {
+
+    const equipResponse = formData?.equipment?.map((data, index) => {
       const equipLists = {
         ...data,
-        Attachments: equpFileArrToSend[index]
-      }
-      return equipLists
-    })
+        Attachments: equpFileArrToSend[index],
+      };
+      return equipLists;
+    });
+    console.log(formData);
     if (formData) {
-      createCheckList(
+      await createCheckList(
         {
           data: {
             actionTakenForProperUniform: formData?.actionTakenForProperUniform,
@@ -319,7 +323,7 @@ const CreateCheckList = () => {
         },
         user?.jwt
       );
-      router.push({
+      await router.push({
         pathname: `/checklist`,
         query: {
           message: !errorCreateCheckList ? "Success!" : "Apologies!",
@@ -337,7 +341,7 @@ const CreateCheckList = () => {
         <div css={styles.inputStyle}>
           <div>
             <label className="secondary-text" htmlFor="title">
-              Tilte <span>*</span>
+              Title <span>*</span>
             </label>
             <input
               type="text"
@@ -440,7 +444,7 @@ const CreateCheckList = () => {
                         </div>
                       </div>
                     )}
-                    <div className="formFlex">
+                    {/* <div className="formFlex">
                       <div className="d-flex">
                         <label className="secondary-text" htmlFor="Name">
                           Name <span style={{ color: "#ec1c24" }}>*</span>
@@ -458,8 +462,23 @@ const CreateCheckList = () => {
                           required
                         />
                       </label>
+                    </div> */}
+                    <div css={styles.inputStyle}>
+                      <div>
+                        <label className="secondary-text" htmlFor="Name">
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          id="Name"
+                          name="Name"
+                          value={formData.sop.Name}
+                          onChange={(e) => handleSopChange(index, e)}
+                          placeholder="Enter SOP name"
+                        />
+                      </div>
                     </div>
-                    <div className="formFlex">
+                    <div className="formFlex" style={{ margin: "0 20px" }}>
                       <div className="d-flex">
                         <label className="secondary-text" htmlFor="sop_type">
                           Type
@@ -488,7 +507,9 @@ const CreateCheckList = () => {
                         isClearable={false}
                       />
                     </div>
-                    {fileList && fileList[index] && Object?.keys(fileList[index]).length > 0 ? (
+                    {fileList &&
+                    fileList[index] &&
+                    Object?.keys(fileList[index]).length > 0 ? (
                       <UploadedFiles
                         fileList={fileList[index]}
                         setFileList={(files) =>
@@ -530,7 +551,7 @@ const CreateCheckList = () => {
                         </div>
                       </div>
                     )}
-                    <div className="formFlex">
+                    {/* <div className="formFlex">
                       <div className="d-flex">
                         <label className="secondary-text" htmlFor="Name">
                           Name
@@ -548,8 +569,25 @@ const CreateCheckList = () => {
                           css={styles.inputBox}
                         />
                       </label>
+                      
+                    </div> */}
+                    <div css={styles.inputStyle}>
+                      <div>
+                        <label className="secondary-text" htmlFor="Name">
+                          Name
+                        </label>
+                        <input
+                          className="secondary-text"
+                          type="text"
+                          id="Name"
+                          name="Name"
+                          value={formData.equipment.Name}
+                          onChange={(e) => handleEquipChange(index, e)}
+                          placeholder="Enter Equipment name"
+                        />
+                      </div>
                     </div>
-                    <div className="formFlex">
+                    {/* <div className="formFlex">
                       <div className="d-flex">
                         <label className="secondary-text" htmlFor="Remarks">
                           Remarks
@@ -566,8 +604,25 @@ const CreateCheckList = () => {
                           css={styles.inputBox}
                         />
                       </label>
+                    </div> */}
+                    <div css={styles.inputStyle}>
+                      <div>
+                        <label className="secondary-text" htmlFor="Remarks">
+                          Remarks
+                        </label>
+                        <input
+                          type="text"
+                          id="Remarks"
+                          name="Remarks"
+                          value={formData.equipment.Remarks}
+                          onChange={(e) => handleEquipChange(index, e)}
+                          className="secondary-text"
+                        />
+                      </div>
                     </div>
-                    {equipFileList && equipFileList[index] && Object?.keys(equipFileList[index]).length > 0 ? (
+                    {equipFileList &&
+                    equipFileList[index] &&
+                    Object?.keys(equipFileList[index]).length > 0 ? (
                       <UploadedFiles
                         fileList={equipFileList[index]}
                         setFileList={(files) =>
@@ -601,7 +656,8 @@ const CreateCheckList = () => {
               <div>
                 <label
                   className="secondary-text"
-                  htmlFor="reasonForProperUniform">
+                  htmlFor="reasonForProperUniform"
+                >
                   Reason
                 </label>
                 <input
@@ -618,7 +674,8 @@ const CreateCheckList = () => {
               <div>
                 <label
                   className="secondary-text"
-                  htmlFor="actionTakenForProperUniform">
+                  htmlFor="actionTakenForProperUniform"
+                >
                   Action Taken
                 </label>
                 <input
@@ -642,7 +699,8 @@ const CreateCheckList = () => {
               <div>
                 <label
                   className="secondary-text"
-                  htmlFor="actionTakenForWelfare">
+                  htmlFor="actionTakenForWelfare"
+                >
                   Action Taken
                 </label>
                 <input
@@ -702,7 +760,8 @@ const CreateCheckList = () => {
         <div css={styles.btnContainer}>
           <button
             css={styles.cancelBtn}
-            onClick={() => router.push("/checklist")}>
+            onClick={() => router.push("/checklist")}
+          >
             Cancel
           </button>
           <button css={styles.createBtn} type="submit">
@@ -780,7 +839,7 @@ const styles = {
     overflow-y: auto;
     overflow-x: hidden;
     gap: 12px;
-    max-height: 78vh;
+    max-height: 76vh;
   `,
   formContent: css`
     display: flex;
@@ -807,7 +866,7 @@ const styles = {
     justify-content: space-between;
     gap: 20px;
 
-    @media (max-width: 345px) {
+    @media (max-width: 450px) {
       flex-direction: column;
     }
     label {
@@ -821,6 +880,10 @@ const styles = {
       gap: 7px;
       height: 50px;
       width: 170px;
+      @media (max-width: 450px) {
+        width: 100%;
+        justify-content: start;
+      }
     }
     .react-datepicker__input-container {
       width: 80%;
@@ -870,15 +933,21 @@ const styles = {
   btnContainer: css`
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    padding: 0 20px;
   `,
   cancelBtn: css`
     border-radius: 10px;
     padding: 5px 50px;
-    border: 1px solid #a0aec0;
-    color: #a0aec0;
+    border: 1px solid #293991;
+    color: #293991;
     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
       0px 4px 6px 0px rgba(50, 50, 93, 0.11);
+
+    height: 46px;
+    font-size: 18px;
+    font-family: "Inter";
+    font-weight: 700;
   `,
   createBtn: css`
     border-radius: 10px;
@@ -888,6 +957,10 @@ const styles = {
     border: none;
     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08),
       0px 4px 6px 0px rgba(50, 50, 93, 0.11);
+
+    font-size: 18px;
+    font-family: "Inter";
+    font-weight: 700;
   `,
   createSopBtn: css`
     border: none;
