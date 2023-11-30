@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_ALL_USERS_HISTORY = gql`
-  query ($startDate: DateTime, $endDate:DateTime ){
-    loginHistories(filters: { loginAt: { gte: $startDate, lte :$endDate }}) {
+  query{
+    loginHistories(sort: "createdAt:desc",pagination:{limit:100}) {
       data {
         id
         attributes {

@@ -3,7 +3,7 @@ import client from "../graphql/apolloClient";
 import { GET_ALL_USERS_HISTORY } from "../graphql/queries/loginHistory";
 
 const historyStore = create((get, set) => ({
-  getAllUsersHistory: async (jwt, start, end) => {
+  getAllUsersHistory: async (jwt) => {
     try {
       const response = await client.query({
         query: GET_ALL_USERS_HISTORY,
@@ -13,10 +13,10 @@ const historyStore = create((get, set) => ({
             Authorization: `Bearer ${jwt}`,
           },
         },
-        variables:{
-          "startDate": start,
-          "endDate": end
-        }
+        // variables:{
+        //   "startDate": start,
+        //   "endDate": end
+        // }
       });
       return response.data.loginHistories.data
     } catch (err) {

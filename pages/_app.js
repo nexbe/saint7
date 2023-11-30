@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps }) {
     let socket = io(process.env.NEXT_PUBLIC_APP_URL, {
       transport: ["websocket"],
     });
-    socket.on(`stats:notification-${userData.id}`, (data) => {
+    socket.on(`stats:notification-${userData?.id}`, (data) => {
       console.log("blocked socket working", data);
       setNotiData(data);
       // clearToken()

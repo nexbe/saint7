@@ -34,7 +34,6 @@ const ConfirmationCard = () => {
         return 'th';
     }
   }
-
   const formatDateString = (dateString) => {
     const day = dayjs(dateString).format('DD');
     const date = dayjs(dateString, { timeZone: 'UTC' }).format('MMM YYYY');
@@ -62,7 +61,7 @@ const ConfirmationCard = () => {
       if (user.jwt) {
         const { start, end } = get30DaysPeriod();
         try {
-          const historyData = await getAllUsersHistory(user.jwt, start, end);
+          const historyData = await getAllUsersHistory(user.jwt);
           setAllHistory(historyData);
         } catch (error) {
           console.error("Error fetching history:", error);
@@ -96,6 +95,7 @@ const ConfirmationCard = () => {
             {allHistory?.map((history) => {
               return (
                 <div css={styles.card} key={history.id}>
+                  {console.log(history?.attributes?.logoutAt)}
                   <span>
                     Email :{" "}
                     <b>{history?.attributes?.user?.data?.attributes?.email}</b>

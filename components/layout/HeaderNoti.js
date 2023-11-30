@@ -30,10 +30,11 @@ const styles = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    white-space: nowrap;
+    gap: 5px;
     font-size: 20px;
     font-weight: 700;
-    padding: 20px;
+    padding: 10px;
     height: 90px;
     color: var(--white);
     background: var(--primary);
