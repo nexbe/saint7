@@ -26,11 +26,10 @@ const LeaveHistoryCard = ({ eachLeave }) => {
               </span>
             )}
           </div>
-          <div css={styles.leaveDetails}>
-            <div className="d-flex">
-              <span style={{ width: "30%" }}>Request To</span>
-              <span>:</span>
-              <span>
+          <ul css={styles.details}>
+            <li>
+              <span>Request To</span> :
+              <b>
                 {eachLeave?.requestedTos?.map((eachRequest) => {
                   return (
                     eachRequest?.username +
@@ -39,26 +38,24 @@ const LeaveHistoryCard = ({ eachLeave }) => {
                     "), "
                   );
                 })}
-              </span>
-            </div>
-            <div className="d-flex">
-              <span style={{ width: "24%" }}>Reason</span>
-              <span>:</span>
-              <span>{eachLeave?.reason}</span>
-            </div>
+              </b>
+            </li>
+            <li>
+              <span>Reason</span>:<b>{eachLeave?.reason}</b>
+            </li>
             {eachLeave?.status != "Pending" && (
-              <div className="d-flex">
-                <span style={{ width: "24%" }}>
-                  {eachLeave?.status == "Approved" ? "Approved" : "Rejected"} by
-                </span>
-                <span>:</span>
+              <li>
                 <span>
+                  {eachLeave?.status == "Approved" ? "Approved" : "Rejected"} by
+                </span>{" "}
+                :
+                <b>
                   {eachLeave?.actionBy?.username} (
                   {eachLeave?.actionBy?.role?.name})
-                </span>
-              </div>
+                </b>
+              </li>
             )}
-          </div>
+          </ul>
           <span className="leaveDate">
             <BiCalendarAlt color="#A0AEC0" size={18} />
             {dayjs(eachLeave?.from).locale("en-US").format("MMM / DD / YY")}
@@ -123,6 +120,38 @@ const styles = {
       display: flex;
       gap: 10px;
       justify-content: flex-start;
+    }
+  `,
+  details: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    padding-left: 1rem;
+    padding-top:10px;
+    ul {
+      display: flex;
+      flex-direction: column;
+      padding-left: 0rem;
+    }
+    li {
+      color: #000;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      display: flex;
+    }
+    b {
+      font-weight: 400;
+      text-align: left;
+      font-size: 12px;
+      padding-left: 20px;
+    }
+    span {
+      min-width: 80px;
+      text-align: left;
+      margin-right: 10px;
+      display: inline-block;
     }
   `,
 };
