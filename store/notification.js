@@ -3,6 +3,7 @@ import { GET_NOTIFICATIONS_BY_USER } from "../graphql/queries/notification";
 
 const notiStore = create((set, get) => ({
   getNotibyUser: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
       query: GET_NOTIFICATIONS_BY_USER,
       variables: where,

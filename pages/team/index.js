@@ -12,11 +12,16 @@ import SearchIcon from "../../public/icons/searchIcon";
 import userStore from "../../store/user";
 import authStore from "../../store/auth";
 import NoDataIcon from "/public/icons/noDataIcon";
+import Loading from "../../components/Loading";
 
 const Team = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
-  const { getAllUsers, UserInfo: userInfo } = userStore((state) => state);
+  const {
+    getAllUsers,
+    UserInfo: userInfo,
+    loading,
+  } = userStore((state) => state);
   const { user } = authStore((state) => state);
   const [addFavourite, setAddFavourite] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
@@ -141,6 +146,7 @@ const Team = () => {
           </div>
         </div>
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };

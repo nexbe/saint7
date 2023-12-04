@@ -9,6 +9,7 @@ import { sanitizeResults } from "../utils/sanitizer";
 
 const leavestore = create((set, get) => ({
   getAllLeaves: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error } = await apolloClient.query({
       query: GET_LEAVE_BY_ID,
       variables: where,
@@ -16,6 +17,7 @@ const leavestore = create((set, get) => ({
     });
     if (data) {
       let leaveInfo = sanitizeResults(data.leaveInformations);
+      set({ loading: false });
       set({ LeaveInfo: leaveInfo });
       return new Promise((resolve) => {
         resolve(leaveInfo);
@@ -23,6 +25,7 @@ const leavestore = create((set, get) => ({
     }
   },
   getLeaves: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error } = await apolloClient.query({
       query: GET_LEAVES,
       variables: where,
@@ -30,6 +33,7 @@ const leavestore = create((set, get) => ({
     });
     if (data) {
       let leaveInfo = sanitizeResults(data.leaveInformations);
+      set({ loading: false });
       set({ LeaveInfo: leaveInfo });
       return new Promise((resolve) => {
         resolve(leaveInfo);
@@ -37,6 +41,7 @@ const leavestore = create((set, get) => ({
     }
   },
   getLeavesByRequest: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error } = await apolloClient.query({
       query: GET_LEAVES_BY_REQUEST,
       variables: where,
@@ -44,6 +49,7 @@ const leavestore = create((set, get) => ({
     });
     if (data) {
       let leaveInfo = sanitizeResults(data.leaveInformations);
+      set({ loading: false });
       set({ LeaveInfo: leaveInfo });
       return new Promise((resolve) => {
         resolve(leaveInfo);
@@ -51,6 +57,7 @@ const leavestore = create((set, get) => ({
     }
   },
   getLeavesByChosenFields: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error } = await apolloClient.query({
       query: GET_LEAVES_BY_CHOSEN_FIELDS,
       variables: where,
@@ -58,6 +65,7 @@ const leavestore = create((set, get) => ({
     });
     if (data) {
       let leaveInfo = sanitizeResults(data.leaveInformations);
+      set({ loading: false });
       set({ LeaveInfo: leaveInfo });
       return new Promise((resolve) => {
         resolve(leaveInfo);
@@ -65,12 +73,15 @@ const leavestore = create((set, get) => ({
     }
   },
   createLeave: async ({ createLeaveAction, data }) => {
+    set({ loading: true });
     try {
       await createLeaveAction({
         variables: {
           data: data,
         },
-      }).then((value) => {});
+      }).then((value) => {
+        set({ loading: false });
+      });
     } catch (error) {}
   },
 
@@ -97,6 +108,7 @@ const leavestore = create((set, get) => ({
 
   fetch: false,
   leaveInfo: [],
+  loading: true,
 }));
 
 export default leavestore;

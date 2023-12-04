@@ -22,14 +22,17 @@ import { DELETE_DOCUMENT } from "../../graphql/mutations/document";
 import EditPencil from "../../public/icons/editPencil";
 import BinIcon from "../../public/icons/binIcon";
 import { parseCookies } from "nookies";
+import Loading from "../../components/Loading";
 
 const Documents = () => {
   const router = useRouter();
   const cookies = parseCookies();
   const apolloClient = useApolloClient();
-  const { getAllDocuments, DocumentInfo: documentInfo } = documentStore(
-    (state) => state
-  );
+  const {
+    getAllDocuments,
+    DocumentInfo: documentInfo,
+    loading,
+  } = documentStore((state) => state);
   const [deleteDocumentAction, { errDeleteDocument }] =
     useMutation(DELETE_DOCUMENT);
   const { user } = userStore((state) => state);
@@ -205,6 +208,7 @@ const Documents = () => {
           belongTo={"document"}
         />
       )}
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };

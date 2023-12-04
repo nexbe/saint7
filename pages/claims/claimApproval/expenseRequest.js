@@ -30,11 +30,16 @@ import claimStore from "../../../store/claim";
 import { UPDATE_CLAIM } from "../../../graphql/mutations/claim";
 import NotificationBox from "../../../components/notification/NotiBox";
 import ConfirmExpenseModal from "../../../components/claims/claimApproval/ConfirmModal";
+import Loading from "../../../components/Loading";
 
 const ExpenseRequestStatus = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
-  const { getClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const {
+    getClaims,
+    ClaimInfo: claimInfo,
+    loading,
+  } = claimStore((state) => state);
   const { updateClaim } = claimStore((state) => state);
   const [updateClaimAction, errUpdateClaim] = useMutation(UPDATE_CLAIM);
   const { user } = userStore((state) => state);
@@ -615,6 +620,7 @@ const ExpenseRequestStatus = () => {
           handleCancel={handleCancel}
         />
       )}
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };

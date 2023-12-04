@@ -26,11 +26,16 @@ import PlusIcon from "/public/icons/plusIcon";
 import userStore from "../../store/auth";
 import claimStore from "../../store/claim";
 import NotificationBox from "../../components/notification/NotiBox";
+import Loading from "../../components/Loading";
 
 const ExpenseRequestStatus = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
-  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const {
+    getAllClaims,
+    ClaimInfo: claimInfo,
+    loading,
+  } = claimStore((state) => state);
   const { user } = userStore((state) => state);
   const [activeTab, setActiveTab] = useState(1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -47,6 +52,7 @@ const ExpenseRequestStatus = () => {
   const [filterTerm, setFilterTerm] = useState("");
   const [expenseList, setExpenseList] = useState();
   const [filteredData, setFilteredData] = useState(claimInfo);
+  const [pendingData, setPendingData] = useState(claimInfo);
   const [approvedData, setApprovedData] = useState(claimInfo);
   const [rejectedData, setRejectedData] = useState(claimInfo);
   const [approvedTotal, setApprovedTotal] = useState();
@@ -72,6 +78,13 @@ const ExpenseRequestStatus = () => {
   }, [claimInfo, router.query]);
 
   const handleListChange = (filteredResults) => {
+    const pendingList = filteredResults.filter(
+      (item) => item && item.status && item.status.toLowerCase() === "pending"
+    );
+
+    const pendingResult = _.groupBy(pendingList, monthName);
+    const pendingResultArr = _.entries(pendingResult);
+    setPendingData(pendingResultArr);
     const approvedList = filteredResults.filter(
       (item) => item && item.status && item.status.toLowerCase() === "approved"
     );
@@ -307,45 +320,41 @@ const ExpenseRequestStatus = () => {
             </div>
             {activeTab == 1 && (
               <>
-                {filteredData && filteredData.length > 0 && (
+                {pendingData && pendingData.length > 0 && (
                   <div css={styles.cardContainer}>
-                    {filteredData.map(
-                      (item, index) =>
-                        item.status === "pending" && (
-                          <div
-                            css={styles.eachCard}
-                            className="primary-text"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              router.push({
-                                pathname: "/claims/requestDetail",
-                                query: {
-                                  expenseId: item.id,
-                                  userName:
-                                    item?.users_permissions_user?.username,
-                                },
-                              });
-                            }}
-                            key={index}
-                          >
-                            <label>
-                              <label css={styles.expenseId}>
-                                #ER-0000{item.id}
-                              </label>
-                              {item.category?.label}
-                            </label>
-                            <label style={{ width: "20%" }}>
-                              $ {item.amount}
-                              <label css={styles.expenseStatus}>
-                                {item.status}
-                              </label>
-                            </label>
-                          </div>
-                        )
-                    )}
+                    {pendingData.map((item, index) => (
+                      <div
+                        css={styles.eachCard}
+                        className="primary-text"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          router.push({
+                            pathname: "/claims/requestDetail",
+                            query: {
+                              expenseId: item.id,
+                              userName: item?.users_permissions_user?.username,
+                            },
+                          });
+                        }}
+                        key={index}
+                      >
+                        <label>
+                          <label css={styles.expenseId}>
+                            #ER-0000{item.id}
+                          </label>
+                          {item.category?.label}
+                        </label>
+                        <label style={{ width: "20%" }}>
+                          $ {item.amount}
+                          <label css={styles.expenseStatus}>
+                            {item.status}
+                          </label>
+                        </label>
+                      </div>
+                    ))}
                   </div>
                 )}
-                {filteredData && filteredData.length == 0 && (
+                {pendingData && pendingData.length == 0 && (
                   <div css={styles.noDataContainer} className="primary-text">
                     <NoDataIcon />
                     <label>Nothing Here to show</label>
@@ -360,6 +369,7 @@ const ExpenseRequestStatus = () => {
                   expenseList={approvedData}
                   total={approvedTotal}
                   role={user?.role?.name}
+                  claimInfo={claimInfo}
                 />
               </div>
             )}
@@ -369,6 +379,7 @@ const ExpenseRequestStatus = () => {
                   expenseList={rejectedData}
                   total={rejectedTotal}
                   role={user?.role?.name}
+                  claimInfo={claimInfo}
                 />
               </div>
             )}
@@ -397,6 +408,7 @@ const ExpenseRequestStatus = () => {
           )}
         </button>
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };
