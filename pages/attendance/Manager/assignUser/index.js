@@ -68,11 +68,11 @@ const AssignUser = () => {
     label: eachOption?.attributes?.title,
   }));
 
-  const userOptions = userInfo?.map((eachOption) => ({
+  const userOptions = userInfo?.filter((eachOption) => eachOption?.role?.name === "guard")
+  ?.map((eachOption) => ({
     value: eachOption?.id,
     label: eachOption?.username,
   }));
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const dates = [];
