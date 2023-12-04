@@ -192,14 +192,7 @@ const useAuth = create((set, get) => ({
       throw new Error("created new password failed");
     }
   },
-  logout: async (id, jwt) => {
-    console.log({
-      data: {
-        user: id,
-        loginAt: null,
-        logoutAt: new Date().toISOString(),
-      },
-    });
+  logout: async (id, jwt, router) => {
     try {
       const response = await client.mutate({
         mutation: CREATE_LOGIN_HISTORY,
@@ -218,6 +211,12 @@ const useAuth = create((set, get) => ({
       });
       if (!response.errors) {
         destroyCookie(null, "jwt", { path: "/" });
+        destroyCookie(null, "user");
+        set((state) => ({
+          ...state,
+          user: null,
+        }));
+        router.push("/");
       }
     } catch (error) {
       console.log(error);

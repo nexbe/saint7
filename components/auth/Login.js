@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
 import LoginLogo from "../../public/icons/LoginLogo";
@@ -19,7 +19,18 @@ const Login = () => {
   const [error, setError] = useState();
   const [modal, setModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
+  const {user} = useAuth();
 
+  useEffect(() => {
+    if (user?.jwt && !modal) {
+      console.log("Redirecting to /home");
+      router.push('/home');
+    } else {
+      console.log("Redirecting to /");
+      router.push('/');
+    }
+  }, [user, modal]);
+  
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     if (email && password) {

@@ -11,10 +11,9 @@ const LogoutModal = ({ modal, setModal }) => {
     setModal(!modal);
   };
 
-  const logoutHandler = async () => {
+  const logoutHandler = () => {
     if(user?.id && user?.jwt){
-      await logout(user?.id, user?.jwt)
-      router.push('/')
+      logout(user?.id, user?.jwt,router)
     }
   }
   return (
