@@ -14,6 +14,7 @@ import Card from "../../components/notifications/Card";
 import Layout from "../../components/layout/Layout";
 import NoDataIcon from "/public/icons/noDataIcon";
 import notiStore from "../../store/notification";
+import Loading from "../../components/Loading";
 
 const Notifications = () => {
   const [searchBox, setSearchBox] = useState(false);
@@ -24,7 +25,7 @@ const Notifications = () => {
   const cookies = parseCookies();
   const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
-  const { getNotibyUser, notiUser, notiFetchData } = notiStore(
+  const { getNotibyUser, notiUser, notiFetchData, loading } = notiStore(
     (state) => state
   );
 
@@ -131,6 +132,7 @@ const Notifications = () => {
           </div>
         )}
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };
