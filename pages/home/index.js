@@ -24,6 +24,7 @@ import moment from "moment";
 import siteStore from "../../store/sites";
 import { parseCookies } from "nookies";
 import attendenceStore from "../../store/attendance";
+import Loading from "../../components/Loading";
 
 const Home = () => {
   const router = useRouter();
@@ -253,6 +254,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };

@@ -28,6 +28,7 @@ const userStore = create((set, get) => ({
   },
 
   getUserById: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
       query: GET_USER_BY_ID,
       variables: where,
@@ -36,6 +37,7 @@ const userStore = create((set, get) => ({
 
     if (data) {
       let userData = data.usersPermissionsUsers.data;
+      set({ loading: false });
       set({ UserData: userData });
       return new Promise((resolve) => {
         resolve(userData);
@@ -44,14 +46,15 @@ const userStore = create((set, get) => ({
   },
 
   getuserByRole: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
       query: GET_USER_BY_ROLE,
-      // variables: where,
       fetchPolicy: "network-only",
     });
 
     if (data) {
       let userData = data.usersPermissionsUsers.data;
+      set({ loading: false });
       set({ roleUserData: userData });
       return new Promise((resolve) => {
         resolve(userData);
@@ -60,6 +63,7 @@ const userStore = create((set, get) => ({
   },
 
   getAssignUsers: async ({ apolloClient, where }) => {
+    set({ loading: true });
     const { data, error, loading } = await apolloClient.query({
       query: GET_ASSIGN_SHIFTS,
       variables: where,
@@ -68,6 +72,7 @@ const userStore = create((set, get) => ({
 
     if (data) {
       let assignUsers = data.assigneeShifts.data;
+      set({ loading: false });
       set({ AssignUsers: assignUsers });
       return new Promise((resolve) => {
         resolve(assignUsers);
@@ -76,13 +81,16 @@ const userStore = create((set, get) => ({
   },
 
   updateUser: async ({ updateUserAction, id, userData }) => {
+    set({ loading: true });
     try {
       await updateUserAction({
         variables: {
           data: userData,
           id: id,
         },
-      }).then((value) => {});
+      }).then((value) => {
+        set({ loading: false });
+      });
     } catch (error) {}
   },
 

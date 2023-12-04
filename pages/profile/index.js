@@ -41,6 +41,7 @@ import { uploadFile } from "../../components/upload/upload";
 import { DELETE_CERTIFICATE } from "../../graphql/mutations/certificate";
 import EditPencil from "../../public/icons/editPencil";
 import EditIcon from "../../public/icons/editIcon";
+import Loading from "../../components/Loading";
 
 const Profile = () => {
   const router = useRouter();
@@ -51,7 +52,7 @@ const Profile = () => {
     getAllProfiles,
     ProfileInfo: profileInfo,
     updateProfile,
-    createProfile,
+    loading,
   } = profileStore((state) => state);
   const { updateUser } = userStore((state) => state);
   const [updateProfileAction, { errUploadProfile }] =
@@ -694,6 +695,7 @@ const Profile = () => {
           selectedCertificate={selectedCertificate}
         />
       )}
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };
