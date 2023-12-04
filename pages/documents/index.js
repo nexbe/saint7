@@ -21,9 +21,11 @@ import NotificationBox from "../../components/notification/NotiBox";
 import { DELETE_DOCUMENT } from "../../graphql/mutations/document";
 import EditPencil from "../../public/icons/editPencil";
 import BinIcon from "../../public/icons/binIcon";
+import { parseCookies } from "nookies";
 
 const Documents = () => {
   const router = useRouter();
+  const cookies = parseCookies();
   const apolloClient = useApolloClient();
   const { getAllDocuments, DocumentInfo: documentInfo } = documentStore(
     (state) => state
@@ -31,6 +33,7 @@ const Documents = () => {
   const [deleteDocumentAction, { errDeleteDocument }] =
     useMutation(DELETE_DOCUMENT);
   const { user } = userStore((state) => state);
+  const userData = cookies.user ? JSON.parse(cookies.user) : null;
 
   const [addModal, setAddModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -83,6 +86,8 @@ const Documents = () => {
     });
   };
 
+  console.log(userData);
+
   return (
     <Layout>
       <div css={styles.wrapper}>
@@ -95,7 +100,7 @@ const Documents = () => {
           />
         </div>
         <div css={styles.bodyContainer}>
-          {user?.role?.name.toLowerCase() != "guard" && (
+          {userData && userData?.role?.name.toLowerCase() != "guard" ? (
             <div css={styles.actions}>
               <button
                 css={styles.actionBtn(true)}
@@ -119,7 +124,7 @@ const Documents = () => {
                 {isDelete ? <DeleteIcon /> : <BinIcon />}
               </button>
             </div>
-          )}
+          ) : null}
           <div>
             {documentInfo &&
               documentInfo?.map((eachDocument, index) => {

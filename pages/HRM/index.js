@@ -49,26 +49,24 @@ const Home = () => {
     <Layout>
       <div css={styles.wrapper}>
         <div css={styles.headerContainer}>
-          <div>
-            <div className="d-flex" css={styles.profileInfo}>
-              <label>
-                <img
-                  src={
-                    profileInfo[0]?.photo?.url
-                      ? `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
-                      : "images/defaultImage.jpg"
-                  }
-                />
-              </label>
-              <div className="d-flex" style={{ flexDirection: "column" }}>
-                <span css={styles.welcomeText}>Welcome !</span>
-                <span className="header-text">{userData?.username}</span>
-              </div>
-            </div>
-            <div css={styles.timeText}>
-              {dayjs(new Date()).format(" dddd, DD MMMM YYYY")}
+          <div className="d-flex" css={styles.profileInfo}>
+            <img
+              src={
+                profileInfo[0]?.photo?.url
+                  ? `${process.env.NEXT_PUBLIC_APP_URL}${profileInfo[0]?.photo.url}`
+                  : "images/defaultImage.jpg"
+              }
+            />
+
+            <div className="d-flex" style={{ flexDirection: "column" }}>
+              <span css={styles.welcomeText}>Welcome !</span>
+              <span className="header-text">{userData?.username}</span>
             </div>
           </div>
+          <div css={styles.timeText}>
+            <p></p>
+          </div>
+
           <div
             onClick={() => router.push("/notifications")}
             style={{ cursor: "pointer" }}
