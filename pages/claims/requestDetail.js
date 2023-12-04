@@ -11,11 +11,16 @@ import PlusIcon from "/public/icons/plusIcon";
 import InvoiceImageModal from "../../components/claims/InvoiceImageModal";
 import userStore from "../../store/auth";
 import claimStore from "../../store/claim";
+import Loading from "../../components/Loading";
 
 const RequestDetail = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
-  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const {
+    getAllClaims,
+    ClaimInfo: claimInfo,
+    loading,
+  } = claimStore((state) => state);
   const { user } = userStore((state) => state);
   const [activeTab, setActiveTab] = useState(1);
   const [openImageModal, setOpenImageModal] = useState(false);
@@ -259,6 +264,7 @@ const RequestDetail = () => {
           </div>
         )}
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };

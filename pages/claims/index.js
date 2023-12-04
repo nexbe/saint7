@@ -28,11 +28,16 @@ import BackIcon from "/public/icons/backIcon";
 import PlusIcon from "/public/icons/plusIcon";
 import userStore from "../../store/auth";
 import claimStore from "../../store/claim";
+import Loading from "../../components/Loading";
 
 const Claims = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
-  const { getAllClaims, ClaimInfo: claimInfo } = claimStore((state) => state);
+  const {
+    getAllClaims,
+    ClaimInfo: claimInfo,
+    loading,
+  } = claimStore((state) => state);
   const { user } = userStore((state) => state);
 
   const [showChart, setShowChart] = useState(true);
@@ -410,6 +415,7 @@ const Claims = () => {
           </button>
         </div>
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };
