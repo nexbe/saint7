@@ -22,6 +22,7 @@ import Card from "../../components/eLeave/leaveCalendar/Card";
 import { UPDATE_LEAVE } from "../../graphql/mutations/eLeave";
 import NotificationBox from "../../components/notification/NotiBox";
 import NoDataIcon from "/public/icons/noDataIcon";
+import Loading from "../../components/Loading";
 
 const LeaveCalendar = () => {
   dayjs.extend(isBetween);
@@ -33,6 +34,7 @@ const LeaveCalendar = () => {
     getLeaves,
     LeaveInfo: leaveInfo,
     updateLeave,
+    loading,
   } = leavestore((state) => state);
   const [updateLeaveAction, errUpdateLeave] = useMutation(UPDATE_LEAVE);
 
@@ -343,6 +345,7 @@ const LeaveCalendar = () => {
           </div>
         </div>
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };

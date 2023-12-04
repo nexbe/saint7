@@ -21,6 +21,7 @@ import RefreshIcon from "/public/icons/refreshIcon";
 import SearchIcon from "/public/icons/searchIcon";
 import { UPDATE_LEAVE } from "../../graphql/mutations/eLeave";
 import DateFilterModal from "../../components/claims/DateFilterModal";
+import Loading from "../../components/Loading";
 
 const LeaveHistory = () => {
   const router = useRouter();
@@ -31,6 +32,7 @@ const LeaveHistory = () => {
     getLeavesByRequest,
     LeaveInfo: leaveInfo,
     updateLeave,
+    loading,
   } = leavestore((state) => state);
   const [updateLeaveAction, errUpdateLeave] = useMutation(UPDATE_LEAVE);
 
@@ -401,6 +403,7 @@ const LeaveHistory = () => {
           </div>
         </div>
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };

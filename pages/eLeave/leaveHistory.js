@@ -11,12 +11,17 @@ import NoDataIcon from "/public/icons/noDataIcon";
 import authStore from "../../store/auth";
 import leavestore from "../../store/eLeave";
 import NotificationBox from "../../components/notification/NotiBox";
+import Loading from "../../components/Loading";
 
 const LeaveHistory = () => {
   const router = useRouter();
   const apolloClient = useApolloClient();
   const { user } = authStore((state) => state);
-  const { getAllLeaves, LeaveInfo: leaveInfo } = leavestore((state) => state);
+  const {
+    getAllLeaves,
+    LeaveInfo: leaveInfo,
+    loading,
+  } = leavestore((state) => state);
 
   const [activeTab, setActiveTab] = useState(1);
   const [pendingData, setPendingData] = useState(leaveInfo);
@@ -147,6 +152,7 @@ const LeaveHistory = () => {
           </div>
         </div>
       </div>
+      {loading && <Loading isOpen={loading} />}
     </Layout>
   );
 };
