@@ -2,12 +2,13 @@ import { gql } from "@apollo/client";
 
 export const GET_SOP_TYPES = gql`
   query {
-    sopTypes {
+    sopTypes(sort: "createdAt:desc", pagination:{limit:100}){
       data {
         id
         attributes {
           name
           description
+          createdAt
         }
       }
     }

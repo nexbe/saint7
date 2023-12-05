@@ -46,7 +46,6 @@ const CreateCheckList = () => {
     },
   ]);
 
-  console.log(fileList);
   const { user } = useAuth();
   const router = useRouter();
   let equipListArr = _.values(equipFileList);
@@ -70,10 +69,10 @@ const CreateCheckList = () => {
     createdUser: user?.id,
   });
 
-  const createNewSopType = (e) => {
+  const createNewSopType = async (e) => {
     e.preventDefault();
     if (typedValue) {
-      createSopType(
+      await createSopType(
         {
           data: {
             name: typedValue,
@@ -81,7 +80,9 @@ const CreateCheckList = () => {
         },
         user?.jwt
       );
+     await fetchSopTypes(user?.jwt);
     }
+    setTypedValue('')
   };
 
   useEffect(() => {
@@ -444,25 +445,6 @@ const CreateCheckList = () => {
                         </div>
                       </div>
                     )}
-                    {/* <div className="formFlex">
-                      <div className="d-flex">
-                        <label className="secondary-text" htmlFor="Name">
-                          Name <span style={{ color: "#ec1c24" }}>*</span>
-                        </label>
-                      </div>
-                      <label>
-                        <input
-                          type="text"
-                          id="Name"
-                          name="Name"
-                          value={formData.sop.Name}
-                          onChange={(e) => handleSopChange(index, e)}
-                          className="secondary-text"
-                          css={styles.inputBox}
-                          required
-                        />
-                      </label>
-                    </div> */}
                     <div css={styles.inputStyle}>
                       <div>
                         <label className="secondary-text" htmlFor="Name">
