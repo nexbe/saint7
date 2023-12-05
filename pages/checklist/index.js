@@ -17,6 +17,7 @@ import NotificationBox from "../../components/notification/NotiBox";
 
 const SiteCheckList = () => {
   const router = useRouter();
+  console.log(router.query)
   const [isEdit, setIsEdit] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -26,7 +27,8 @@ const SiteCheckList = () => {
   const [selectedDeletedData, setSelectedDeletedData] = useState([]);
   useEffect(() => {
     fetchCheckList(user?.jwt);
-  }, [router, setDeleteModal, isEdit]);
+  }, [router.query, setDeleteModal, isEdit, setIsEdit]);
+
   //delete announcements
   const handleSelect = (selectedId) => {
     setSelectedDeletedData((prevData) => {
@@ -39,14 +41,15 @@ const SiteCheckList = () => {
   };
 
   //handle delete
-  const handleDelete = (id) => {
-    deleteCheckLists(id, user?.jwt);
+  const handleDelete = async (id) => {
+    await deleteCheckLists(id, user?.jwt);
+    await fetchCheckList(user?.jwt);
     router.push({
       pathname: `/checklist`,
       query: {
         message: !errorDeleteCheckLists ? "Success!" : "Apologies!",
         belongTo: !errorDeleteCheckLists ? "Site Checklists" : "error",
-        action: "delete",
+        label: "Checklist has successfully deleted.",
         userId: user?.id,
       },
     });
@@ -54,14 +57,13 @@ const SiteCheckList = () => {
 
   return (
     <Layout>
-      <HeaderNoti title={"Site Checklist"} href={"/home"} />
+      <HeaderNoti title={"Site Checklist"} href={"/operation"} />
       <div css={styles.wrapper}>
         <div style={{ position: "relative", margin: "2px 10px" }}>
           <NotificationBox
             message={router.query.message}
-            belongTo={router.query.belongTo}
-            timeout={5000}
-            action={router.query.action}
+            timeout={1000}
+            label={router.query.label}
           />
         </div>
         <div css={styles.actions}>
@@ -96,7 +98,7 @@ const SiteCheckList = () => {
                 <div
                   key={checklist.id}
                   onClick={() => {
-                    !isDelete &&
+                    !isDelete && !isEdit &&
                       router.push({
                         pathname: "/checklist/viewCheckList",
                         query: { id: checklist.id },
