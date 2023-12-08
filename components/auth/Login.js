@@ -19,35 +19,38 @@ const Login = () => {
   const [error, setError] = useState();
   const [modal, setModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
-  const {user} = useAuth();
+  const [redirectHome, setRedirectHome] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (user?.jwt && !modal) {
+    if (user?.jwt && !redirectHome) {
       console.log("Redirecting to /home");
-      router.push('/home');
+      router.push("/home");
     } else {
       console.log("Redirecting to /");
-      router.push('/');
+      router.push("/");
     }
-  }, [user, modal]);
-  
+  }, [redirectHome]);
+
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     if (email && password) {
       try {
-      const response =  await login({
+        const response = await login({
           identifier: email,
           password: password,
         });
-        if(!response.errors) {
-          setModal(true); 
-          setError(null)
+        if (!response.errors) {
+          setModal(true);
+          setError(null);
         } else {
-          setModal(false)
+          setModal(false);
+          setRedirectHome(false);
         }
       } catch (err) {
         console.log(err);
-        setError(errorLogin)
+        setRedirectHome(false);
+        setError(errorLogin);
       }
     }
   };
@@ -130,7 +133,11 @@ const Login = () => {
         setModal={setModal}
         setSuccessModal={setSuccessModal}
       />
-     <LoginSuccessModal modal={successModal} setModal={setSuccessModal} />
+      <LoginSuccessModal
+        modal={successModal}
+        setModal={setSuccessModal}
+        setRedirectHome={setRedirectHome}
+      />
     </div>
   );
 };

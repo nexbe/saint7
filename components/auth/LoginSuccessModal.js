@@ -4,10 +4,11 @@ import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
 import CustomeModal from "./CustomeModal";
 
-const LoginSuccessModal = ({ modal, setModal }) => {
+const LoginSuccessModal = ({ modal, setModal, setRedirectHome }) => {
   const router = useRouter();
   const onClickHandler = () => {
     setModal(false);
+    setRedirectHome(true)
     router.push("/home");
   };
   return (
