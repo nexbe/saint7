@@ -15,7 +15,13 @@ import documentStore from "../../store/document";
 import { UPDATE_DOCUMENT } from "../../graphql/mutations/document";
 import { uploadFile } from "../upload/upload";
 
-const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
+const EditDocModal = ({
+  modal,
+  setModal,
+  selectedDocument,
+  userId,
+  visibleFor,
+}) => {
   const {
     handleSubmit,
     register,
@@ -112,6 +118,7 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
           belongTo: errEditDocument ? "Document" : "error",
           label: data?.title + " has successfully updated.",
           userId: userId,
+          visibleFor: visibleFor,
         },
       });
     }

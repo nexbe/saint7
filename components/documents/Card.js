@@ -108,13 +108,19 @@ const Card = ({
           </AccordionHeader>
           <AccordionBody accordionId={eachDocument?.id}>
             {eachDocument?.description}
-            <div className="fileIconContainer">
+            <div className="fileContainer">
               {eachDocument?.attachment &&
                 eachDocument?.attachment.map((eachAttach, index) => {
                   return (
                     isImage[index] == false && (
-                      <div onClick={() => onButtonClick(eachAttach)}>
-                        <PdfIcon />
+                      <div
+                        css={styles.fileIconContainer}
+                        onClick={() => onButtonClick(eachAttach)}
+                      >
+                        <img
+                          css={styles.previewPdf}
+                          src={`${process.env.NEXT_PUBLIC_APP_URL}/uploads/pdf_Icon_c25ad717da.png`}
+                        />
                       </div>
                     )
                   );
@@ -122,6 +128,7 @@ const Card = ({
               {imageList.length > 0 && (
                 <div onClick={imageModal} style={{ cursor: "pointer" }}>
                   <img
+                    className="previewImage"
                     style={{ opacity: imageList?.length > 1 ? "0.7" : "1" }}
                     src={`${process.env.NEXT_PUBLIC_APP_URL}${imageList[0]?.url}`}
                   />
@@ -177,15 +184,35 @@ const styles = {
       font-weight: 400;
       line-height: normal;
     }
-    .fileIconContainer {
+    .fileContainer {
       display: flex;
-    }
-    .fileIconContainer svg, img {
+      gap: 10px;
       margin-top: 10px;
+    }
+    .fileContainer svg, .previewImage {
+     
       width: 56px;
       height: 56px;
-      margin-right: 10px;
+      
     }
+   
+  `,
+  fileIconContainer: css`
+    width: 60px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: #e3f3ff;
+    padding: 3px;
+  `,
+  previewPdf: css`
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 1px solid #e3f0ff;
+    filter: drop-shadow(0px 4px 16px rgba(5, 14, 37, 0.05));
+    border-radius: 4px 4px 0px 0px;
   `,
   imageCount: css`
     position: relative;
