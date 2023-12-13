@@ -21,7 +21,7 @@ const Login = () => {
   const [successModal, setSuccessModal] = useState(false);
   const [redirectHome, setRedirectHome] = useState(false);
   const { user } = useAuth();
-
+  
   useEffect(() => {
     if (user?.jwt && !redirectHome) {
       console.log("Redirecting to /home");
