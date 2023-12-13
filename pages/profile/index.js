@@ -303,7 +303,6 @@ const Profile = () => {
     });
   };
 
-  console.log(selectedProfile[0].contactNumber);
   useEffect(() => {
     if (!!profileInfo && profileInfo?.length > 0) {
       const selectedProfile = !!router.query.userId
