@@ -12,9 +12,17 @@ import { parseCookies } from "nookies";
 
 const Card = ({ isActive, state, notiData }) => {
   const convertTimeToAMPM = (timeString) => {
-    const time = new Date(`2000-01-01T${timeString}Z`); // Use a specific date to parse the time
-    const options = { hour: "numeric", minute: "2-digit", hour12: true };
-    return time.toLocaleString("en-US", options);
+    const timeComponents = timeString?.split(":");
+    if (timeString) {
+      const hours = parseInt(timeComponents[0], 10); // Extract hours
+      const minutes = parseInt(timeComponents[1], 10); // Extract minutes
+      const ampm = hours >= 12 ? "PM" : "AM"; // Determine AM or PM
+      const displayHours = hours % 12 || 12; // Convert hours to 12-hour format
+
+      return `${displayHours}:${minutes < 10 ? "0" : ""}${minutes} ${ampm}`;
+    } else {
+      ("00:00");
+    }
   };
   const cookies = parseCookies();
   const userData = cookies.user ? JSON.parse(cookies.user) : null;

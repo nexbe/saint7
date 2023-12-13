@@ -58,6 +58,7 @@ const QrCode = (props) => {
               if (!!result) {
                 const resultData = JSON.parse(result.text);
                 setResultData(resultData);
+                console.log(result);
               } else {
                 setResultData();
               }

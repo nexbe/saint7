@@ -2,7 +2,11 @@ const { gql } = require("@apollo/client");
 
 export const GET_NOTIFICATIONS_BY_USER = gql`
   query ($userId: ID!) {
-    notifications(filters: { notified_users: { id: { eq: $userId } } }) {
+    notifications(
+      filters: { notified_users: { id: { eq: $userId } } }
+      pagination: { limit: 100 }
+      sort: "createdAt:desc"
+    ) {
       data {
         id
         attributes {
