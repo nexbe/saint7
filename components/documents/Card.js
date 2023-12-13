@@ -113,7 +113,10 @@ const Card = ({
                 eachDocument?.attachment.map((eachAttach, index) => {
                   return (
                     isImage[index] == false && (
-                      <div onClick={() => onButtonClick(eachAttach)}>
+                      <div
+                        onClick={() => onButtonClick(eachAttach)}
+                        key={index}
+                      >
                         <PdfIcon />
                       </div>
                     )

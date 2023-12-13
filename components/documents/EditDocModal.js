@@ -34,7 +34,7 @@ const EditDocModal = ({ modal, setModal, selectedDocument, userId }) => {
   const [saveAction, setSaveAction] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [fileList, setFileList] = useState([]);
-  let fileListArr = _.entries(fileList);
+  let fileListArr = [];
 
   const toggle = () => {
     setModal(!modal);
