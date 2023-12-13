@@ -303,6 +303,7 @@ const Profile = () => {
     });
   };
 
+  console.log(selectedProfile[0].contactNumber);
   useEffect(() => {
     if (!!profileInfo && profileInfo?.length > 0) {
       const selectedProfile = !!router.query.userId
@@ -455,7 +456,7 @@ const Profile = () => {
               <div style={{ display: showProfileDetail ? "block" : "none" }}>
                 <div css={styles.formFlexDiv}>
                   <div css={styles.formFlexChildDiv}>
-                    <label className="primary-text">Emaill</label>
+                    <label className="primary-text">Email</label>
                   </div>
                   <div css={styles.formFlexChildDiv}>
                     <input
@@ -474,7 +475,7 @@ const Profile = () => {
                   </div>
                   <div css={styles.formFlexChildDiv}>
                     <input
-                      type="number"
+                      type={selectedProfile?.[0]?.contactNumber ? 'string' : 'number'}
                       min={0}
                       onWheel={(event) => event.currentTarget.blur()}
                       className="primary-text"
