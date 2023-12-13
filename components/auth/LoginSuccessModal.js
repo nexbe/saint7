@@ -8,7 +8,8 @@ const LoginSuccessModal = ({ modal, setModal, setRedirectHome }) => {
   const router = useRouter();
   const onClickHandler = () => {
     setModal(false);
-    setRedirectHome(true)
+    setRedirectHome(false)
+    console.log("go to home")
     router.push("/home");
   };
   return (
