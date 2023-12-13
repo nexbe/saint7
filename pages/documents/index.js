@@ -194,6 +194,7 @@ const Documents = () => {
           setModal={setEditModal}
           selectedDocument={selectedDocument}
           userId={user?.id}
+          visibleFor={router?.query?.visibleFor}
         />
       )}
       {deleteModal && (

@@ -67,6 +67,7 @@ const siteCheckListStore = create((set) => ({
     }
   },
   updateCheckLists : async (data, jwt) =>{
+    console.log("=>",data, jwt)
     try { 
       await client.mutate({
         mutation: UPDATE_SITE_CHECKLIST,

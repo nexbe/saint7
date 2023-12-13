@@ -331,7 +331,7 @@ const EditCheckList = () => {
         query: {
           message: !errorUpdateCheckLists ? "Success!" : "Apologies!",
           belongTo: !errorUpdateCheckLists ? "Checklists" : "error",
-          action: "update",
+          label: "Checklist has successfully updated.",
           userId: user?.id,
         },
       });
