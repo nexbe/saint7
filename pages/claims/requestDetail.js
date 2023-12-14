@@ -38,6 +38,10 @@ const RequestDetail = () => {
 
   const [selectedExpense, setSelectedExpense] = useState(claimInfo || []);
 
+  useEffect(() => {
+    setSelectedExpense(claimInfo || [])
+  },[claimInfo])
+
   const handleExpenseChange = (id) => {
     const filteredResults = claimInfo.filter(
       (item) => item?.id?.toLowerCase() === id?.toLowerCase()
@@ -48,7 +52,6 @@ const RequestDetail = () => {
   useEffect(() => {
     handleExpenseChange(router.query.expenseId);
   }, [router.query]);
-
   return (
     <Layout>
       <div css={styles.wrapper}>
