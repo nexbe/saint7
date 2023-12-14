@@ -66,7 +66,7 @@ const ExpenseRequestStatus = () => {
       apolloClient,
       where: { userId: user.id },
     });
-  }, []);
+  }, [router.query.message]);
 
   useMemo(() => {
     if (!!claimInfo) {
@@ -76,7 +76,6 @@ const ExpenseRequestStatus = () => {
       setExpenseList(resultArr);
     }
   }, [claimInfo, router.query]);
-
   const handleListChange = (filteredResults) => {
     const pendingList = filteredResults.filter(
       (item) => item && item.status && item.status.toLowerCase() === "pending"
@@ -201,7 +200,7 @@ const ExpenseRequestStatus = () => {
     if (!!claimInfo) {
       handleListChange(claimInfo);
     }
-  }, []);
+  }, [claimInfo]);
 
   const handleRefresh = () => {
     setFilterTerm("");
@@ -320,9 +319,10 @@ const ExpenseRequestStatus = () => {
             </div>
             {activeTab == 1 && (
               <>
-                {pendingData && pendingData.length > 0 && (
-                  <div css={styles.cardContainer}>
-                    {pendingData.map((item, index) => (
+                {pendingData && pendingData?.length > 0 && (
+                  pendingData?.map((data) => {
+                  return (<div css={styles.cardContainer} key={data?.id}>
+                    {data?.[1]?.map((item, index) => (
                       <div
                         css={styles.eachCard}
                         className="primary-text"
@@ -340,19 +340,20 @@ const ExpenseRequestStatus = () => {
                       >
                         <label>
                           <label css={styles.expenseId}>
-                            #ER-0000{item.id}
+                            #ER-0000{item?.id}
                           </label>
-                          {item.category?.label}
+                          {item?.category?.label}
                         </label>
                         <label style={{ width: "20%" }}>
-                          $ {item.amount}
+                          $ {item?.amount}
                           <label css={styles.expenseStatus}>
-                            {item.status}
+                            {item?.status}
                           </label>
                         </label>
                       </div>
                     ))}
-                  </div>
+                  </div>)
+                  })
                 )}
                 {pendingData && pendingData.length == 0 && (
                   <div css={styles.noDataContainer} className="primary-text">
