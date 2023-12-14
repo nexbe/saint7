@@ -31,8 +31,10 @@ const DutyModal = ({ isOpen = false, close = () => {} }) => {
     }
   }, [historyData]);
 
+  console.log(AttendanceUser);
+
   useEffect(() => {
-    if (AttendanceUser?.attributes?.checkOutTImee) {
+    if (AttendanceUser?.attributes?.checkOutTIme) {
       const checkInDateTime = new Date(
         `2000-01-01T${AttendanceUser?.attributes?.checkInTime}`
       );
