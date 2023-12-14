@@ -53,6 +53,7 @@ const HomeMap2 = ({ siteData }) => {
             return itemDate === moment().format("YYYY-MM-DD");
           }
         );
+        console.log(filteredData);
         return (
           <Marker
             position={[

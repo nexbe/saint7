@@ -9,6 +9,7 @@ export const GET_ATTENDANCE = gql`
           checkOutTIme
           address
           date
+          status
           assignee_shift {
             data {
               attributes {
